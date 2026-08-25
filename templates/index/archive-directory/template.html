@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{siteName}}</title>
+</head>
+<body>
+  <div class="archive-container">
+    <div class="archive-header">
+      <div class="archive-badge">机密 · CONFIDENTIAL</div>
+      <h1 data-arg-slot="siteName">{{siteName}}</h1>
+      <div class="archive-nav" data-arg-slot="navigation">{{navigation}}</div>
+    </div>
+    <div class="archive-body">
+      <div class="archive-title-bar">
+        <span data-arg-slot="categoryTitle">{{categoryTitle}}</span>
+      </div>
+      <div class="archive-list" data-arg-slot="links">{{ARG_LINKS}}</div>
+    </div>
+    <div class="archive-footer">
+      <span>档案编目中心 · 严禁未授权翻阅</span>
+    </div>
+  </div>
+</body>
+</html>

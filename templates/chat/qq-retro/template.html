@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{siteName}}</title>
+</head>
+<body>
+  <div class="chat-app qq-theme" data-arg-component="chat">
+    <div class="chat-nav">
+      <div class="chat-nav-item active" title="消息">
+        <span class="nav-icon">💬</span>
+      </div>
+      <div class="chat-nav-item" title="通讯录">
+        <span class="nav-icon">👥</span>
+      </div>
+      <div role="button" tabindex="0" class="chat-nav-item chat-nav-back" data-arg-link="node_desktop" data-arg-port="返回电脑桌面" title="退出 / 返回电脑桌面" style="margin-top:auto;cursor:pointer;">
+        <span class="nav-icon">🔙</span>
+      </div>
+    </div>
+
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">
+        <div class="chat-search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="搜索联系人..." id="contactSearch">
+        </div>
+      </div>
+      <div class="chat-contacts-list" id="contactsList">
+        <!-- contacts rendered by runtime -->
+      </div>
+    </div>
+
+    <div class="chat-main" id="chatMain">
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <span class="chat-title-name" id="currentContactName">{{siteName}}</span>
+          <span class="chat-title-bio" id="currentContactBio"></span>
+        </div>
+        <div class="chat-header-actions">
+          <button type="button" class="chat-header-back-btn" data-arg-link="node_desktop" data-arg-port="返回电脑桌面" title="返回电脑桌面">
+            🖥️ 返回桌面
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <!-- messages rendered by runtime -->
+      </div>
+
+      <div class="chat-choices-area" id="chatChoicesArea">
+        <!-- choice pills rendered by runtime -->
+      </div>
+
+      <div class="chat-input-area">
+        <div class="chat-toolbar">
+          <span class="tool-btn" title="表情">😀</span>
+          <span class="tool-btn" title="发送图片">🖼️</span>
+          <span class="tool-btn" title="发送文件">📁</span>
+        </div>
+        <form class="chat-form" id="chatForm">
+          <input type="text" id="chatInput" placeholder="输入回复内容，或点击上方选项..." autocomplete="off">
+          <button type="submit" id="chatSendBtn" class="chat-send-btn">发送</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

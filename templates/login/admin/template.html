@@ -1,54 +1,52 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="zh-CN">
 <head>
-
-<meta charset="UTF-8">
-
-<title>Login</title>
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{systemName}}</title>
 </head>
-
-
 <body>
+  <div class="login-page-wrap">
+    <div class="safe-vault-card">
+      <div class="vault-header">
+        <div class="vault-icon">🔐</div>
+        <h2 class="vault-title" data-arg-slot="systemName">{{systemName}}</h2>
+        <p class="vault-subtitle">SECURITY LEVEL 4 · CLASSIFIED ARCHIVE VAULT</p>
+      </div>
 
+      <form class="vault-form" data-arg-component="login">
+        <div class="vault-input-group">
+          <label for="password">输入解密口令 (Password / Keycode)：</label>
+          <div class="vault-input-wrapper">
+            <span class="input-icon">🔑</span>
+            <input 
+              id="password" 
+              type="password" 
+              data-arg-input="password" 
+              placeholder="请输入 7 位解密口令..." 
+              autocomplete="off"
+              autofocus
+            >
+          </div>
+        </div>
 
-<form class="login" data-arg-component="login">
+        <div class="vault-actions">
+          <button type="submit" data-arg-submit class="vault-submit-btn">
+            🔓 验证并解锁档案
+          </button>
+          <button type="button" class="vault-back-btn" data-arg-link="node_desktop" data-arg-port="返回电脑桌面" title="返回电脑桌面">
+            🖥️ 返回桌面
+          </button>
+        </div>
 
+        <p class="vault-error-msg" id="error" data-arg-error></p>
 
-<h2>
-
-<span data-arg-slot="systemName">{{systemName}}</span>
-
-</h2>
-
-
-
-<input 
-id="password"
-type="password"
-placeholder="密码"
->
-
-
-<button data-arg-submit>
-
-登录
-
-</button>
-
-
-
-<p id="error"></p>
-
-
-
-</form>
-
-
+        <div class="vault-hint-box">
+          <div class="hint-title">💡 调查线索提示 (Investigation Clue)：</div>
+          <div class="hint-body">口令为女大学生失踪案报道与互助会暗号“一切自愿的大学”拼音首字母（7位英文小写）。</div>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
-
-
 </html>

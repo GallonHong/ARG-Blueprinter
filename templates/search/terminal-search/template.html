@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{siteName}}</title>
+</head>
+<body>
+  <div class="term-search-wrap">
+    <div class="term-topbar">
+      <div class="term-status-badge">SECURE TERMINAL // NODE 0717</div>
+      <div class="term-nav-links" data-arg-slot="navLinks">{{ARG_NAV_LINKS}}</div>
+    </div>
+    <div class="term-container">
+      <div class="term-brand">
+        <h1 data-arg-slot="siteName">{{siteName}}</h1>
+        <div class="term-subtitle" data-arg-slot="subtitle">{{subtitle}}</div>
+      </div>
+      <div class="term-notice" data-arg-slot="notice">{{notice}}</div>
+      <form id="searchForm" data-arg-component="search">
+        <div class="term-input-line">
+          <span class="term-prompt">&gt;</span>
+          <input id="keyword" data-arg-input="keyword" placeholder="{{placeholder}}">
+          <button type="submit" data-arg-submit>
+            <span data-arg-slot="buttonText">{{buttonText}}</span>
+          </button>
+        </div>
+      </form>
+      <div id="result" data-arg-result></div>
+      <div class="term-hot-section">
+        <div class="term-hot-label">// FREQUENT TARGETS / HOT KEYS:</div>
+        <div class="term-hot-links" data-arg-slot="hotLinks">{{ARG_HOT_LINKS}}</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

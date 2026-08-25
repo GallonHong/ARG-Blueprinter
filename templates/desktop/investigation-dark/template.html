@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{systemName}}</title>
+</head>
+<body>
+  <div class="dark-desktop">
+    <div class="desktop-main">
+      <div class="desktop-icons" data-arg-slot="icons">
+        {{ARG_DESKTOP_ICONS}}
+      </div>
+      <div class="desktop-widgets">
+        <div class="dark-sticky-note" data-arg-slot="stickyNote">
+          <div class="note-titlebar">🚨 案件调查专案提醒</div>
+          <div class="note-body">{{stickyNote}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="dark-taskbar">
+      <div class="dark-start-btn">
+        <span>SYSTEM // NODE</span>
+        <span data-arg-slot="startTitle">{{startTitle}}</span>
+      </div>
+      <div class="taskbar-tasks">
+        <div class="dark-taskbar-item">
+          <span>CLASSIFIED // {{systemName}}</span>
+        </div>
+      </div>
+      <div class="dark-tray">
+        <span class="tray-status">● ONLINE</span>
+        <span class="tray-time" data-arg-slot="time">{{time}}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

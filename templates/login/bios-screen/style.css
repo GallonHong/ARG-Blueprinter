@@ -1,0 +1,35 @@
+body {
+  margin: 0; padding: 0; background: var(--arg-bg-color, #0000aa);
+  font-family: var(--arg-font-family, "Consolas", "Courier New", monospace);
+  height: 100vh; overflow: hidden; color: #ffffff;
+}
+.bios-screen {
+  height: 100vh; display: flex; flex-direction: column; justify-content: space-between;
+  padding: 24px; box-sizing: border-box;
+}
+.bios-header { border-bottom: 2px solid #5555ff; padding-bottom: 8px; }
+.bios-brand { font-size: 14px; color: #ffff55; }
+.bios-title { font-size: 18px; font-weight: bold; margin-top: 4px; }
+.bios-sysinfo { font-size: 13px; line-height: 1.6; color: #aaaaaa; margin-top: 14px; }
+.bios-dialog-wrapper { display: flex; justify-content: center; align-items: center; flex: 1; }
+.bios-dialog {
+  background: #000000; border: 2px solid #ffffff; padding: 20px 28px; width: 360px;
+  box-shadow: 6px 6px 0px #5555ff; text-align: center;
+}
+.bios-dialog-title { font-size: 14px; font-weight: bold; color: #ffff55; margin-bottom: 14px; }
+.bios-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.bios-prompt { font-size: 18px; color: #55ff55; font-weight: bold; }
+.bios-input-row input {
+  flex: 1; background: #000055; border: 1px solid #ffff55; color: #ffffff;
+  font-size: 16px; padding: 6px 10px; font-family: inherit; outline: none;
+}
+.bios-btn {
+  background: transparent; border: 1px solid #ffffff; color: #ffffff;
+  font-family: inherit; font-size: 13px; padding: 6px 14px; cursor: pointer;
+}
+.bios-btn:hover { background: #ffffff; color: #000000; }
+.bios-error { color: #ff5555; font-size: 13px; font-weight: bold; margin-top: 8px; }
+.bios-footer {
+  border-top: 2px solid #5555ff; padding-top: 8px; font-size: 12px;
+  display: flex; justify-content: space-between; color: #aaaaaa;
+}

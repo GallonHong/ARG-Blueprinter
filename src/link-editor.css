@@ -1,1 +1,7 @@
 .link-target{padding:6px 9px;border:1px solid #dfe5ec;border-radius:6px;background:#fff;color:#17202b;font:12px inherit;max-width:170px}.editor-toolbar button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.quick-add-select{padding:4px 8px;font-size:12px;font-weight:600;color:#356ae6;background:#eef3ff;border:1px solid #c9d8ff;border-radius:6px;cursor:pointer;outline:none}
+.quick-add-select:hover{background:#e0ebff}
+.link-card{background:#f8fafc;border:1px solid #dce4ef;border-radius:8px;padding:10px;margin-bottom:10px;transition:border-color .15s}
+.link-card:hover{border-color:#b9cbe6}
+.icon-tiny{padding:1px 6px;font-size:11px;line-height:1.2;border-radius:4px}
+

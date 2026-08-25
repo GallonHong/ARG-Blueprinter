@@ -1,0 +1,29 @@
+body {
+  margin: 0; padding: 24px; background: var(--arg-bg-color, #1a1a1a);
+  font-family: var(--arg-font-family, "Courier New", monospace); color: #e0e0e0;
+}
+.scp-page { max-width: 800px; margin: 0 auto; }
+.scp-warning-header {
+  background: #8b0000; color: #fff; padding: 12px 16px; border: 2px solid #ff3333;
+  margin-bottom: 20px; text-align: center; box-shadow: 0 0 15px rgba(255,0,0,0.4);
+}
+.scp-badge { font-weight: bold; font-size: 14px; letter-spacing: 2px; }
+.scp-warning-text { font-size: 11px; margin-top: 4px; }
+.scp-card {
+  background: var(--arg-card-bg, #0f1217); border: 1px solid #333; padding: 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+.scp-title {
+  color: #ff4d4d; border-bottom: 2px solid #8b0000; padding-bottom: 8px; margin: 0 0 16px 0;
+  font-size: 22px; letter-spacing: 1px;
+}
+.scp-meta {
+  display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: #888;
+  border-bottom: 1px dashed #333; padding-bottom: 12px; margin-bottom: 20px;
+}
+.scp-meta span strong { color: #aaa; }
+.scp-body { font-size: 14px; line-height: 1.8; color: #d0d0d0; white-space: pre-wrap; }
+.scp-footer {
+  margin-top: 30px; border-top: 1px solid #333; padding-top: 16px; text-align: center;
+}
+.scp-seal { font-size: 12px; color: #666; letter-spacing: 4px; font-weight: bold; }

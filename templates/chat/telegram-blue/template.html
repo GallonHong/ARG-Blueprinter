@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{siteName}}</title>
+</head>
+<body>
+  <div class="chat-app tg-theme" data-arg-component="chat">
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">
+        <div class="chat-search-bar">
+          <span class="search-icon">✈️</span>
+          <input type="text" placeholder="搜索频道或联系人..." id="contactSearch">
+        </div>
+      </div>
+      <div class="chat-contacts-list" id="contactsList">
+        <!-- contacts rendered dynamically -->
+      </div>
+    </div>
+
+    <div class="chat-main" id="chatMain">
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <span class="chat-title-name" id="currentContactName">{{siteName}}</span>
+          <span class="chat-title-bio" id="currentContactBio"></span>
+        </div>
+        <div class="chat-header-actions" style="margin-left:auto;">
+          <button type="button" class="chat-header-back-btn" data-arg-link="node_desktop" data-arg-port="返回电脑桌面" title="返回电脑桌面" style="color:#2481cc;background:#fff;padding:4px 10px;border-radius:12px;border:none;font-size:12px;font-weight:bold;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+            🖥️ 返回桌面
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <!-- messages rendered dynamically -->
+      </div>
+
+      <div class="chat-choices-area" id="chatChoicesArea">
+        <!-- choice pills rendered dynamically -->
+      </div>
+
+      <div class="chat-input-area">
+        <form class="chat-form" id="chatForm">
+          <input type="text" id="chatInput" placeholder="输入加密消息，或点击上方选项..." autocomplete="off">
+          <button type="submit" id="chatSendBtn" class="chat-send-btn">发送</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

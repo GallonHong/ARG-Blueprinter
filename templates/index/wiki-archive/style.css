@@ -1,0 +1,27 @@
+body {
+  margin: 0; padding: 20px; background: var(--arg-bg-color, #f6f6f6);
+  font-family: var(--arg-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif);
+  color: #202122;
+}
+.wiki-container {
+  max-width: 900px; margin: 0 auto; background: var(--arg-card-bg, #ffffff);
+  border: 1px solid #a7d7f9; display: flex; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.wiki-sidebar {
+  width: 170px; background: #f6f6f6; border-right: 1px solid #a7d7f9; padding: 18px 14px;
+}
+.wiki-logo { font-size: 15px; font-weight: bold; color: #3366cc; margin-bottom: 16px; }
+.wiki-menu-item { display: block; color: #0645ad; font-size: 13px; margin-bottom: 8px; cursor: pointer; }
+.wiki-menu-item:hover { text-decoration: underline; }
+.wiki-content { flex: 1; padding: 24px 30px; }
+.wiki-title { font-size: 26px; border-bottom: 1px solid #a2a9b1; padding-bottom: 6px; margin: 0 0 4px 0; font-family: "Georgia", serif; }
+.wiki-tagline { font-size: 12px; color: #54595d; margin-bottom: 18px; }
+.wiki-toc {
+  background: #f8f9fa; border: 1px solid #a2a9b1; padding: 14px; width: fit-content; min-width: 280px; margin-bottom: 20px;
+}
+.toc-title { font-weight: bold; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+.wiki-links { display: flex; flex-direction: column; gap: 8px; }
+.wiki-links a, .arg-link-item { color: #0645ad; text-decoration: none; font-size: 14px; }
+.wiki-links a:hover, .arg-link-item:hover { text-decoration: underline; }
+.arg-link-desc { font-size: 12px; color: #72777d; margin-left: 6px; }
+.wiki-notice { background: #eaf3ff; border-left: 4px solid #3366cc; padding: 10px 14px; font-size: 13px; color: #222; }

@@ -1,58 +1,34 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-
-<meta charset="UTF-8">
-
-<title>{{siteName}}</title>
-
-
+  <meta charset="UTF-8">
+  <title>{{siteName}}</title>
 </head>
-
-
 <body>
-
-
-<div class="search">
-
-
-<h1>
-
-<span data-arg-slot="siteName">{{siteName}}</span>
-
-</h1>
-
-
-
-<form id="searchForm" data-arg-component="search">
-
-
-<input id="keyword" data-arg-input="keyword" placeholder="{{placeholder}}">
-
-
-<button data-arg-submit>
-
-<span data-arg-slot="buttonText">{{buttonText}}</span>
-
-</button>
-
-
-</form>
-
-
-
-<div id="result">
-
-</div>
-
-
-</div>
-
-
-
+  <div class="search-page-wrap">
+    <div class="search-topbar">
+      <div class="search-nav-links" data-arg-slot="navLinks">{{ARG_NAV_LINKS}}</div>
+    </div>
+    <div class="search-container">
+      <div class="search-brand">
+        <h1 data-arg-slot="siteName">{{siteName}}</h1>
+        <div class="search-subtitle" data-arg-slot="subtitle">{{subtitle}}</div>
+      </div>
+      <div class="search-notice" data-arg-slot="notice">{{notice}}</div>
+      <form id="searchForm" data-arg-component="search">
+        <div class="search-input-wrap">
+          <input id="keyword" data-arg-input="keyword" placeholder="{{placeholder}}">
+          <button type="submit" data-arg-submit>
+            <span data-arg-slot="buttonText">{{buttonText}}</span>
+          </button>
+        </div>
+      </form>
+      <div id="result" data-arg-result></div>
+      <div class="search-hot-section">
+        <div class="search-hot-label">推荐检索 / 快捷通道：</div>
+        <div class="search-hot-links" data-arg-slot="hotLinks">{{ARG_HOT_LINKS}}</div>
+      </div>
+    </div>
+  </div>
 </body>
-
-
 </html>

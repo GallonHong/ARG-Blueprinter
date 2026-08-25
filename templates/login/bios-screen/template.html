@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{systemName}}</title>
+</head>
+<body>
+  <div class="bios-screen">
+    <div class="bios-header">
+      <div class="bios-brand">AMIBIOS (C) 1999 American Megatrends Inc.</div>
+      <div class="bios-title" data-arg-slot="systemName">{{systemName}}</div>
+    </div>
+
+    <div class="bios-sysinfo">
+      <div>CPU: Intel Pentium III Processor 800MHz</div>
+      <div>Base Memory: 640K  Extended Memory: 261120K</div>
+      <div>Primary Master: WDC WD200BB-00AUA1 HDD (20.0GB)</div>
+      <div>Security Status: PASSWORD CHECK REQUIRED</div>
+    </div>
+
+    <div class="bios-dialog-wrapper">
+      <div class="bios-dialog">
+        <div class="bios-dialog-title">ENTER SYSTEM PASSWORD</div>
+        <form class="bios-form" data-arg-component="login">
+          <div class="bios-input-row">
+            <span class="bios-prompt">&gt;</span>
+            <input type="password" id="password" data-arg-input="password" autofocus autocomplete="off">
+          </div>
+          <button type="submit" data-arg-submit class="bios-btn">[ ENTER - VERIFY ]</button>
+          <p class="bios-error" id="error" data-arg-error></p>
+        </form>
+      </div>
+    </div>
+
+    <div class="bios-footer">
+      <span>Press &lt;DEL&gt; to Enter Setup</span>
+      <span>Press &lt;F8&gt; for BBS POPUP</span>
+    </div>
+  </div>
+</body>
+</html>

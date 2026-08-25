@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{systemName}}</title>
+</head>
+<body>
+  <div class="cyber-desktop">
+    <div class="cyber-header">
+      <div class="cyber-status-tag">SYSTEM::ROOT_TERMINAL_ONLINE</div>
+      <div class="cyber-title" data-arg-slot="systemName">{{systemName}}</div>
+      <div class="cyber-clock" data-arg-slot="time">SYS_TIME: {{time}}</div>
+    </div>
+    <div class="cyber-body">
+      <div class="cyber-icons" data-arg-slot="icons">
+        {{ARG_DESKTOP_ICONS}}
+      </div>
+      <div class="cyber-hud-card" data-arg-slot="stickyNote">
+        <div class="hud-header">[ INVESTIGATION_LOGS // CLASSIFIED ]</div>
+        <div class="hud-content">{{stickyNote}}</div>
+      </div>
+    </div>
+    <div class="cyber-footer">
+      <span class="cyber-start" data-arg-slot="startTitle">⚡ {{startTitle}}</span>
+      <span class="cyber-net">SECURE_TUNNEL: CONNECTED (256-BIT AES)</span>
+    </div>
+  </div>
+</body>
+</html>

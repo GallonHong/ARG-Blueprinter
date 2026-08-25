@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - 私人日记</title>
+</head>
+<body>
+  <div class="diary-notebook">
+    <div class="diary-bookmark">🔖 第 717 页</div>
+    <div class="diary-header">
+      <div class="diary-date" data-arg-slot="date">📅 {{date}}</div>
+      <div class="diary-author" data-arg-slot="author">✍️ 记录人：{{author}}</div>
+    </div>
+    
+    <h2 class="diary-title" data-arg-slot="title">{{title}}</h2>
+
+    <div class="diary-content" data-arg-slot="body">
+      {{body}}
+    </div>
+
+    <div class="diary-footer">
+      <span>—— 笔记在此处戛然而止 ——</span>
+    </div>
+  </div>
+</body>
+</html>

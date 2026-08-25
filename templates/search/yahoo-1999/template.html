@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{siteName}}</title>
+</head>
+<body>
+  <div class="yahoo-container">
+    <div class="yahoo-topbar">
+      <span class="yahoo-notice" data-arg-slot="notice">{{notice}}</span>
+      <div class="yahoo-nav-links" data-arg-slot="navLinks">{{ARG_NAV_LINKS}}</div>
+    </div>
+
+    <div class="yahoo-header">
+      <div class="yahoo-logo" data-arg-slot="siteName">🌟 {{siteName}} <em>!</em></div>
+      <div class="yahoo-subtitle" data-arg-slot="subtitle">{{subtitle}}</div>
+    </div>
+
+    <form class="yahoo-search-form" id="searchForm" data-arg-component="search">
+      <div class="search-input-box">
+        <input type="text" id="keyword" data-arg-input="keyword" placeholder="{{placeholder}}">
+        <button type="submit" data-arg-submit class="yahoo-btn">{{buttonText}}</button>
+      </div>
+    </form>
+
+    <div class="yahoo-hot-links" data-arg-slot="hotLinks">
+      <span class="hot-label">🔥 热门检索分类：</span>
+      {{ARG_HOT_LINKS}}
+    </div>
+
+    <div class="yahoo-result-box" id="result" data-arg-result></div>
+
+    <div class="yahoo-directory">
+      <div class="dir-col">
+        <h4>📁 商业与经济</h4>
+        <p>公司 · 投资 · 金融案卷</p>
+      </div>
+      <div class="dir-col">
+        <h4>📁 计算机与互联网</h4>
+        <p>软硬件 · 网络安全 · 数据库</p>
+      </div>
+      <div class="dir-col">
+        <h4>📁 社会与新闻</h4>
+        <p>临江专案 · 调查通报 · 目击者</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

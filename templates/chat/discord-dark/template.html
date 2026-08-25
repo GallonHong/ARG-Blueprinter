@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{siteName}}</title>
+</head>
+<body>
+  <div class="chat-app discord-theme" data-arg-component="chat">
+    <!-- Server icon sidebar -->
+    <div class="chat-nav">
+      <div class="chat-nav-item active" title="绝密调查局">
+        <span class="nav-icon">👾</span>
+      </div>
+      <div class="chat-nav-item" title="717专案组">
+        <span class="nav-icon">🕵️</span>
+      </div>
+      <div role="button" tabindex="0" class="chat-nav-item chat-nav-back" data-arg-link="node_desktop" data-arg-port="返回电脑桌面" title="退出 / 返回电脑桌面" style="margin-top:auto;cursor:pointer;">
+        <span class="nav-icon">🔙</span>
+      </div>
+    </div>
+
+    <!-- Channels / Direct Messages sidebar -->
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">
+        <div class="chat-search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="寻找或开始对话" id="contactSearch">
+        </div>
+      </div>
+      <div class="chat-contacts-list" id="contactsList">
+        <!-- contacts rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Chat main window -->
+    <div class="chat-main" id="chatMain">
+      <div class="chat-header">
+        <div style="display:flex;align-items:center;">
+          <span class="discord-hash">#</span>
+          <span class="chat-title-name" id="currentContactName">{{siteName}}</span>
+          <span class="chat-title-bio" id="currentContactBio"></span>
+        </div>
+        <div class="chat-header-actions" style="margin-left:auto;">
+          <button type="button" class="chat-header-back-btn" data-arg-link="node_desktop" data-arg-port="返回电脑桌面" title="返回电脑桌面" style="color:#fff;background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:4px;border:none;font-size:12px;cursor:pointer;">
+            🖥️ 返回桌面
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <!-- messages rendered dynamically -->
+      </div>
+
+      <div class="chat-choices-area" id="chatChoicesArea">
+        <!-- player choice buttons rendered dynamically -->
+      </div>
+
+      <div class="chat-input-area">
+        <form class="chat-form" id="chatForm">
+          <input type="text" id="chatInput" placeholder="发送消息至当前频道，或点击上方选项..." autocomplete="off">
+          <button type="submit" id="chatSendBtn" class="chat-send-btn">发送</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

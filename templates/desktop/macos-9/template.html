@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{systemName}}</title>
+</head>
+<body>
+  <div class="macos-desktop">
+    <!-- Top Menu Bar -->
+    <div class="mac-menubar">
+      <div class="mac-menubar-left">
+        <span class="mac-apple-logo">🍎</span>
+        <span class="mac-menu-item active"><strong>访达</strong></span>
+        <span class="mac-menu-item">文件</span>
+        <span class="mac-menu-item">编辑</span>
+        <span class="mac-menu-item">视图</span>
+        <span class="mac-menu-item">特别</span>
+        <span class="mac-menu-item">帮助</span>
+      </div>
+      <div class="mac-menubar-right">
+        <span class="mac-time" data-arg-slot="time">{{time}}</span>
+        <span class="mac-finder-icon">🖥️ Finder</span>
+      </div>
+    </div>
+
+    <!-- Desktop Area -->
+    <div class="mac-main-area">
+      <!-- Sticky Note Widget -->
+      <div class="mac-stickies" data-arg-slot="stickyNote">
+        <div class="stickies-bar">
+          <span class="stickies-close"></span>
+          <span class="stickies-title">备忘录</span>
+        </div>
+        <div class="stickies-content">{{stickyNote}}</div>
+      </div>
+
+      <!-- Desktop Icons (Right Aligned Mac style) -->
+      <div class="mac-desktop-icons" data-arg-slot="icons">
+        {{ARG_DESKTOP_ICONS}}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

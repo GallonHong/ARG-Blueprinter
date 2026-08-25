@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+</head>
+<body>
+  <div class="scp-page">
+    <div class="scp-warning-header">
+      <div class="scp-badge">RESTRICTED // LEVEL-4 CLEARANCE ONLY</div>
+      <div class="scp-warning-text">警告：未经授权擅自访问绝密档案者将被立即执行模因抹杀。</div>
+    </div>
+
+    <div class="scp-card">
+      <div class="scp-header">
+        <h1 class="scp-title" data-arg-slot="title">{{title}}</h1>
+        <div class="scp-meta">
+          <span><strong>项目编号 / 档案代号：</strong><span data-arg-slot="author">{{author}}</span></span>
+          <span><strong>档案日期：</strong><span data-arg-slot="date">{{date}}</span></span>
+          <span><strong>机密所属：</strong><span data-arg-slot="siteName">{{siteName}}</span></span>
+        </div>
+      </div>
+
+      <div class="scp-body" data-arg-slot="body">
+        {{body}}
+      </div>
+
+      <div class="scp-footer">
+        <div class="scp-seal">SECURE · CONTAIN · PROTECT</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

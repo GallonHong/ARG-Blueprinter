@@ -1,0 +1,40 @@
+body {
+  margin: 0; padding: 20px; background: var(--arg-bg-color, #fffae8);
+  font-family: var(--arg-font-family, "SimSun", "宋体", serif); color: #333;
+}
+.yahoo-container {
+  max-width: 760px; margin: 0 auto; background: var(--arg-card-bg, #ffffff);
+  border: 2px solid #5a009d; padding: 24px; box-shadow: 4px 4px 0px #5a009d;
+}
+.yahoo-topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px dotted #ccc; padding-bottom: 8px; margin-bottom: 16px; font-size: 12px;
+}
+.yahoo-header { text-align: center; margin-bottom: 20px; }
+.yahoo-logo { font-size: 34px; font-weight: bold; color: #cc0000; font-family: "Georgia", serif; }
+.yahoo-logo em { color: #5a009d; font-style: normal; }
+.yahoo-subtitle { font-size: 12px; color: #666; margin-top: 4px; }
+.yahoo-search-form { display: flex; justify-content: center; margin-bottom: 16px; }
+.search-input-box { display: flex; width: 100%; max-width: 520px; gap: 8px; }
+.search-input-box input {
+  flex: 1; padding: 8px 12px; border: 2px solid #5a009d; font-size: 14px; outline: none;
+}
+.yahoo-btn {
+  background: #5a009d; color: #fff; border: none; padding: 8px 20px;
+  font-size: 14px; font-weight: bold; cursor: pointer;
+}
+.yahoo-btn:hover { background: #7b0dbd; }
+.yahoo-hot-links {
+  background: #fdf5e6; border: 1px solid #faebcc; padding: 8px 12px;
+  font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px;
+}
+.hot-link-btn { color: #0000cc; font-weight: bold; text-decoration: underline; cursor: pointer; }
+.yahoo-result-box {
+  margin: 12px 0; font-size: 14px; font-weight: bold; color: #cc0000; text-align: center;
+}
+.yahoo-directory {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+  border-top: 2px solid #5a009d; padding-top: 16px; margin-top: 20px;
+}
+.dir-col h4 { margin: 0 0 4px 0; font-size: 13px; color: #5a009d; }
+.dir-col p { margin: 0; font-size: 11px; color: #666; }

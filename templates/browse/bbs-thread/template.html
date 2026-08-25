@@ -1,82 +1,84 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="zh-CN">
 <head>
-
-<meta charset="UTF-8">
-
-<title>{{title}}</title>
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - {{forumName}}</title>
 </head>
-
-
 <body>
+  <div class="bbs-container">
+    <div class="bbs-top-bar">
+      <div class="bbs-brand">
+        <span class="bbs-logo">🌐</span>
+        <span class="bbs-site-name" data-arg-slot="siteName">{{siteName}}</span>
+      </div>
+      <div class="bbs-top-actions">
+        <button type="button" class="bbs-btn" data-arg-link="node_search" data-arg-port="全网搜索引擎" title="打开搜索引擎">🔍 搜索线索</button>
+        <button type="button" class="bbs-btn primary" data-arg-link="node_desktop" data-arg-port="返回电脑桌面" title="返回电脑桌面">🖥️ 返回桌面</button>
+      </div>
+    </div>
 
+    <div class="bbs-nav-path">
+      <span>当前位置：</span>
+      <span role="button" tabindex="0" class="bbs-nav-link" data-arg-link="node_forum" data-arg-port="七月半论坛" style="cursor:pointer;color:#2563eb;">论坛首页</span>
+      <span>&gt;</span>
+      <span data-arg-slot="forumName">{{forumName}}</span>
+      <span>&gt;</span>
+      <span class="current-thread-title" data-arg-slot="title">{{title}}</span>
+    </div>
 
-<div class="forum">
+    <div class="bbs-post-card">
+      <div class="bbs-thread-header">
+        <h1 class="bbs-title" data-arg-slot="title">{{title}}</h1>
+        <div class="bbs-thread-meta">
+          <span class="bbs-tag">[置顶精华]</span>
+          <span>发表于：<span data-arg-slot="time">{{time}}</span></span>
+          <span>|</span>
+          <span>阅读：7170 次</span>
+          <span>|</span>
+          <span>回复：23 条</span>
+        </div>
+      </div>
 
+      <div class="bbs-floor">
+        <div class="bbs-user-side">
+          <div class="bbs-avatar">👤</div>
+          <div class="bbs-username" data-arg-slot="username">{{username}}</div>
+          <div class="bbs-user-badge">楼主 / 资深版主</div>
+          <div class="bbs-user-info">
+            <div>UID: 00717</div>
+            <div>积分: 9527</div>
+          </div>
+        </div>
 
-<div class="header">
+        <div class="bbs-post-main">
+          <div class="bbs-post-body" data-arg-slot="body">
+            {{body}}
+          </div>
 
-<span data-arg-slot="forumName">{{forumName}}</span>
+          <div class="bbs-post-links">
+            <div class="bbs-links-title">📌 快捷出口与相关线索：</div>
+            <div class="bbs-links-container" data-arg-slot="links">
+              {{ARG_LINKS}}
+            </div>
+          </div>
 
-</div>
+          <div class="bbs-post-sig">
+            <span>—— 签名档：真相只有一个，不要相信没有来源的私信。</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-
-
-<div class="post">
-
-
-<h2 data-arg-slot="title">{{title}}</h2>
-
-
-<div class="user">
-
-楼主：
-<span data-arg-slot="username">{{username}}</span>
-
-<br>
-
-时间：
-<span data-arg-slot="time">{{time}}</span>
-
-</div>
-
-
-
-<div class="content" data-arg-slot="body">
-
-{{body}}
-
-</div>
-
-
-
-</div>
-
-
-
-<div class="reply">
-
-<div data-arg-slot="replies">{{replies}}</div>
-
-</div>
-
-
-
-<div class="links">
-
-<span data-arg-slot="links">{{ARG_LINKS}}</span>
-
-</div>
-
-
-
-</div>
-
-
+    <div class="bbs-replies-card">
+      <div class="bbs-replies-head">
+        <span>💬 玩家与网友回复讨论</span>
+        <span class="bbs-reply-count">Floor #2 ~ #4</span>
+      </div>
+      <div class="bbs-replies-list" data-arg-slot="replies">
+        {{replies}}
+      </div>
+    </div>
+  </div>
 </body>
-
 </html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{siteName}} - 维基解密档案百科</title>
+</head>
+<body>
+  <div class="wiki-container">
+    <div class="wiki-sidebar">
+      <div class="wiki-logo">📖 {{siteName}}</div>
+      <div class="wiki-menu">
+        <span class="wiki-menu-item">首页</span>
+        <span class="wiki-menu-item">最近更改</span>
+        <span class="wiki-menu-item">随机条目</span>
+        <span class="wiki-menu-item">绝密专题</span>
+      </div>
+    </div>
+    <div class="wiki-content">
+      <h1 class="wiki-title" data-arg-slot="siteName">{{siteName}}</h1>
+      <p class="wiki-tagline">出自维基自由档案库，专供线索整理与案件索引。</p>
+      
+      <div class="wiki-toc">
+        <div class="toc-title" data-arg-slot="categoryTitle">📑 {{categoryTitle}}</div>
+        <div class="wiki-links" data-arg-slot="links">
+          {{ARG_LINKS}}
+        </div>
+      </div>
+
+      <div class="wiki-notice">
+        <strong>提示：</strong>本条目记录了当前调查的所有已知关联出口，点击上方链接可直接跳转到对应卷宗或系统页面。
+      </div>
+    </div>
+  </div>
+</body>
+</html>

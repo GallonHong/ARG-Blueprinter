@@ -1,53 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>{{title}}</title>
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - {{siteName}}</title>
 </head>
-
 <body>
+  <div class="news-browser">
+    <div class="news-top">
+      <div class="news-brand">
+        <span class="news-logo">📰</span>
+        <span data-arg-slot="siteName">{{siteName}}</span>
+      </div>
+      <div class="news-top-actions">
+        <button type="button" class="news-btn" data-arg-link="node_search" data-arg-port="全网搜索引擎">🔍 新闻检索</button>
+        <button type="button" class="news-btn primary" data-arg-link="node_desktop" data-arg-port="返回电脑桌面">🖥️ 返回桌面</button>
+      </div>
+    </div>
 
-<div class="browser">
+    <div class="news-article">
+      <div class="news-breadcrumb">
+        <span>当前栏目：社会特稿 / 深度调查记录</span>
+      </div>
 
-<div class="top">
-    <span data-arg-slot="siteName">{{siteName}}</span>
-</div>
+      <h1 class="news-title" data-arg-slot="title">{{title}}</h1>
 
+      <div class="news-info">
+        <span>发布日期：<span data-arg-slot="date">{{date}}</span></span>
+        <span>|</span>
+        <span>特约记者：<span data-arg-slot="author">{{author}}</span></span>
+        <span>|</span>
+        <span>来源：新千禧调查专栏</span>
+      </div>
 
-<div class="article">
+      <div class="news-divider"></div>
 
-<h1 data-arg-slot="title">{{title}}</h1>
+      <div class="news-content" data-arg-slot="body">
+        {{body}}
+      </div>
 
-<div class="info">
-<span data-arg-slot="date">{{date}}</span>　
-记者：<span data-arg-slot="author">{{author}}</span>
-</div>
-
-
-<hr>
-
-
-<div class="content" data-arg-slot="body">
-
-{{body}}
-
-</div>
-
-
-<div class="links">
-
-<span data-arg-slot="links">{{ARG_LINKS}}</span>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
+      <div class="news-links">
+        <div class="news-links-header">📌 关联调查档案与前往入口：</div>
+        <div class="news-links-list" data-arg-slot="links">
+          {{ARG_LINKS}}
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

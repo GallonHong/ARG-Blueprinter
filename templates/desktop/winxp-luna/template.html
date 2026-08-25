@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{systemName}}</title>
+</head>
+<body>
+  <div class="winxp-desktop">
+    <div class="desktop-main">
+      <div class="desktop-icons" data-arg-slot="icons">
+        {{ARG_DESKTOP_ICONS}}
+      </div>
+      <div class="desktop-widgets">
+        <div class="win-sticky-note" data-arg-slot="stickyNote">
+          <div class="note-titlebar">📌 便签 (Sticky Note)</div>
+          <div class="note-body">{{stickyNote}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="winxp-taskbar">
+      <div class="xp-start-btn">
+        <span>❖</span>
+        <span data-arg-slot="startTitle">{{startTitle}}</span>
+      </div>
+      <div class="taskbar-tasks">
+        <div class="xp-taskbar-item">
+          <span>💻 {{systemName}}</span>
+        </div>
+      </div>
+      <div class="winxp-tray">
+        <span class="tray-icon">🔊</span>
+        <span class="tray-time" data-arg-slot="time">{{time}}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

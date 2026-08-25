@@ -1,0 +1,22 @@
+body {
+  margin: 0; padding: 24px; background: var(--arg-bg-color, #2b2b2b);
+  font-family: var(--arg-font-family, "SimSun", "宋体", "FangSong", serif); color: #1a1a1a;
+}
+.verdict-page {
+  max-width: 720px; margin: 0 auto; background: var(--arg-card-bg, #fcfaf2);
+  border: 2px solid #8b0000; padding: 40px 48px; position: relative;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+.verdict-seal-watermark {
+  position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
+  font-size: 72px; color: rgba(139, 0, 0, 0.08); font-weight: 900; pointer-events: none;
+}
+.verdict-header { text-align: center; border-bottom: 2px solid #8b0000; padding-bottom: 16px; margin-bottom: 24px; }
+.police-badge { font-size: 13px; color: #8b0000; font-weight: bold; letter-spacing: 2px; }
+.verdict-header h1 { font-size: 26px; letter-spacing: 4px; margin: 10px 0 6px 0; color: #8b0000; }
+.verdict-sub { font-size: 12px; color: #666; }
+.verdict-body { font-size: 16px; line-height: 2; color: #222; white-space: pre-wrap; }
+.verdict-stamp-area { margin-top: 40px; display: flex; justify-content: flex-end; }
+.stamp-box { text-align: center; border: 2px solid #cc0000; padding: 8px 16px; border-radius: 4px; }
+.red-stamp { color: #cc0000; font-size: 18px; font-weight: bold; letter-spacing: 2px; }
+.stamp-date { font-size: 11px; color: #888; margin-top: 2px; }
