@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>{{title}}</title>
+
+
+</head>
+
+
+<body>
+
+
+<div class="forum">
+
+
+<div class="header">
+
+<span data-arg-slot="forumName">{{forumName}}</span>
+
+</div>
+
+
+
+<div class="post">
+
+
+<h2 data-arg-slot="title">{{title}}</h2>
+
+
+<div class="user">
+
+楼主：
+<span data-arg-slot="username">{{username}}</span>
+
+<br>
+
+时间：
+<span data-arg-slot="time">{{time}}</span>
+
+</div>
+
+
+
+<div class="content" data-arg-slot="body">
+
+{{body}}
+
+</div>
+
+
+
+</div>
+
+
+
+<div class="reply">
+
+<div data-arg-slot="replies">{{replies}}</div>
+
+</div>
+
+
+
+<div class="links">
+
+<span data-arg-slot="links">{{ARG_LINKS}}</span>
+
+</div>
+
+
+
+</div>
+
+
+</body>
+
+</html>

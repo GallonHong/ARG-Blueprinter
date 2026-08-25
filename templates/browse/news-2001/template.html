@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>{{title}}</title>
+
+
+</head>
+
+<body>
+
+<div class="browser">
+
+<div class="top">
+    <span data-arg-slot="siteName">{{siteName}}</span>
+</div>
+
+
+<div class="article">
+
+<h1 data-arg-slot="title">{{title}}</h1>
+
+<div class="info">
+<span data-arg-slot="date">{{date}}</span>　
+记者：<span data-arg-slot="author">{{author}}</span>
+</div>
+
+
+<hr>
+
+
+<div class="content" data-arg-slot="body">
+
+{{body}}
+
+</div>
+
+
+<div class="links">
+
+<span data-arg-slot="links">{{ARG_LINKS}}</span>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</body>
+</html>

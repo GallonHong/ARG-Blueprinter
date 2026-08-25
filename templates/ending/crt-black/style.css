@@ -1,0 +1,42 @@
+body {
+
+background:black;
+
+color:#00ff00;
+
+font-family:monospace;
+
+}
+
+
+.screen {
+
+
+margin:80px;
+
+
+font-size:22px;
+
+
+}
+
+
+.blink {
+
+
+animation:blink 1s infinite;
+
+}
+
+
+@keyframes blink {
+
+
+50%{
+
+opacity:0;
+
+}
+
+
+}
