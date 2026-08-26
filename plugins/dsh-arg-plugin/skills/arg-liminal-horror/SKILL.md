@@ -124,7 +124,7 @@ rule archive_search "第 4 版" rules_v4
 rule archive_search "巡查员" ward_chat
 
 # 5. 扩充聊天对话与抉择分支（--requires 字段请构建后在画布编辑器补配）
-contact ward_chat "家人" --avatar "👨👩👧" --bio "走廊尽头的声音"
+contact ward_chat "家人" --avatar "👨‍👩‍👧" --bio "走廊尽头的声音"
 msg ward_chat "家人" npc "孩子，开门，妈妈在外面。"
 choice ward_chat "家人" "开门" end_counted --reply "门开了。里面只有一台播放雪花屏的电视机。"
 choice ward_chat "家人" "检查门牌号" corridor_404 --reply "门牌号：404。没有 403，也没有 405。"

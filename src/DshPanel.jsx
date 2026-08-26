@@ -62,6 +62,41 @@ export function DshPanel({ state, update, isOpen, onClose }) {
     setGeneratedScript('');
   };
 
+  const handlePullFromBridge = async () => {
+    try {
+      const bridgeUrl = endpoint.includes('3088') ? endpoint : 'http://127.0.0.1:3088';
+      const resp = await fetch(`${bridgeUrl.replace(/\/+$/, '')}/api/state`);
+      const data = await resp.json();
+      if (data.success && data.state && Array.isArray(data.state.nodes)) {
+        update(next => {
+          Object.assign(next, data.state);
+        });
+        alert(`✓ 已成功从 3088 桥接进程拉取并同步蓝图到画布！（共 ${data.state.nodes.length} 个节点）`);
+      } else {
+        alert('从桥接进程拉取状态失败：未返回有效的蓝图数据');
+      }
+    } catch (e) {
+      alert(`无法连接到 3088 桥接服务：${e.message}。请确认 node plugins/dsh-arg-plugin/bridge-server.js 正在运行。`);
+    }
+  };
+
+  const handlePushToBridge = async () => {
+    try {
+      const bridgeUrl = endpoint.includes('3088') ? endpoint : 'http://127.0.0.1:3088';
+      const resp = await fetch(`${bridgeUrl.replace(/\/+$/, '')}/api/state`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        alert(`✓ 已将当前画布的 ${state.nodes?.length || 0} 个节点成功推送到 3088 桥接进程！`);
+      }
+    } catch (e) {
+      alert(`推送失败：${e.message}`);
+    }
+  };
+
   const applyPreset = (presetType) => {
     if (presetType === 'story_brainstorm') {
       setPromptInput('请作为 ARG 剧情副驾驶，基于现有蓝图设定，为我构思 2~3 个不同风格（如现实社会派揭黑、民俗怪谈、黑客反转）的后续剧情走向方案。请深入分析各方案的悬念亮点与玩家情感共鸣，由我做最终决断，并附带可落地的 ARG CLI 脚本。');
@@ -104,9 +139,14 @@ export function DshPanel({ state, update, isOpen, onClose }) {
             <button className="ghost icon-tiny" onClick={() => testConnection(endpoint)} disabled={isChecking}>
               {isChecking ? '探测中...' : '测试连接'}
             </button>
-            <button className="ghost icon-tiny" onClick={() => window.open(endpoint, '_blank')} title="在独立浏览器标签页打开 DSH 界面">
-              在新标签页打开
-            </button>
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              <button className="ghost icon-tiny" style={{ color: '#0284c7', borderColor: '#bae6fd', background: '#f0f9ff' }} onClick={handlePullFromBridge} title="一键将 3088 桥接服务中的蓝图（如12页受试者脱离守则）拉取并显示在当前画布">
+                📥 从 3088 桥接同步到画布
+              </button>
+              <button className="ghost icon-tiny" onClick={handlePushToBridge} title="一键将当前画布的蓝图数据推送到 3088 桥接服务">
+                📤 推送画布到 3088
+              </button>
+            </div>
           </div>
           <div className="inspector-tabs" style={{ margin: 0, padding: 2 }}>
             <button className={`tab-btn ${activeTab === 'copilot' ? 'active' : ''}`} onClick={() => setActiveTab('copilot')}>
