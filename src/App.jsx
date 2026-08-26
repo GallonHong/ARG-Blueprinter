@@ -612,8 +612,8 @@ export default function App() {
     } catch (e) {
       saved = null
     }
-    if (!saved || !Array.isArray(saved.nodes) || saved.nodes.length === 0) {
-      saved = getQiyuebanDemoProject()
+    if (!saved || !Array.isArray(saved.nodes)) {
+      saved = empty()
     }
     if (!saved.customTemplates) {
       try {
@@ -1024,7 +1024,8 @@ export default function App() {
           DSH 联动 {dshOnline ? '3080' : ''}
         </button>
         <button className="ghost icon-tiny" onClick={() => setShowTemplateModal(true)}>自定义模板</button>
-        <button className="ghost icon-tiny" onClick={() => confirm('确定新建项目？') && update(next => { Object.assign(next, empty()) })}>新建</button>
+        <button className="ghost icon-tiny" onClick={() => confirm('确定清空并新建空白蓝图？') && update(next => { Object.assign(next, empty()) })}>新建</button>
+        <button className="ghost icon-tiny" onClick={() => confirm('载入官方示例项目《灵异论坛调查模仿》？当前画布内容将被替换') && update(next => { Object.assign(next, getQiyuebanDemoProject()) })} title="载入官方完整 20 节点悬疑解谜范例">示例项目</button>
         <button className="secondary" onClick={() => openPreviewInNewTab(state)} title="在新的浏览器标签页中全屏运行并体验完整游戏（支持点击桌面图标、论坛、搜索与所有结局跳转）">
           预览运行
         </button>
@@ -1200,16 +1201,29 @@ export default function App() {
           </div>
 
           {!state.nodes.length && (
-            <div className="empty" style={{ zIndex: 4, maxWidth: 360 }}>
-              <div className="empty-icon" style={{ fontSize: 24, fontWeight: 'bold', color: 'var(--text-main)', marginBottom: 8 }}>■</div>
-              <h2>欢迎使用 ARG Blueprint</h2>
-              <p style={{ marginBottom: 14 }}>从创建一个核心剧情页面节点开始：</p>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {Object.entries(TYPES).map(([k, v]) => (
-                  <button key={k} className="primary icon-tiny" onClick={() => add(k)}>
-                    {v.label}
-                  </button>
-                ))}
+            <div className="empty" style={{ zIndex: 4, maxWidth: 440, padding: '32px 36px', textAlign: 'center', background: 'rgba(255,255,255,0.96)', borderRadius: 12, boxShadow: '0 8px 30px rgba(0,0,0,0.08)', border: '1px solid var(--border-color)' }}>
+              <div style={{ fontSize: 36, marginBottom: 8 }}>🗺️</div>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-main)', marginBottom: 6 }}>
+                空白 ARG 游戏蓝图
+              </h2>
+              <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 18 }}>
+                当前画布为空。你可以快速创建新页面节点开始构思，或一键载入官方完整范例进行体验：
+              </p>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 16 }}>
+                <button className="primary" style={{ padding: '6px 12px' }} onClick={() => add('Desktop')}>
+                  ＋ 电脑桌面 (Desktop)
+                </button>
+                <button className="secondary" style={{ padding: '6px 12px' }} onClick={() => add('Browse')}>
+                  ＋ 浏览文章 (Browse)
+                </button>
+                <button className="secondary" style={{ padding: '6px 12px' }} onClick={() => add('Chat')}>
+                  ＋ 聊天通讯 (Chat)
+                </button>
+              </div>
+              <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: 14 }}>
+                <button className="ghost" style={{ fontSize: 12, padding: '6px 14px', border: '1px solid #cbd5e1' }} onClick={() => update(next => { Object.assign(next, getQiyuebanDemoProject()) })}>
+                  📦 载入《灵异论坛调查模仿》20 节点官方范例
+                </button>
               </div>
             </div>
           )}
