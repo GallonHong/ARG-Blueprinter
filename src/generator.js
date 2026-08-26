@@ -105,6 +105,35 @@ export function buildPageHtml(node,state,{preview=false}={}){
       --arg-text-color: ${defaultText};
       --arg-font-family: ${defaultFont};
     }
+    .arg-atmosphere-crt:before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      z-index: 99999;
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+    .arg-atmosphere-vignette:after {
+      content: " ";
+      display: block;
+      position: fixed;
+      inset: 0;
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+      z-index: 99998;
+    }
+    .arg-atmosphere-glitch {
+      animation: arg-glitch-flicker 4s infinite;
+    }
+    @keyframes arg-glitch-flicker {
+      0%, 95%, 100% { filter: none; }
+      96% { filter: hue-rotate(90deg) contrast(1.2); }
+      97% { filter: invert(0.1) saturate(1.4); }
+      98% { filter: none; }
+    }
     ${f.customCss || ''}
   `;
 

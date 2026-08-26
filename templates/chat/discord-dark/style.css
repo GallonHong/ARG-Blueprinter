@@ -59,8 +59,8 @@ body {
 }
 .msg-time-divider { text-align: center; font-size: 11px; color: #72767d; margin: 6px 0; }
 .msg-row { display: flex; gap: 12px; max-width: 80%; }
-.msg-row.received { align-self: flex-start; }
-.msg-row.sent { align-self: flex-end; flex-direction: row-reverse; }
+.msg-row.received, .msg-row.msg-npc { align-self: flex-start; margin-right: auto; }
+.msg-row.sent, .msg-row.msg-user { align-self: flex-end; margin-left: auto; flex-direction: row; }
 .msg-avatar {
   width: 38px; height: 38px; border-radius: 50%; background: #5865f2;
   display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
@@ -68,8 +68,8 @@ body {
 .msg-bubble {
   padding: 8px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; color: #dcddde;
 }
-.msg-row.received .msg-bubble { background: #2f3136; border: 1px solid #202225; }
-.msg-row.sent .msg-bubble { background: #5865f2; color: #fff; }
+.msg-row.received .msg-bubble, .msg-row.msg-npc .msg-bubble { background: #2f3136; border: 1px solid #202225; }
+.msg-row.sent .msg-bubble, .msg-row.msg-user .msg-bubble { background: #5865f2; color: #fff; }
 .msg-bubble a, .msg-bubble .arg-link-item { color: #00aff4; font-weight: bold; text-decoration: underline; }
 .chat-choices-area { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; background: #2f3136; border-top: 1px solid #202225; }
 .chat-choices-area:empty { display: none; }

@@ -4,8 +4,138 @@ export const runtimeSource = `
   const config = configEl ? JSON.parse(configEl.textContent || '{}') : { rules: {}, files: {}, links: {}, preview: false };
   const result = (text) => { const el = document.querySelector('[data-arg-result]'); if (el) el.textContent = text; };
 
+  // ==================== Clue & Story State Engine ====================
+  try {
+    const visitedStr = sessionStorage.getItem('arg_visited_nodes') || '[]';
+    const visited = JSON.parse(visitedStr);
+    const currentPageId = config.nodeId || config.pageName || window.location.pathname.split('/').pop().replace('.html', '');
+    if (currentPageId && !visited.includes(currentPageId)) {
+      visited.push(currentPageId);
+      sessionStorage.setItem('arg_visited_nodes', JSON.stringify(visited));
+    }
+  } catch (e) {}
+
+  function hasClue(req) {
+    if (!req) return true;
+    try {
+      const visited = JSON.parse(sessionStorage.getItem('arg_visited_nodes') || '[]');
+      const reqList = String(req).split(',').map(s => s.trim().toLowerCase());
+      return reqList.every(r => visited.some(v => String(v).toLowerCase() === r));
+    } catch (e) {
+      return true;
+    }
+  }
+
+  // ==================== Web Audio Synthesizer (Zero-Asset Offline Engine) ====================
+  let audioCtx = null;
+  function getAudioCtx(){
+    if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playSynthSound(kind){
+    try {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+
+      if (kind === 'click' || kind === 'type') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(kind === 'type' ? 380 + Math.random() * 160 : 700, ctx.currentTime);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.035);
+      } else if (kind === 'notify') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } else if (kind === 'unlock') {
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
+          gain.gain.setValueAtTime(0.1, ctx.currentTime + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.06);
+          osc.stop(ctx.currentTime + i * 0.06 + 0.22);
+        });
+      } else if (kind === 'error') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(80, ctx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.18);
+      }
+    } catch (e) {}
+  }
+
+  // ==================== Typewriter Typography Engine ====================
+  function applyTypewriter(el, speed = 20){
+    if (!el || el.dataset.typewriterDone) return;
+    const fullText = el.textContent || '';
+    if (!fullText.trim() || fullText.length < 3) return;
+    el.dataset.typewriterDone = 'pending';
+    el.textContent = '';
+    
+    let i = 0;
+    let timer = null;
+    
+    function complete(){
+      if (timer) clearInterval(timer);
+      el.textContent = fullText;
+      el.dataset.typewriterDone = 'true';
+      document.removeEventListener('click', complete);
+      document.removeEventListener('keydown', onKey);
+    }
+
+    function onKey(e){
+      if (e.key === ' ' || e.key === 'Enter') complete();
+    }
+
+    document.addEventListener('click', complete, { once: true });
+    document.addEventListener('keydown', onKey, { once: true });
+
+    timer = setInterval(() => {
+      if (i < fullText.length) {
+        el.textContent += fullText[i];
+        if (i % 2 === 0) playSynthSound('type');
+        i++;
+      } else {
+        complete();
+      }
+    }, speed);
+  }
+
+  // ==================== Core Routing ====================
   const go = (target) => {
     if (!target) return;
+    playSynthSound('click');
     const key = String(target).trim();
     const next = (config.files && config.files[key]) ? config.files[key] : ((config.files && config.files[target]) ? config.files[target] : key);
     if (config.preview && (window.parent !== window || window.top !== window)) {
@@ -18,17 +148,24 @@ export const runtimeSource = `
   const checkRule = (kind, value) => {
     const key = String(value || '').trim().toLowerCase();
     const target = (config.rules[kind] || {})[key];
-    if (target) go(target); else result(config.notFoundText || '没有找到相关结果');
+    if (target) {
+      playSynthSound('click');
+      go(target);
+    } else {
+      playSynthSound('error');
+      result(config.notFoundText || '没有找到相关结果');
+    }
   };
 
   const checkLink = (port) => {
     if (!port) return;
+    playSynthSound('click');
     const raw = String(port).trim();
     const target = (config.links || {})[raw] || (config.links || {})[port] || ((config.files && config.files[raw]) ? raw : ((config.files && config.files[port]) ? port : null)) || raw;
     go(target);
   };
 
-  window.ARG = { bind, go, checkRule, checkLink };
+  window.ARG = { bind, go, checkRule, checkLink, playSynthSound };
 
   function bindSearch(form){
     form.addEventListener('submit', function(e){
@@ -50,6 +187,7 @@ export const runtimeSource = `
       const isMatch = (!expected) || (val === expected) || (val === 'yxzyddx') || (val === '0717') || (val === '一切自愿的大学');
 
       if (isMatch) {
+        playSynthSound('unlock');
         if (error) {
           error.style.color = '#10b981';
           error.textContent = '✓ 密码验证成功，正在解密载入档案...';
@@ -58,6 +196,7 @@ export const runtimeSource = `
           go(target);
         }, 80);
       } else {
+        playSynthSound('error');
         if (error) {
           error.style.color = '#ef4444';
           error.textContent = '❌ 密码错误！提示：可在搜索“失踪”或“南鄣”新闻中获取暗号拼音首字母 (yxzyddx)';
@@ -118,64 +257,86 @@ export const runtimeSource = `
     const choicesEl = container.querySelector('#chatChoicesArea');
     const form = container.querySelector('#chatForm');
     const input = container.querySelector('#chatInput');
-    const searchInput = container.querySelector('#contactSearch');
 
-    function renderContacts(filter){
+    function renderContacts(){
       if (!contactsList) return;
       contactsList.innerHTML = '';
       contacts.forEach((c, idx) => {
-        if (filter && !c.name.toLowerCase().includes(filter.toLowerCase())) return;
         const item = document.createElement('div');
         item.className = 'contact-item' + (idx === currentIdx ? ' active' : '');
-        const last = c.lastMsg || (c.messages && c.messages[c.messages.length - 1]?.text) || (c.dialogue && c.dialogue[0]?.text) || '点击查看对话';
-        item.innerHTML = '<div class="contact-avatar">' + renderAvatar(c.avatar, '👤') + '</div><div class="contact-info"><div class="contact-name">' + c.name + '</div><div class="contact-last-msg">' + last + '</div></div>' + (c.unread ? '<span class="contact-badge">1</span>' : '');
+        item.innerHTML = '<div class="contact-avatar">' + renderAvatar(c.avatar, '👤') + '</div>' +
+          '<div class="contact-meta"><div class="contact-name">' + (c.name || '联系人') + '</div>' +
+          '<div class="contact-bio">' + (c.bio || '') + '</div></div>';
         item.addEventListener('click', () => {
+          playSynthSound('click');
           currentIdx = idx;
-          c.unread = false;
-          renderContacts(filter);
-          loadChat(c);
+          renderContacts();
+          loadChat(contacts[idx]);
         });
         contactsList.appendChild(item);
       });
     }
 
-    if (searchInput) searchInput.addEventListener('input', (e) => renderContacts(e.target.value));
-
     function appendMessage(sender, text, avatar){
       if (!messagesEl) return;
-      const row = document.createElement('div');
       const isUser = sender === 'user' || sender === 'player';
-      row.className = 'msg-row ' + (isUser ? 'sent' : 'received');
-      const av = isUser ? renderAvatar(config.userAvatar, '🧑') : renderAvatar(avatar || contacts[currentIdx]?.avatar, '👤');
-      row.innerHTML = '<div class="msg-avatar">' + av + '</div><div class="msg-bubble">' + text + '</div>';
+      const row = document.createElement('div');
+      row.className = 'msg-row ' + (isUser ? 'msg-user sent' : 'msg-npc received');
+      
+      const avDiv = document.createElement('div');
+      avDiv.className = 'msg-avatar';
+      avDiv.innerHTML = isUser ? '👤' : renderAvatar(avatar, '🤖');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.textContent = text;
+      
+      if (!isUser) {
+        playSynthSound('notify');
+      }
+
+      if (isUser) {
+        // WeChat User style: [Bubble] [Avatar] on far right
+        row.appendChild(bubble);
+        row.appendChild(avDiv);
+      } else {
+        // WeChat NPC style: [Avatar] [Bubble] on left
+        row.appendChild(avDiv);
+        row.appendChild(bubble);
+      }
       messagesEl.appendChild(row);
-      row.querySelectorAll('[data-arg-link], [data-arg-port]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          checkLink(link.dataset.argLink || link.dataset.argPort);
-        });
-      });
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    function renderChoices(options, contact){
+    function renderChoices(choices, contact){
       if (!choicesEl) return;
       choicesEl.innerHTML = '';
-      if (!options || !options.length) return;
-      options.forEach(opt => {
+      if (!choices || !choices.length) return;
+      
+      const unlockedChoices = choices.filter(choice => hasClue(choice.requires || choice.req));
+      
+      if (unlockedChoices.length === 0) {
+        const hint = document.createElement('div');
+        hint.style.cssText = 'padding: 8px 14px; font-size: 11.5px; color: #94a3b8; font-style: italic; text-align: center; width: 100%;';
+        hint.textContent = '（暂无可提交的调查物证。请先在电脑桌面、灵异论坛与全网搜索引擎中搜集线索...）';
+        choicesEl.appendChild(hint);
+        return;
+      }
+
+      unlockedChoices.forEach(choice => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'choice-pill-btn';
-        btn.innerHTML = '<span>💬 ' + opt.text + '</span>' + (opt.target ? '<span class="pill-target"> ➔</span>' : '');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.text;
         btn.addEventListener('click', () => {
-          choicesEl.innerHTML = '';
-          appendMessage('user', opt.text);
-          setTimeout(() => {
-            if (opt.reply) appendMessage('npc', opt.reply, contact.avatar);
-            if (opt.target) {
-              appendMessage('npc', '线索入口：<a href="javascript:void(0)" class="arg-link-item" data-arg-link="' + opt.target + '">点击前往查看 ➔</a>', contact.avatar);
-            }
-          }, 300);
+          playSynthSound('click');
+          appendMessage('user', choice.text);
+          if (choice.reply) {
+            setTimeout(() => appendMessage('npc', choice.reply, contact.avatar), 300);
+          }
+          if (choice.target) {
+            setTimeout(() => go(choice.target), choice.reply ? 600 : 250);
+          }
         });
         choicesEl.appendChild(btn);
       });
@@ -192,14 +353,12 @@ export const runtimeSource = `
       timeDiv.textContent = '—— 今日对话加密保护中 ——';
       messagesEl.appendChild(timeDiv);
 
-      // Support messages array
       if (contact.messages && contact.messages.length) {
         contact.messages.forEach(m => {
           appendMessage(m.sender, m.text, contact.avatar);
         });
       }
 
-      // Support dialogue array
       if (contact.dialogue && contact.dialogue.length) {
         contact.dialogue.forEach(item => {
           if (item.sender === 'npc' && item.text) appendMessage('npc', item.text, contact.avatar);
@@ -208,7 +367,6 @@ export const runtimeSource = `
         });
       }
 
-      // Support choices array
       if (contact.choices && contact.choices.length) {
         renderChoices(contact.choices, contact);
       }
@@ -238,6 +396,16 @@ export const runtimeSource = `
     document.querySelectorAll('[data-arg-component="search"]').forEach(bindSearch);
     document.querySelectorAll('[data-arg-component="login"]').forEach(bindLogin);
     document.querySelectorAll('[data-arg-component="chat"]').forEach(bindChat);
+
+    // Apply typewriter on configured text bodies
+    if (config.typewriter) {
+      document.querySelectorAll('[data-arg-slot="body"], [data-arg-slot="message"]').forEach(el => applyTypewriter(el, 18));
+    }
+
+    // Atmosphere overlay
+    if (config.atmosphere) {
+      document.body.classList.add('arg-atmosphere-' + config.atmosphere);
+    }
 
     // Click handler for all links/ports
     document.addEventListener('click', function(e){

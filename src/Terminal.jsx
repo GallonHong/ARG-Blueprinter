@@ -47,7 +47,7 @@ export function Terminal({ state, update, isOpen, onClose }) {
         setHistory(prev => [
           ...prev,
           { type: 'cmd', text: `arg-blueprint:~$ ${rawCmd}` },
-          ...(res.error ? [{ type: 'error', text: `❌ ${res.error}` }] : []),
+          ...(res.error ? [{ type: 'error', text: `Error: ${res.error}` }] : []),
           ...(res.output ? [{ type: 'output', text: res.output }] : [])
         ]);
       }
@@ -97,7 +97,7 @@ export function Terminal({ state, update, isOpen, onClose }) {
     const result = executeBatchCli(batchScript, state, update);
     setHistory(prev => [
       ...prev,
-      { type: 'cmd', text: `arg-blueprint:~$ [执行多行 Shell 批处理脚本]` },
+      { type: 'cmd', text: `arg-blueprint:~$ [执行批量 Shell 脚本]` },
       { type: 'output', text: result || '[OK] 批处理脚本执行完毕' }
     ]);
     setIsBatchOpen(false);
@@ -108,31 +108,31 @@ export function Terminal({ state, update, isOpen, onClose }) {
     const script = `# ==========================================
 # 完整悬疑游戏快速构建脚本 (Bash Shell 风格)
 # ==========================================
-touch desktop -t Desktop -n "🖥️ 调查员电脑桌面" --start
-touch chat -t Chat -n "💬 微信聊天软件" --template "微信 UI 风格"
-touch search -t Search -n "🔍 全网搜索引擎" --template "经典搜索"
-touch login -t Login -n "🔐 机密档案密码锁" --template "后台登录"
-touch files -t Files -n "📁 机密卷宗文件夹"
-touch doc_case -t Browse -n "📰 新闻：0717 特大案"
-touch ending_true -t Ending -n "🎬 结局 · 真相大白"
+touch desktop -t Desktop -n "调查员电脑桌面" --start
+touch chat -t Chat -n "微信聊天软件" --template "微信 UI 风格"
+touch search -t Search -n "全网搜索引擎" --template "经典搜索"
+touch login -t Login -n "机密档案密码锁" --template "后台登录"
+touch files -t Files -n "机密卷宗文件夹"
+touch doc_case -t Browse -n "新闻：0717 特大案"
+touch ending_true -t Ending -n "结局 · 真相大白"
 
 # 建立桌面图标与路由
-ln desktop chat -p "微信.exe" --icon "💬"
-ln desktop search -p "全盘搜索.exe" --icon "🔍"
-ln desktop login -p "机密文件夹" --icon "🔐"
+ln desktop chat -p "微信.exe" --icon "chat"
+ln desktop search -p "全盘搜索.exe" --icon "search"
+ln desktop login -p "机密文件夹" --icon "lock"
 
 # 设置密码与搜索规则
 set login password="0717"
 rule search "0717" doc_case
 
 # 设置聊天对话与分支
-contact chat "林警官" --avatar "👮" --bio "刑侦支队"
+contact chat "林警官" --bio "刑侦支队"
 msg chat "林警官" npc "水青，我们在现场找到了一组加密日记。"
 choice chat "林警官" "询问密码" login --reply "密码是【0717】"
 
 # 归档流转
 ln login files
-ln files ending_true -p "提交结案报告.doc" --icon "📄"
+ln files ending_true -p "提交结案报告.doc"
 `;
     setBatchScript(script);
   };
@@ -153,7 +153,7 @@ ln files ending_true -p "提交结案报告.doc" --icon "📄"
             help
           </button>
           <button className="term-btn" onClick={() => setIsBatchOpen(!isBatchOpen)}>
-            📜 批量脚本
+            {isBatchOpen ? '控制台' : '批量脚本'}
           </button>
           <button className="term-btn" onClick={() => setHistory([])}>
             clear
@@ -170,20 +170,20 @@ ln files ending_true -p "提交结案报告.doc" --icon "📄"
       {isBatchOpen ? (
         <div className="terminal-batch-pane">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 12, color: '#93c5fd' }}>📝 批量执行 Shell 脚本指令 (支持一键粘贴数十行 touch / ln / set 命令)：</span>
+            <span style={{ fontSize: 11.5, color: '#a1a1aa' }}>批量执行 Shell 指令 (支持一次性粘贴执行多行 touch / ln / set 命令)：</span>
             <button className="term-btn" onClick={insertSampleScript}>
-              ⚡ 填入完整示例脚本
+              插入示例脚本
             </button>
           </div>
           <textarea
             className="terminal-batch-textarea"
             value={batchScript}
             onChange={e => setBatchScript(e.target.value)}
-            placeholder={`# 在此粘贴多行 Linux 指令，例如：\ntouch desktop -t Desktop -n "🖥️ 电脑桌面" --start\ntouch chat -t Chat -n "💬 微信聊天"\nln desktop chat -p "微信.exe" --icon "💬"`}
+            placeholder={`# 在此粘贴多行 Linux 指令，例如：\ntouch desktop -t Desktop -n "电脑桌面" --start\ntouch chat -t Chat -n "微信聊天"\nln desktop chat -p "微信.exe"`}
           />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
             <button className="term-btn" onClick={() => setIsBatchOpen(false)}>取消</button>
-            <button className="term-btn primary" onClick={handleRunBatch}>⚡ 立即执行全部指令</button>
+            <button className="term-btn primary" onClick={handleRunBatch}>执行全部指令</button>
           </div>
         </div>
       ) : (

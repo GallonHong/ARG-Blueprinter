@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import JSZip from 'jszip'
 import { buildPageHtml } from './generator.js'
 import { pageFileName, defaultContacts } from './route-config.js'
@@ -6,6 +6,11 @@ import { runtimeSource } from './runtime.js'
 import { setCustomTemplates } from './templates.js'
 import { getQiyuebanDemoProject } from './demo-project.js'
 import { Terminal } from './Terminal.jsx'
+import { validateStoryGraph } from './validator.js'
+import { DshPanel } from './DshPanel.jsx'
+import { EventsModal } from './EventsModal.jsx'
+import { getStoredDshEndpoint, checkDshHealth } from './dsh-bridge.js'
+import { executeBatchCli } from './cli.js'
 
 const TYPES = {
   Chat: {
@@ -135,18 +140,18 @@ const DESKTOP_ICON_SYMBOLS = [
 ]
 
 const THEME_PRESETS = [
-  { name: '🟢 微信经典绿', primaryColor: '#95ec69', bgColor: '#f0f2f5', cardBg: '#ffffff', textColor: '#333333', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif' },
-  { name: '🐧 经典 QQ 蓝', primaryColor: '#cce5ff', bgColor: '#c3daf9', cardBg: '#ffffff', textColor: '#002244', fontFamily: '"SimSun", "宋体", "MS Sans Serif", sans-serif' },
-  { name: '🖥️ Win98 经典蓝绿', primaryColor: '#000080', bgColor: '#008080', cardBg: '#c0c0c0', textColor: '#ffffff', fontFamily: '"MS Sans Serif", "SimSun", "宋体", sans-serif' },
-  { name: '🍎 Mac OS 9 铂金灰', primaryColor: '#000080', bgColor: '#56728a', cardBg: '#e6e6e6', textColor: '#000000', fontFamily: '"Charcoal", "Geneva", "PingFang SC", sans-serif' },
-  { name: '👾 Discord 深空暗蓝', primaryColor: '#5865f2', bgColor: '#202225', cardBg: '#36393f', textColor: '#dcddde', fontFamily: '"gg sans", "Noto Sans", sans-serif' },
-  { name: '✈️ Telegram 天空蓝', primaryColor: '#3390ec', bgColor: '#e6ebee', cardBg: '#ffffff', textColor: '#1e293b', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' },
-  { name: '🌐 千禧门户蓝', primaryColor: '#174a8b', bgColor: '#f4f6f9', cardBg: '#ffffff', textColor: '#222222', fontFamily: '"SimSun", "宋体", serif' },
-  { name: '🕶️ 暗网终端绿', primaryColor: '#00ff66', bgColor: '#0a0d14', cardBg: '#0d111a', textColor: '#00ff66', fontFamily: '"Courier New", monospace' },
-  { name: '📑 绝密档案红', primaryColor: '#991b1b', bgColor: '#e8e5dc', cardBg: '#f7f5ef', textColor: '#2b2b2b', fontFamily: '"KaiTi", "楷体", "SimSun", serif' },
-  { name: '📜 牛皮纸手写日记', primaryColor: '#8b2500', bgColor: '#3d2f23', cardBg: '#f4ecd8', textColor: '#2c1d11', fontFamily: '"KaiTi", "楷体", serif' },
-  { name: '💻 BIOS 经典蓝底', primaryColor: '#ffff55', bgColor: '#0000aa', cardBg: '#000000', textColor: '#ffffff', fontFamily: '"Consolas", "Courier New", monospace' },
-  { name: '⚪ 极简现代风', primaryColor: '#2563eb', bgColor: '#ffffff', cardBg: '#f8fafc', textColor: '#0f172a', fontFamily: 'Inter, system-ui, sans-serif' }
+  { name: '微信经典', primaryColor: '#95ec69', bgColor: '#f0f2f5', cardBg: '#ffffff', textColor: '#333333', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif' },
+  { name: 'QQ 复古', primaryColor: '#cce5ff', bgColor: '#c3daf9', cardBg: '#ffffff', textColor: '#002244', fontFamily: '"SimSun", "宋体", "MS Sans Serif", sans-serif' },
+  { name: 'Windows 98', primaryColor: '#000080', bgColor: '#008080', cardBg: '#c0c0c0', textColor: '#ffffff', fontFamily: '"MS Sans Serif", "SimSun", "宋体", sans-serif' },
+  { name: 'Mac OS 9', primaryColor: '#000080', bgColor: '#56728a', cardBg: '#e6e6e6', textColor: '#000000', fontFamily: '"Charcoal", "Geneva", "PingFang SC", sans-serif' },
+  { name: 'Discord 暗黑', primaryColor: '#5865f2', bgColor: '#202225', cardBg: '#36393f', textColor: '#dcddde', fontFamily: '"gg sans", "Noto Sans", sans-serif' },
+  { name: 'Telegram 蓝', primaryColor: '#3390ec', bgColor: '#e6ebee', cardBg: '#ffffff', textColor: '#1e293b', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' },
+  { name: '千禧门户', primaryColor: '#174a8b', bgColor: '#f4f6f9', cardBg: '#ffffff', textColor: '#222222', fontFamily: '"SimSun", "宋体", serif' },
+  { name: '黑客终端', primaryColor: '#00ff66', bgColor: '#0a0d14', cardBg: '#0d111a', textColor: '#00ff66', fontFamily: '"Courier New", monospace' },
+  { name: '绝密卷宗', primaryColor: '#991b1b', bgColor: '#e8e5dc', cardBg: '#f7f5ef', textColor: '#2b2b2b', fontFamily: '"KaiTi", "楷体", "SimSun", serif' },
+  { name: '羊皮纸日记', primaryColor: '#8b2500', bgColor: '#3d2f23', cardBg: '#f4ecd8', textColor: '#2c1d11', fontFamily: '"KaiTi", "楷体", serif' },
+  { name: 'BIOS 开机', primaryColor: '#ffff55', bgColor: '#0000aa', cardBg: '#000000', textColor: '#ffffff', fontFamily: '"Consolas", "Courier New", monospace' },
+  { name: '极简现代', primaryColor: '#18181b', bgColor: '#fafafa', cardBg: '#ffffff', textColor: '#18181b', fontFamily: 'Inter, system-ui, sans-serif' }
 ]
 
 const empty = () => ({ title: '未命名 ARG', nodes: [], edges: [], selected: null, startId: null })
@@ -183,7 +188,9 @@ export default function App() {
     } catch (e) {
       saved = null
     }
-    if (!saved || !Array.isArray(saved.nodes)) saved = empty()
+    if (!saved || !Array.isArray(saved.nodes) || saved.nodes.length === 0) {
+      saved = getQiyuebanDemoProject()
+    }
     if (!saved.customTemplates) {
       try {
         saved.customTemplates = JSON.parse(localStorage.getItem('arg_custom_templates') || '[]')
@@ -192,6 +199,8 @@ export default function App() {
       }
     }
     setCustomTemplates(saved.customTemplates)
+    saved.nodes = (saved.nodes || []).filter(Boolean)
+    saved.edges = (saved.edges || []).filter(Boolean)
     saved.nodes.forEach((node, index) => {
       if (typeof node.x !== 'number' || isNaN(node.x)) node.x = 60 + (index % 3) * 230
       if (typeof node.y !== 'number' || isNaN(node.y)) node.y = 60 + Math.floor(index / 3) * 150
@@ -212,60 +221,18 @@ export default function App() {
   const [inspectorOpen, setInspectorOpen] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
+  const [showValidatorModal, setShowValidatorModal] = useState(false)
+  const [showEventsModal, setShowEventsModal] = useState(false)
+  const [showDshPanel, setShowDshPanel] = useState(false)
+  const [dshOnline, setDshOnline] = useState(false)
+  const [dshEndpoint, setDshEndpoint] = useState(getStoredDshEndpoint())
   const [history, setHistory] = useState({ past: [], future: [] })
   const [terminalOpen, setTerminalOpen] = useState(false)
   const canvas = useRef(null)
   const importInputRef = useRef(null)
   const selected = state.nodes.find(node => node.id === state.selected)
 
-  useEffect(() => {
-    const handleFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement))
-    document.addEventListener('fullscreenchange', handleFsChange)
-    return () => document.removeEventListener('fullscreenchange', handleFsChange)
-  }, [])
-
-  useEffect(() => {
-    const handleShortcut = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === '`') {
-        e.preventDefault()
-        setTerminalOpen(v => !v)
-      }
-    }
-    window.addEventListener('keydown', handleShortcut)
-    return () => window.removeEventListener('keydown', handleShortcut)
-  }, [])
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => {})
-    } else {
-      document.exitFullscreen?.().catch(() => {})
-    }
-  }
-
-  const handleImportFile = async event => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    try {
-      const loadedState = await parseAndLoadProject(file)
-      setHistory(h => ({ past: [...h.past.slice(-30), copy(state)], future: [] }))
-      setState(loadedState)
-      setCustomTemplates(loadedState.customTemplates)
-      localStorage.setItem('arg-blueprint-react', JSON.stringify(loadedState))
-      localStorage.setItem('arg_custom_templates', JSON.stringify(loadedState.customTemplates))
-      if (loadedState.nodes.length) {
-        const minX = Math.min(...loadedState.nodes.map(n => n.x))
-        const minY = Math.min(...loadedState.nodes.map(n => n.y))
-        setViewport({ x: -minX + 80, y: -minY + 60, zoom: 1 })
-      }
-      alert(`成功导入项目「${loadedState.title}」！\n已恢复 ${loadedState.nodes.length} 个页面节点、${loadedState.edges.length} 条连线关系。`)
-    } catch (err) {
-      console.error('Import failed:', err)
-      alert('导入失败: ' + err.message)
-    } finally {
-      event.target.value = ''
-    }
-  }
+  const graphValidation = useMemo(() => validateStoryGraph(state), [state])
 
   const update = (fn, { recordHistory = true } = {}) => {
     setState(current => {
@@ -315,6 +282,130 @@ export default function App() {
     if (next.customTemplates) {
       setCustomTemplates(next.customTemplates)
       localStorage.setItem('arg_custom_templates', JSON.stringify(next.customTemplates))
+    }
+  }
+
+  const selectNode = id => {
+    update(next => { next.selected = id }, { recordHistory: false })
+    setInspectorOpen(true)
+  }
+
+  const focusNode = (nodeId) => {
+    const node = state.nodes.find(n => n.id === nodeId)
+    if (node) {
+      selectNode(node.id)
+      setViewport({ x: -node.x + 200, y: -node.y + 150, zoom: 1 })
+      setShowValidatorModal(false)
+    }
+  }
+
+  const add = type => {
+    update(next => {
+      const node = newNode(type, next.nodes.length + 1)
+      next.nodes.push(node)
+      if (!next.startId || !next.nodes.some(n => n.id === next.startId)) {
+        next.startId = node.id
+        node.isStart = true
+      }
+      next.selected = node.id
+    })
+    setShowAddMenu(false)
+    setInspectorOpen(true)
+  }
+
+  const setAsStart = (id, e) => {
+    if (e) e.stopPropagation()
+    update(next => {
+      next.startId = id
+      next.nodes.forEach(n => { n.isStart = n.id === id })
+    })
+  }
+
+  const remove = () => selected && update(next => {
+    next.nodes = next.nodes.filter(node => node.id !== selected.id)
+    next.edges = next.edges.filter(edge => edge.from !== selected.id && edge.to !== selected.id)
+    if (next.startId === selected.id) { next.startId = next.nodes[0]?.id || null; next.nodes.forEach((node, index) => { node.isStart = index === 0 }) }
+    next.selected = next.nodes[0]?.id || null
+  })
+
+  const patchSelected = fn => selected && update(next => fn(next.nodes.find(node => node.id === selected.id)))
+
+  const editSlots = (id, slots) => update(next => {
+    const node = next.nodes.find(item => item.id === id)
+    if (node) Object.assign(node.fields, slots)
+  })
+
+  // Periodic DSH Health Probe
+  useEffect(() => {
+    const checkConn = async () => {
+      const ep = getStoredDshEndpoint()
+      setDshEndpoint(ep)
+      const res = await checkDshHealth(ep)
+      setDshOnline(res.online)
+    }
+    checkConn()
+    const timer = setInterval(checkConn, 10000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Listen for incoming DSH scripts via postMessage
+  useEffect(() => {
+    const handleDshMessage = (event) => {
+      if (event.data && event.data.type === 'ARG_EXECUTE_SCRIPT' && typeof event.data.script === 'string') {
+        const out = executeBatchCli(event.data.script, state, update)
+        console.log('[DSH Bridge] Executed script from DSH:', out)
+      }
+    }
+    window.addEventListener('message', handleDshMessage)
+    return () => window.removeEventListener('message', handleDshMessage)
+  }, [state])
+
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement))
+    document.addEventListener('fullscreenchange', handleFsChange)
+    return () => document.removeEventListener('fullscreenchange', handleFsChange)
+  }, [])
+
+  useEffect(() => {
+    const handleShortcut = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+        e.preventDefault()
+        setTerminalOpen(v => !v)
+      }
+    }
+    window.addEventListener('keydown', handleShortcut)
+    return () => window.removeEventListener('keydown', handleShortcut)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(() => {})
+    } else {
+      document.exitFullscreen?.().catch(() => {})
+    }
+  }
+
+  const handleImportFile = async event => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    try {
+      const loadedState = await parseAndLoadProject(file)
+      setHistory(h => ({ past: [...h.past.slice(-30), copy(state)], future: [] }))
+      setState(loadedState)
+      setCustomTemplates(loadedState.customTemplates)
+      localStorage.setItem('arg-blueprint-react', JSON.stringify(loadedState))
+      localStorage.setItem('arg_custom_templates', JSON.stringify(loadedState.customTemplates))
+      if (loadedState.nodes.length) {
+        const minX = Math.min(...loadedState.nodes.map(n => n.x))
+        const minY = Math.min(...loadedState.nodes.map(n => n.y))
+        setViewport({ x: -minX + 80, y: -minY + 60, zoom: 1 })
+      }
+      alert(`成功导入项目「${loadedState.title}」！\n已恢复 ${loadedState.nodes.length} 个页面节点、${loadedState.edges.length} 条连线关系。`)
+    } catch (err) {
+      console.error('Import failed:', err)
+      alert('导入失败: ' + err.message)
+    } finally {
+      event.target.value = ''
     }
   }
 
@@ -418,45 +509,6 @@ export default function App() {
     return () => el.removeEventListener('wheel', handleWheel)
   }, [])
 
-  const add = type => {
-    update(next => {
-      const node = newNode(type, next.nodes.length + 1)
-      next.nodes.push(node)
-      if (!next.startId || !next.nodes.some(n => n.id === next.startId)) {
-        next.startId = node.id
-        node.isStart = true
-      }
-      next.selected = node.id
-    })
-    setShowAddMenu(false)
-    setInspectorOpen(true)
-  }
-
-  const setAsStart = (id, e) => {
-    if (e) e.stopPropagation()
-    update(next => {
-      next.startId = id
-      next.nodes.forEach(n => { n.isStart = n.id === id })
-    })
-  }
-
-  const remove = () => selected && update(next => {
-    next.nodes = next.nodes.filter(node => node.id !== selected.id)
-    next.edges = next.edges.filter(edge => edge.from !== selected.id && edge.to !== selected.id)
-    if (next.startId === selected.id) { next.startId = next.nodes[0]?.id || null; next.nodes.forEach((node, index) => { node.isStart = index === 0 }) }
-    next.selected = next.nodes[0]?.id || null
-  })
-  const patchSelected = fn => selected && update(next => fn(next.nodes.find(node => node.id === selected.id)))
-  const editSlots = (id, slots) => update(next => {
-    const node = next.nodes.find(item => item.id === id)
-    if (node) Object.assign(node.fields, slots)
-  })
-
-  const selectNode = id => {
-    update(next => { next.selected = id }, { recordHistory: false })
-    setInspectorOpen(true)
-  }
-
   const workspaceClass = `workspace ${sidebarOpen && inspectorOpen ? 'with-both' : (sidebarOpen ? 'sidebar-only' : (inspectorOpen ? 'inspector-only' : 'zen-mode'))}`
 
   return <>
@@ -464,14 +516,14 @@ export default function App() {
       <div className="topbar-left">
         <button
           className="ghost icon-tiny"
-          style={{ fontSize: 13, padding: '4px 8px' }}
+          style={{ fontSize: 12, padding: '4px 8px' }}
           title={sidebarOpen ? '收起左侧页面列表' : '展开左侧页面列表'}
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
           {sidebarOpen ? '«' : '» 页面列表'}
         </button>
         <div className="brand">
-          <span className="brand-mark">◆</span>
+          <span className="brand-mark">■</span>
           <div className="brand-title-wrap">
             <strong>ARG Blueprint</strong>
             <input
@@ -485,30 +537,67 @@ export default function App() {
         </div>
       </div>
       <div className="topbar-toolbar">
-        <button className="ghost icon-tiny" style={{ padding: '6px 9px' }} disabled={!history.past.length} onClick={undo} title="撤销上一步操作 (Ctrl+Z)">
-          ↩ 撤销
+        <button className="ghost icon-tiny" style={{ padding: '5px 8px' }} disabled={!history.past.length} onClick={undo} title="撤销上一步操作 (Ctrl+Z)">
+          撤销
         </button>
-        <button className="ghost icon-tiny" style={{ padding: '6px 9px' }} disabled={!history.future.length} onClick={redo} title="重做操作 (Ctrl+Y 或 Ctrl+Shift+Z)">
-          ↪ 重做
+        <button className="ghost icon-tiny" style={{ padding: '5px 8px' }} disabled={!history.future.length} onClick={redo} title="重做操作 (Ctrl+Y 或 Ctrl+Shift+Z)">
+          重做
         </button>
         <button
-          className="ghost"
-          style={{ color: terminalOpen ? '#38bdf8' : 'inherit', fontWeight: terminalOpen ? 600 : 'normal' }}
+          className="ghost icon-tiny"
+          style={{ color: terminalOpen ? 'var(--text-main)' : 'inherit', fontWeight: terminalOpen ? 600 : 'normal' }}
           onClick={() => setTerminalOpen(!terminalOpen)}
           title="打开/收起 Linux 命令行终端 (快捷键 Ctrl+`)"
         >
-          ❯_ 终端
+          终端
         </button>
         <input type="file" ref={importInputRef} accept=".zip,.json" style={{ display: 'none' }} onChange={handleImportFile} />
-        <button className="ghost" onClick={() => importInputRef.current?.click()} title="导入 .zip 或 .json 蓝图文件">📂 导入</button>
-        <button className="ghost" onClick={() => setShowTemplateModal(true)}>📤 自定义模板</button>
-        <button className="ghost" onClick={() => confirm('确定新建项目？') && update(next => { Object.assign(next, empty()) })}>新建</button>
-        <button className="secondary" onClick={() => openPreviewInNewTab(state)} title="在新的浏览器标签页中全屏运行并体验完整游戏（支持点击桌面图标、论坛、搜索与所有结局跳转）">
-          ▶ 预览游戏
+        <button className="ghost icon-tiny" onClick={() => importInputRef.current?.click()} title="导入 .zip 或 .json 蓝图文件">导入</button>
+        <button
+          className="ghost icon-tiny"
+          style={{ padding: '5px 8px' }}
+          onClick={() => setShowEventsModal(true)}
+          title="全局自定义事件、线索收集与解锁前置条件中枢"
+        >
+          🔒 事件线索
         </button>
-        <button className="primary" onClick={() => exportZip(state)} title="打包所有 HTML 与蓝图数据导出为 ZIP 压缩包">📦 导出 ZIP</button>
-        <button className="ghost icon-tiny" style={{ padding: '6px 9px', fontSize: 13 }} onClick={toggleFullscreen} title={isFullscreen ? '退出全屏' : '全屏沉浸模式'}>
-          {isFullscreen ? '⛶ 退出全屏' : '⛶ 全屏'}
+        <button
+          className="ghost icon-tiny"
+          style={{
+            padding: '5px 8px',
+            color: graphValidation.healthy ? 'inherit' : '#b45309',
+            fontWeight: graphValidation.healthy ? 'normal' : 600,
+            borderColor: graphValidation.healthy ? 'var(--border-color)' : '#fde68a',
+            background: graphValidation.healthy ? 'transparent' : '#fefce8'
+          }}
+          onClick={() => setShowValidatorModal(true)}
+          title="剧情死胡同、孤岛与断路结局自检"
+        >
+          自检 {graphValidation.healthy ? '✓' : `(${graphValidation.errorCount + graphValidation.warningCount})`}
+        </button>
+        <button
+          className="ghost icon-tiny"
+          style={{
+            padding: '5px 8px',
+            color: dshOnline ? '#166534' : 'inherit',
+            fontWeight: dshOnline ? 600 : 'normal',
+            borderColor: dshOnline ? '#bbf7d0' : 'var(--border-color)',
+            background: dshOnline ? '#f0fdf4' : 'transparent'
+          }}
+          onClick={() => setShowDshPanel(true)}
+          title={`DeepSeek Harness (dsh) 本地协同 - 端点: ${dshEndpoint}`}
+        >
+          <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: dshOnline ? '#16a34a' : '#a1a1aa', marginRight: 4 }} />
+          DSH 联动 {dshOnline ? '3080' : ''}
+        </button>
+        <button className="ghost icon-tiny" onClick={() => setShowTemplateModal(true)}>自定义模板</button>
+        <button className="ghost icon-tiny" onClick={() => confirm('确定新建项目？') && update(next => { Object.assign(next, empty()) })}>新建</button>
+        <button className="secondary" onClick={() => openPreviewInNewTab(state)} title="在新的浏览器标签页中全屏运行并体验完整游戏（支持点击桌面图标、论坛、搜索与所有结局跳转）">
+          预览运行
+        </button>
+        <button className="primary" onClick={() => exportZip(state)} title="打包所有 HTML 与蓝图数据导出为 ZIP 压缩包">导出 ZIP</button>
+        <button className="ghost icon-tiny" style={{ padding: '5px 8px', fontSize: 12 }} onClick={toggleFullscreen} title={isFullscreen ? '退出全屏' : '全屏模式'}>
+          {isFullscreen ? '退出全屏' : '全屏'}
         </button>
       </div>
     </header>
@@ -520,14 +609,14 @@ export default function App() {
             <span className="panel-title">页面节点 ({state.nodes.length})</span>
             <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               <button className="primary icon-tiny" onClick={() => setShowAddMenu(!showAddMenu)}>
-                ＋ 添加
+                新建
               </button>
             </div>
             {showAddMenu && (
-              <div className="add-menu-popover" style={{ position: 'absolute', top: 40, left: 140, background: '#fff', border: '1px solid #dfe5ec', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 30, padding: 6, minWidth: 140 }}>
+              <div className="add-menu-popover" style={{ position: 'absolute', top: 38, left: 130, background: '#fff', border: '1px solid var(--border-color)', borderRadius: 6, boxShadow: 'var(--shadow-lg)', zIndex: 30, padding: 4, minWidth: 130 }}>
                 {Object.entries(TYPES).map(([k, v]) => (
-                  <div key={k} className="add-menu-item" style={{ padding: '7px 10px', fontSize: 12, cursor: 'pointer', borderRadius: 5, color: '#17202b' }} onClick={() => add(k)} onMouseEnter={e => e.currentTarget.style.background = '#eef3ff'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                    ＋ {v.label}
+                  <div key={k} className="add-menu-item" style={{ padding: '6px 8px', fontSize: 11.5, cursor: 'pointer', borderRadius: 4, color: 'var(--text-main)' }} onClick={() => add(k)} onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-subtle)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    {v.label}
                   </div>
                 ))}
               </div>
@@ -540,16 +629,16 @@ export default function App() {
                 className={`node-item ${node.id === state.selected ? 'active' : ''}`}
                 onClick={() => selectNode(node.id)}
               >
-                <span className={`node-dot ${node.type}`}/>
+                <span className="node-dot"/>
                 <div className="node-name">
                   {node.name}
-                  <span className="node-type">{TYPES[node.type]?.label || node.type}{node.isStart ? ' · ★起始' : ''}</span>
+                  <span className="node-type">{TYPES[node.type]?.label || node.type}{node.isStart ? ' · 起始' : ''}</span>
                 </div>
               </div>
             ))}
           </div>
           <div className="sidebar-tip">
-            💡 拖动节点摆放位置。<br/>拖动节点右侧小圆点到目标卡片可快速连线建立跳转。
+            拖拽节点调整布局，从节点右侧圆点拖拽至目标卡片建立连线。
           </div>
         </aside>
       )}
@@ -557,12 +646,12 @@ export default function App() {
       <section className="canvas-wrap">
         {!sidebarOpen && (
           <button className="floating-panel-toggle left" onClick={() => setSidebarOpen(true)} title="展开页面列表">
-            » 页面列表 ({state.nodes.length})
+            页面列表 ({state.nodes.length})
           </button>
         )}
         {!inspectorOpen && (
           <button className="floating-panel-toggle right" onClick={() => setInspectorOpen(true)} title="展开属性配置面板">
-            📝 属性配置 «
+            属性配置
           </button>
         )}
 
@@ -600,7 +689,7 @@ export default function App() {
             <svg className="edges" style={{ pointerEvents: 'none' }}>
               <defs>
                 <marker id="arrow-glow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#6366f1" />
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#71717a" />
                 </marker>
               </defs>
               {state.edges.map((edge, index) => {
@@ -623,14 +712,16 @@ export default function App() {
               })}
             </svg>
 
-            {state.nodes.map(node => (
-              <div
-                key={node.id}
-                data-id={node.id}
-                className={`map-node ${node.id === state.selected ? 'selected' : ''} ${node.isStart ? 'start-node' : ''}`}
-                style={{ left: node.x, top: node.y, pointerEvents: 'auto' }}
-                onClick={() => selectNode(node.id)}
-                onDoubleClick={() => setPreviewNode(node)}
+            {state.nodes.map(node => {
+              const nodeHasIssue = graphValidation.issues.some(i => i.nodeId === node.id)
+              return (
+                <div
+                  key={node.id}
+                  data-id={node.id}
+                  className={`map-node ${node.id === state.selected ? 'selected' : ''} ${node.isStart ? 'start-node' : ''} ${nodeHasIssue ? 'has-issue' : ''}`}
+                  style={{ left: node.x, top: node.y, pointerEvents: 'auto' }}
+                  onClick={() => selectNode(node.id)}
+                  onDoubleClick={() => setPreviewNode(node)}
                 onMouseDown={event => {
                   if (event.target.classList.contains('port') || event.target.closest('button')) return
                   event.stopPropagation()
@@ -656,11 +747,11 @@ export default function App() {
                 <div className="node-actions">
                   {!node.isStart && (
                     <button className="ghost icon-tiny" title="设为起始游戏页" onClick={e => setAsStart(node.id, e)}>
-                      ★ 起始
+                      设为起始
                     </button>
                   )}
                   <button className="ghost icon-tiny" title="实时预览该页面" onClick={e => { e.stopPropagation(); setPreviewNode(node) }}>
-                    ↗ 预览
+                    预览
                   </button>
                 </div>
 
@@ -672,18 +763,18 @@ export default function App() {
                   />
                 )}
               </div>
-            ))}
+            )})}
           </div>
 
           {!state.nodes.length && (
-            <div className="empty" style={{ zIndex: 4, maxWidth: 380 }}>
-              <div className="empty-icon" style={{ fontSize: 40, color: '#6366f1' }}>✦</div>
+            <div className="empty" style={{ zIndex: 4, maxWidth: 360 }}>
+              <div className="empty-icon" style={{ fontSize: 24, fontWeight: 'bold', color: 'var(--text-main)', marginBottom: 8 }}>■</div>
               <h2>欢迎使用 ARG Blueprint</h2>
               <p style={{ marginBottom: 14 }}>从创建一个核心剧情页面节点开始：</p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {Object.entries(TYPES).map(([k, v]) => (
-                  <button key={k} className="primary" style={{ padding: '6px 12px', fontSize: 12 }} onClick={() => add(k)}>
-                    ＋ {v.label}
+                  <button key={k} className="primary icon-tiny" onClick={() => add(k)}>
+                    {v.label}
                   </button>
                 ))}
               </div>
@@ -691,26 +782,26 @@ export default function App() {
           )}
 
           <div className="canvas-hint-bar">
-            💡 Ctrl+Z 撤销 · Ctrl+Y 重做 · Del 删除页面 · 拖拽右侧圆点连线 · 双击卡片快速预览
+            Ctrl+Z 撤销 · Ctrl+Y 重做 · Del 删除 · 拖拽右侧圆点连线 · 双击卡片快速预览
           </div>
 
           <div className="canvas-dock-controls">
-            <button className="ghost canvas-dock-btn" disabled={!history.past.length} onClick={undo} title="撤销 (Ctrl+Z)">↩ 撤销</button>
-            <button className="ghost canvas-dock-btn" disabled={!history.future.length} onClick={redo} title="重做 (Ctrl+Y)">↪ 重做</button>
-            <button className="ghost canvas-dock-btn" title="放大 (滚轮向上)" onClick={() => setViewport(v => ({ ...v, zoom: Math.min(2.5, Number((v.zoom + 0.15).toFixed(2))) }))}>＋</button>
+            <button className="ghost canvas-dock-btn" disabled={!history.past.length} onClick={undo} title="撤销 (Ctrl+Z)">撤销</button>
+            <button className="ghost canvas-dock-btn" disabled={!history.future.length} onClick={redo} title="重做 (Ctrl+Y)">重做</button>
+            <button className="ghost canvas-dock-btn" title="放大" onClick={() => setViewport(v => ({ ...v, zoom: Math.min(2.5, Number((v.zoom + 0.15).toFixed(2))) }))}>＋</button>
             <button className="ghost canvas-dock-btn" title="重置为 100%" onClick={() => setViewport(v => ({ ...v, zoom: 1 }))}>{Math.round(viewport.zoom * 100)}%</button>
-            <button className="ghost canvas-dock-btn" title="缩小 (滚轮向下)" onClick={() => setViewport(v => ({ ...v, zoom: Math.max(0.4, Number((v.zoom - 0.15).toFixed(2))) }))}>－</button>
+            <button className="ghost canvas-dock-btn" title="缩小" onClick={() => setViewport(v => ({ ...v, zoom: Math.max(0.4, Number((v.zoom - 0.15).toFixed(2))) }))}>－</button>
             <button className="ghost canvas-dock-btn" title="居中聚焦所有节点" onClick={() => {
               if (!state.nodes.length) { setViewport({ x: 0, y: 0, zoom: 1 }); return }
               const minX = Math.min(...state.nodes.map(n => n.x))
               const minY = Math.min(...state.nodes.map(n => n.y))
               setViewport({ x: -minX + 80, y: -minY + 60, zoom: 1 })
-            }}>⊙ 居中</button>
+            }}>居中</button>
             <button className="ghost canvas-dock-btn" title="打开 Linux 命令行终端 (Ctrl+`)" onClick={() => setTerminalOpen(!terminalOpen)}>
-              ❯_ 终端
+              终端
             </button>
             <button className="ghost canvas-dock-btn" title={isFullscreen ? '退出全屏' : '全屏模式'} onClick={toggleFullscreen}>
-              {isFullscreen ? '⛶ 退出' : '⛶ 全屏'}
+              {isFullscreen ? '退出全屏' : '全屏'}
             </button>
           </div>
         </div>
@@ -734,6 +825,28 @@ export default function App() {
     </main>
 
     <Terminal state={state} update={update} isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
+    {showValidatorModal && (
+      <ValidatorModal
+        validation={graphValidation}
+        onFocusNode={focusNode}
+        onClose={() => setShowValidatorModal(false)}
+      />
+    )}
+    {showEventsModal && (
+      <EventsModal
+        state={state}
+        onClose={() => setShowEventsModal(false)}
+        onFocusNode={focusNode}
+      />
+    )}
+    {showDshPanel && (
+      <DshPanel
+        state={state}
+        update={update}
+        isOpen={showDshPanel}
+        onClose={() => setShowDshPanel(false)}
+      />
+    )}
     {previewNode && <Preview state={state} initialNode={previewNode} onEdit={editSlots} close={() => setPreviewNode(null)}/>} 
     {showTemplateModal && (
       <CustomTemplateModal
@@ -826,15 +939,15 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
           </button>
         )}
       </div>
-      <div className="inspector-tabs" style={{ display: 'flex', gap: 4, marginTop: 10 }}>
-        <button className={`tab-btn ${activeTab === 'content' ? 'active' : 'ghost'}`} onClick={() => setActiveTab('content')}>
-          {isChat ? '📝 基础信息' : '📝 内容与规则'}
+      <div className="inspector-tabs">
+        <button className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`} onClick={() => setActiveTab('content')}>
+          {isChat ? '基础信息' : '内容与规则'}
         </button>
-        <button className={`tab-btn ${activeTab === 'links' ? 'active' : 'ghost'}`} onClick={() => setActiveTab('links')}>
-          {isChat ? '📇 联系人与对话' : (isDesktop ? '🖥️ 桌面图标' : '🔗 超链接按键')}
+        <button className={`tab-btn ${activeTab === 'links' ? 'active' : ''}`} onClick={() => setActiveTab('links')}>
+          {isChat ? '联系人与对话' : (isDesktop ? '桌面图标' : '连接出口')}
         </button>
-        <button className={`tab-btn ${activeTab === 'style' ? 'active' : 'ghost'}`} onClick={() => setActiveTab('style')}>
-          🎨 样式定制
+        <button className={`tab-btn ${activeTab === 'style' ? 'active' : ''}`} onClick={() => setActiveTab('style')}>
+          样式定制
         </button>
       </div>
     </div>
@@ -862,12 +975,12 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
               </optgroup>
               {customForThisType.length > 0 && (
                 <optgroup label="自定义导入模板">
-                  {customForThisType.map(t => <option key={t.name} value={t.name}>🌟 {t.name} (自定义)</option>)}
+                  {customForThisType.map(t => <option key={t.name} value={t.name}>{t.name} (自定义)</option>)}
                 </optgroup>
               )}
             </select>
             <button className="ghost icon-tiny" style={{ fontSize: 11, padding: '3px 8px', whiteSpace: 'nowrap' }} title="上传/管理自定义模板" onClick={openTemplateModal}>
-              📤 导入
+              导入
             </button>
           </div>
         </Field>
@@ -880,35 +993,35 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
           if (fieldKey === 'stickyNote') {
             const isNoteDeleted = selected.fields.showStickyNote === false || selected.fields.stickyNote === '__deleted__' || !selected.fields.stickyNote
             return (
-              <div key="stickyNote" className="field" style={{ margin: '12px 0' }}>
+              <div key="stickyNote" className="field" style={{ margin: '10px 0' }}>
                 {!isNoteDeleted ? (
-                  <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, padding: 10 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                      <label style={{ margin: 0, color: '#92400e', fontWeight: 'bold' }}>📌 桌面便签卡片 (Sticky Note)</label>
+                  <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', borderRadius: 6, padding: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <label style={{ margin: 0, color: 'var(--text-secondary)', fontWeight: 600 }}>桌面便签卡片 (Sticky Note)</label>
                       <button
                         className="rule-remove"
-                        style={{ color: '#b91c1c', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#fee2e2' }}
-                        title="删除该便签卡片"
+                        style={{ color: '#71717a', fontSize: 11, padding: '1px 5px', borderRadius: 3 }}
+                        title="删除便签"
                         onClick={() => patch(node => { node.fields.showStickyNote = false; node.fields.stickyNote = '__deleted__' })}
                       >
-                        🗑️ 删除便签
+                        删除
                       </button>
                     </div>
                     <textarea
-                      style={{ background: '#fff', border: '1px solid #fde68a', fontSize: 12, minHeight: 70 }}
+                      style={{ background: '#fff', border: '1px solid var(--border-color)', fontSize: 11.5, minHeight: 60 }}
                       value={selected.fields.stickyNote === '__deleted__' ? '' : (selected.fields.stickyNote || '')}
                       onChange={event => patch(node => { node.fields.stickyNote = event.target.value; node.fields.showStickyNote = true; })}
                     />
                   </div>
                 ) : (
-                  <div style={{ border: '2px dashed #cbd5e1', borderRadius: 8, padding: '10px 12px', textAlign: 'center', background: '#f8fafc' }}>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>📌 桌面便签卡片已删除 / 隐藏</span>
+                  <div style={{ border: '1px dashed var(--border-color)', borderRadius: 6, padding: '8px 10px', textAlign: 'center', background: 'var(--bg-subtle)' }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>桌面便签已隐藏</span>
                     <button
                       className="primary icon-tiny"
-                      style={{ marginLeft: 10, fontSize: 11, padding: '3px 8px' }}
-                      onClick={() => patch(node => { node.fields.showStickyNote = true; node.fields.stickyNote = '📌 案件调查备忘：\n1. 查阅 0717 卷宗。\n2. 登录档案库后台核对嫌疑人名单。'; })}
+                      style={{ marginLeft: 8, fontSize: 10.5, padding: '2px 6px' }}
+                      onClick={() => patch(node => { node.fields.showStickyNote = true; node.fields.stickyNote = '案件调查备忘：\n1. 查阅 0717 卷宗。\n2. 登录档案库后台核对嫌疑人名单。'; })}
                     >
-                      ＋ 恢复便签卡片
+                      恢复便签
                     </button>
                   </div>
                 )}
@@ -920,18 +1033,18 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
           if (fieldKey === 'notice') {
             const isNoticeDeleted = selected.fields.showNotice === false || selected.fields.notice === '__deleted__' || !selected.fields.notice
             return (
-              <div key="notice" className="field" style={{ margin: '12px 0' }}>
+              <div key="notice" className="field" style={{ margin: '10px 0' }}>
                 {!isNoticeDeleted ? (
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                       <label style={{ margin: 0 }}>顶部提示公告 (Notice)</label>
                       <button
                         className="rule-remove"
-                        style={{ color: '#b91c1c', fontSize: 11, padding: '1px 5px' }}
-                        title="删除顶部公告"
+                        style={{ color: '#71717a', fontSize: 11, padding: '1px 5px' }}
+                        title="删除公告"
                         onClick={() => patch(node => { node.fields.showNotice = false; node.fields.notice = '__deleted__' })}
                       >
-                        🗑️ 删除公告
+                        删除
                       </button>
                     </div>
                     <textarea
@@ -940,14 +1053,14 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
                     />
                   </div>
                 ) : (
-                  <div style={{ border: '2px dashed #cbd5e1', borderRadius: 8, padding: '8px 10px', textAlign: 'center', background: '#f8fafc' }}>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>💡 顶部提示公告已删除</span>
+                  <div style={{ border: '1px dashed var(--border-color)', borderRadius: 6, padding: '8px 10px', textAlign: 'center', background: 'var(--bg-subtle)' }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>顶部公告已删除</span>
                     <button
                       className="primary icon-tiny"
-                      style={{ marginLeft: 8, fontSize: 11, padding: '3px 8px' }}
-                      onClick={() => patch(node => { node.fields.showNotice = true; node.fields.notice = '💡 提示：输入案件编号、人物姓名或案由检索线索'; })}
+                      style={{ marginLeft: 8, fontSize: 10.5, padding: '2px 6px' }}
+                      onClick={() => patch(node => { node.fields.showNotice = true; node.fields.notice = '提示：输入案件编号、人物姓名或案由检索线索'; })}
                     >
-                      ＋ 恢复公告
+                      恢复公告
                     </button>
                   </div>
                 )}
@@ -976,7 +1089,7 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
               </select>
             </div>
           </div>)}
-          <button className="ghost" style={{ width: '100%' }} onClick={addRule}>＋ 添加关键词规则</button>
+          <button className="ghost" style={{ width: '100%' }} onClick={addRule}>添加关键词规则</button>
         </div>}
       </>}
 
@@ -1040,6 +1153,27 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
             <option value='"Courier New", "Consolas", monospace'>黑客终端 / 等宽打字机 (Monospace)</option>
           </select>
         </Field>
+
+        <Field label="氛围多媒体滤镜 (Atmosphere Filter)">
+          <select value={selected.fields.atmosphere || ''} onChange={e => patch(node => { node.fields.atmosphere = e.target.value })}>
+            <option value="">默认 (无滤镜)</option>
+            <option value="crt">CRT 复古显像管扫描线</option>
+            <option value="vignette">暗角暗影 (悬疑/绝密档案)</option>
+            <option value="glitch">画面微弱故障闪烁 (Glitch)</option>
+          </select>
+        </Field>
+
+        <div className="field" style={{ marginTop: 8 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 11.5 }}>
+            <input
+              type="checkbox"
+              style={{ width: 'auto', cursor: 'pointer' }}
+              checked={Boolean(selected.fields.typewriter)}
+              onChange={e => patch(node => { node.fields.typewriter = e.target.checked })}
+            />
+            <span>启用打字机逐字排字动效 (支持点击/空格瞬间跳过)</span>
+          </label>
+        </div>
 
         <ImageUpload
           label="自定义壁纸 / 页面背景图 (覆盖默认纯色背景)"
@@ -1442,6 +1576,20 @@ function ChatEditor({ selected, nodes, edges, update, patch }) {
                             {targets.map(n => <option key={n.id} value={n.id}>{n.name}（{TYPES[n.type]?.label || n.type}）</option>)}
                           </select>
                         </div>
+                        <div className="field" style={{ margin: '4px 0 0 0' }}>
+                          <label style={{ fontSize: 9, color: opt.requires ? '#b45309' : 'inherit', fontWeight: opt.requires ? 600 : 'normal' }}>
+                            🔒 解锁前置线索/页面 (可选)
+                          </label>
+                          <select
+                            value={opt.requires || ''}
+                            onChange={e => updateActiveContact(c => { c.dialogue[dIdx].options[optIdx].requires = e.target.value })}
+                          >
+                            <option value="">（无前置条件 · 开局即可见）</option>
+                            {nodes.filter(n => n.id !== selected.id).map(n => (
+                              <option key={n.id} value={n.id}>需先探索：{n.name} ({n.id})</option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     ))}
                     <button className="ghost icon-tiny" style={{ width: '100%', fontSize: 11, marginTop: 4 }} onClick={() => addChoiceOption(dIdx)}>＋ 增加选项分支</button>
@@ -1451,8 +1599,8 @@ function ChatEditor({ selected, nodes, edges, update, patch }) {
             ))}
 
             <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-              <button className="ghost" style={{ flex: 1, fontSize: 11 }} onClick={() => addDialogueItem('npc')}>＋ 添加 NPC 消息</button>
-              <button className="ghost" style={{ flex: 1, fontSize: 11 }} onClick={() => addDialogueItem('choice')}>＋ 添加玩家选项分支</button>
+              <button className="ghost" style={{ flex: 1, fontSize: 11 }} onClick={() => addDialogueItem('npc')}>添加 NPC 消息</button>
+              <button className="ghost" style={{ flex: 1, fontSize: 11 }} onClick={() => addDialogueItem('choice')}>添加玩家选项分支</button>
             </div>
           </div>
         </div>
@@ -1506,27 +1654,27 @@ function LinkEditor({ selected, nodes, edges, update }) {
     <div className="field">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
         <label style={{ margin: 0 }}>{isDesktop ? '桌面图标列表 / 快捷方式' : '超链接按键列表 / 页面出口'}</label>
-        <span style={{ fontSize: 11, color: '#718096' }}>{outgoing.length} 个{isDesktop ? '图标' : '出口'}</span>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{outgoing.length} 个{isDesktop ? '图标' : '出口'}</span>
       </div>
       <button className="ghost start-toggle" style={{ marginBottom: 10, width: '100%' }} onClick={() => update(next => { next.startId = selected.id; next.nodes.forEach(node => { node.isStart = node.id === selected.id }) })}>
-        {selected.isStart ? '✓ 当前为游戏起始页' : '◎ 设为游戏起始页'}
+        {selected.isStart ? '当前为游戏起始页' : '设为游戏起始页'}
       </button>
       
       {isDesktop && (
-        <div style={{ fontSize: 11, color: '#2b6cb0', marginBottom: 10, background: '#ebf8ff', border: '1px solid #bee3f8', padding: '8px 10px', borderRadius: 6 }}>
-          💡 <strong>桌面图标设定</strong>：所有图标将以网格形式呈现在 Windows 桌面上，双击或点击即可打开对应页面。
+        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8, background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', padding: '6px 8px', borderRadius: 5 }}>
+          桌面图标设定：所有图标将以网格形式呈现在 Windows 桌面上，点击即可打开对应页面。
         </div>
       )}
 
       {isSearch && (
-        <div style={{ fontSize: 11, color: '#4a5568', marginBottom: 10, background: '#eef3ff', padding: '8px 10px', borderRadius: 6 }}>
-          💡 <strong>搜索页按键设定</strong>：创作者可自由添加顶部导航按键或搜索框下方的热门检索通道，点击即可跳转。
+        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8, background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', padding: '6px 8px', borderRadius: 5 }}>
+          搜索页按键设定：可自由添加顶部导航按键或热门检索通道。
         </div>
       )}
 
       {isIndex && (
-        <div style={{ fontSize: 11, color: '#718096', marginBottom: 8, background: '#f0f4f9', padding: '6px 8px', borderRadius: 4 }}>
-          💡 索引页将自动把下列按键渲染在页面的超链接列表中，点击即可跳转。
+        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8, background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', padding: '6px 8px', borderRadius: 5 }}>
+          索引页将自动把下列按键渲染在页面的超链接列表中，点击即可跳转。
         </div>
       )}
 
@@ -1541,11 +1689,11 @@ function LinkEditor({ selected, nodes, edges, update }) {
                 <button className="ghost icon-tiny" title="上移" disabled={index === 0} onClick={() => moveLink(index, -1)}>↑</button>
                 <button className="ghost icon-tiny" title="下移" disabled={index === outgoing.length - 1} onClick={() => moveLink(index, 1)}>↓</button>
                 {isDesktop && (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, background: '#f1f5f9', borderRadius: 3, border: '1px solid #cbd5e1' }}>
-                    {isIconImg ? <img src={edge.icon} alt="ico" style={{ width: 18, height: 18, objectFit: 'contain' }} /> : (edge.icon || '📁')}
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, background: 'var(--bg-subtle)', borderRadius: 3, border: '1px solid var(--border-color)' }}>
+                    {isIconImg ? <img src={edge.icon} alt="ico" style={{ width: 16, height: 16, objectFit: 'contain' }} /> : (edge.icon || '📁')}
                   </span>
                 )}
-                <strong style={{ fontSize: 12, color: '#356ae6', alignSelf: 'center' }}>
+                <strong style={{ fontSize: 11.5, color: 'var(--text-main)', alignSelf: 'center' }}>
                   {isDesktop ? `桌面图标 #${index + 1}` : `按键 #${index + 1}`}
                 </strong>
               </div>
@@ -1653,6 +1801,24 @@ function LinkEditor({ selected, nodes, edges, update }) {
                 })}
               >
                 {targets.map(node => <option key={node.id} value={node.id}>{node.name}（{TYPES[node.type]?.label || node.type}）</option>)}
+              </select>
+            </div>
+
+            <div className="field" style={{ margin: '4px 0 0 0' }}>
+              <label style={{ fontSize: 10, color: edge.requires ? '#b45309' : 'inherit', fontWeight: edge.requires ? 600 : 'normal' }}>
+                🔒 解锁前置线索/页面 (可选)
+              </label>
+              <select
+                value={edge.requires || ''}
+                onChange={event => update(next => {
+                  const item = next.edges[realIdx]
+                  if (item) item.requires = event.target.value
+                })}
+              >
+                <option value="">（无前置条件 · 开局即可见）</option>
+                {nodes.filter(node => node.id !== selected.id).map(node => (
+                  <option key={node.id} value={node.id}>需先探索：{node.name} ({node.id})</option>
+                ))}
               </select>
             </div>
           </div>
@@ -1854,12 +2020,12 @@ export function openPreviewInNewTab(state, initialNode) {
 </head>
 <body>
   <div id="runnerBar" class="runner-floating-bar">
-    <span style="color:#818cf8; font-weight:bold; cursor:pointer;" onclick="toggleCollapse()" title="点击收起/展开控制条">✦ ARG 预览</span>
+    <span style="color:#fafafa; font-weight:600; cursor:pointer;" onclick="toggleCollapse()" title="点击收起/展开控制条">ARG 运行器</span>
     <span id="pageTitle" style="max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.9;"></span>
     <select id="nodeSelect" class="runner-select" onchange="loadPage(this.value)">
     </select>
-    <button class="runner-pill-btn" onclick="restartGame()" title="重新从起始页开始">🔄 重开</button>
-    <button class="runner-pill-btn" onclick="toggleFullscreen()" title="全屏沉浸式体验">⛶ 全屏</button>
+    <button class="runner-pill-btn" onclick="restartGame()" title="重新从起始页开始">重开</button>
+    <button class="runner-pill-btn" onclick="toggleFullscreen()" title="全屏体验">全屏</button>
     <button class="runner-pill-btn" onclick="toggleCollapse()" title="收起控制条" id="collapseBtn">◀</button>
   </div>
   <iframe id="arg-preview-frame" title="ARG Runtime Game Player"></iframe>
@@ -2750,3 +2916,50 @@ function CustomTemplateModal({ state, update, close, initialType = 'Browse', onS
     </div>
   )
 }
+
+function ValidatorModal({ validation, onFocusNode, onClose }) {
+  return (
+    <div className="modal" onClick={onClose}>
+      <div className="validator-card" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <h2>剧情健康度与死胡同自检 (Story Graph Validator)</h2>
+          <button className="ghost icon-tiny" onClick={onClose}>✕</button>
+        </div>
+        <div className="validator-summary-bar">
+          <span className={`validator-status-badge ${validation.healthy ? 'healthy' : 'warning'}`}>
+            {validation.healthy ? '✓ 蓝图链路 100% 完整' : `! 发现 ${validation.errorCount} 处严重问题 · ${validation.warningCount} 处潜在隐患`}
+          </span>
+          <span style={{ fontSize: 11.5, color: 'var(--text-muted)' }}>
+            可达节点: {validation.reachableCount}/{validation.totalCount} · 结局数: {validation.endingCount}
+          </span>
+        </div>
+        <div className="validator-issues-list">
+          {validation.healthy ? (
+            <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: 24, marginBottom: 8, color: '#16a34a' }}>✓</div>
+              <p style={{ margin: 0, fontWeight: 600, color: 'var(--text-main)' }}>太棒了！所有页面均可正常到达并通关。</p>
+              <p style={{ fontSize: 11.5, marginTop: 4, color: 'var(--text-muted)' }}>不存在任何孤岛卡片、死胡同页面或损坏的关键词跳转。</p>
+            </div>
+          ) : (
+            validation.issues.map((issue, idx) => (
+              <div key={idx} className={`validator-issue-item ${issue.type}`}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600, color: issue.type === 'error' ? '#dc2626' : '#d97706', marginBottom: 2 }}>
+                    {issue.type === 'error' ? '[严重缺陷]' : '[逻辑隐患]'} {issue.nodeName ? `卡片：${issue.nodeName}` : '全局'}
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', lineHeight: 1.4 }}>{issue.message}</div>
+                </div>
+                {issue.nodeId && (
+                  <button className="ghost icon-tiny" style={{ fontSize: 11, padding: '3px 8px', alignSelf: 'center' }} onClick={() => onFocusNode(issue.nodeId)}>
+                    定位卡片
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+

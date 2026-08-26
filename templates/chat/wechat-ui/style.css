@@ -201,12 +201,14 @@ body {
   gap: 10px;
   max-width: 75%;
 }
-.msg-row.received {
+.msg-row.received, .msg-row.msg-npc {
   align-self: flex-start;
+  margin-right: auto;
 }
-.msg-row.sent {
+.msg-row.sent, .msg-row.msg-user {
   align-self: flex-end;
-  flex-direction: row-reverse;
+  margin-left: auto;
+  flex-direction: row;
 }
 .msg-avatar {
   width: 36px;
@@ -227,12 +229,12 @@ body {
   word-break: break-word;
   position: relative;
 }
-.msg-row.received .msg-bubble {
+.msg-row.received .msg-bubble, .msg-row.msg-npc .msg-bubble {
   background: #ffffff;
   color: #1f1f1f;
   border: 1px solid #e2e8f0;
 }
-.msg-row.sent .msg-bubble {
+.msg-row.sent .msg-bubble, .msg-row.msg-user .msg-bubble {
   background: var(--arg-primary-color, #95ec69);
   color: #000000;
 }

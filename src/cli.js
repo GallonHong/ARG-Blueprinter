@@ -1,4 +1,5 @@
 import { defaultContacts } from './route-config.js';
+import { formatBlueprintForDsh, getStoredDshEndpoint, setStoredDshEndpoint } from './dsh-bridge.js';
 
 /**
  * Linux CLI Command Engine for ARG Blueprint
@@ -416,6 +417,24 @@ export function executeCliCommand(line, state, updateState) {
           });
         });
         return { output: `[OK] 已将节点 '${oldId}' 重命名为 '${newId}'`, error: null };
+      }
+
+      case 'dsh': {
+        const sub = (args[0] || '').toLowerCase();
+        if (!sub || sub === 'status') {
+          const endpoint = getStoredDshEndpoint();
+          return { output: `[DSH] 当前 DeepSeek Harness 本地端点: ${endpoint}\n使用 'dsh connect <url>' 修改端点，使用 'dsh sync' 导出当前蓝图为 Prompt 上下文。`, error: null };
+        } else if (sub === 'connect') {
+          if (!args[1]) throw new Error('用法: dsh connect <url> (例如: dsh connect http://127.0.0.1:3080)');
+          const newUrl = args[1];
+          setStoredDshEndpoint(newUrl);
+          return { output: `[DSH] 已更新本地 DSH 端点为: ${newUrl}`, error: null };
+        } else if (sub === 'sync' || sub === 'prompt') {
+          const prompt = formatBlueprintForDsh(state, args.slice(1).join(' '));
+          return { output: `[DSH] 已生成完整蓝图 Prompt 上下文 (${prompt.length} 字符)：\n\n${prompt.slice(0, 350)}...\n[提示：可在 DSH 工作台中一键复制全文]`, error: null };
+        } else {
+          throw new Error(`未知 dsh 子命令 '${sub}'。支持: dsh status, dsh connect <url>, dsh sync [需求]`);
+        }
       }
 
       case 'clear':

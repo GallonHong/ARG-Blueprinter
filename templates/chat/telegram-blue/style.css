@@ -53,15 +53,15 @@ body {
   align-self: center; padding: 2px 10px; border-radius: 10px; margin: 4px 0;
 }
 .msg-row { display: flex; gap: 8px; max-width: 70%; }
-.msg-row.received { align-self: flex-start; }
-.msg-row.sent { align-self: flex-end; flex-direction: row-reverse; }
+.msg-row.received, .msg-row.msg-npc { align-self: flex-start; margin-right: auto; }
+.msg-row.sent, .msg-row.msg-user { align-self: flex-end; margin-left: auto; flex-direction: row; }
 .msg-avatar { display: none; }
 .msg-bubble {
   padding: 8px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; word-break: break-word;
   box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
-.msg-row.received .msg-bubble { background: #ffffff; color: #111; border-bottom-left-radius: 4px; }
-.msg-row.sent .msg-bubble { background: #eeffde; color: #000; border-bottom-right-radius: 4px; }
+.msg-row.received .msg-bubble, .msg-row.msg-npc .msg-bubble { background: #ffffff; color: #111; border-bottom-left-radius: 4px; }
+.msg-row.sent .msg-bubble, .msg-row.msg-user .msg-bubble { background: #eeffde; color: #000; border-bottom-right-radius: 4px; }
 .msg-bubble a, .msg-bubble .arg-link-item { color: #3390ec; font-weight: bold; text-decoration: underline; }
 .chat-choices-area { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 20px; background: rgba(255,255,255,0.9); }
 .chat-choices-area:empty { display: none; }

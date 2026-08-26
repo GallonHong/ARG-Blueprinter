@@ -112,6 +112,7 @@ export function buildRouteConfig(node, state, { preview = false } = {}) {
   const searchRules = Object.fromEntries((searchNode?.rules || []).map(rule => [String(rule.keyword || '').trim().toLowerCase(), rule.target]))
   const contacts = node.type === 'Chat' ? (node.contacts && node.contacts.length ? node.contacts : defaultContacts()) : []
   const config = {
+    nodeId: node.id,
     preview,
     files,
     rules: { search: searchRules },
@@ -119,6 +120,8 @@ export function buildRouteConfig(node, state, { preview = false } = {}) {
     password: node.fields?.password || '',
     loginTarget: state.edges.find(edge => edge.from === node.id)?.to || '',
     notFoundText: node.fields?.notFoundText || '没有找到相关结果',
+    typewriter: !!(node.fields?.typewriter ?? false),
+    atmosphere: node.fields?.atmosphere || '',
     contacts
   }
 

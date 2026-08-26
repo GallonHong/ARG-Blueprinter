@@ -3,7 +3,7 @@ export function getQiyuebanDemoProject() {
     // 1. 电脑桌面
     {
       id: 'node_desktop',
-      name: '🖥️ 温水青的电脑桌面',
+      name: '温水青的电脑桌面',
       type: 'Desktop',
       template: 'Windows XP 桌面',
       x: 80,
@@ -11,7 +11,7 @@ export function getQiyuebanDemoProject() {
       isStart: true,
       fields: {
         systemName: '温水青的主机 (Windows XP Pro)',
-        stickyNote: '📌 调查备忘录：\n1. 七月半论坛注册已关闭，通过聊天软件联络《奇闻调查》记者明月夜。\n2. 隐藏机密文件夹密码提示：异想之夜大典拼音首字母。\n3. 在搜索引擎检索“失踪”、“南鄣”、“运契”、“泰永集团”。',
+        stickyNote: '调查备忘录：\n1. 七月半论坛注册已关闭，通过聊天软件联络《奇闻调查》记者明月夜。\n2. 隐藏机密文件夹密码提示：异想之夜大典拼音首字母。\n3. 在搜索引擎检索“失踪”、“南鄣”、“运契”、“泰永集团”。',
         startTitle: '开始',
         time: '2026-02-20 23:17',
         primaryColor: '#000080',
@@ -25,7 +25,7 @@ export function getQiyuebanDemoProject() {
     // 2. 加密通讯
     {
       id: 'node_chat',
-      name: '💬 加密聊天软件',
+      name: '加密聊天软件',
       type: 'Chat',
       template: '微信 UI 风格',
       x: 380,
@@ -42,27 +42,26 @@ export function getQiyuebanDemoProject() {
           id: 'mingyueye',
           name: '明月夜 (《奇闻调查》记者)',
           bio: '《奇闻调查》特约栏目记者 · 专注于离奇事件追踪',
-          avatar: '📰',
+          avatar: '',
           messages: [
             { sender: 'npc', text: '温小姐您好，我是《奇闻调查》的记者明月夜。' },
-            { sender: 'npc', text: '请问您是否是七月半论坛的正式用户？几番辗转才找到您的联系方式。' },
-            { sender: 'player', text: '怎么了？是要我帮你搜集灵异事件吗？' },
-            { sender: 'npc', text: '我们在调查九华高中女生失踪案与南鄣市运契互助会...你是否有关键证据？' },
-            { sender: 'npc', text: '请选择你打算提交的调查方向：' }
+            { sender: 'npc', text: '几番辗转才找到您的联系方式。我正在暗中调查南鄣市与延盛岛的系列离奇失踪事件。' },
+            { sender: 'player', text: '怎么了？是要我帮你搜集灵异事件和调查证据吗？' },
+            { sender: 'npc', text: '是的。如果你在电脑、论坛或搜索中找到了关键证据或机密档案，请随时在聊天里提交给我。' }
           ],
           choices: [
-            { text: '📁 提供云留山调查报告', target: 'node_end1' },
-            { text: '🚨 提供九华高中失踪线索', target: 'node_end2' },
-            { text: '⚖️ 联合实名举报泰永集团', target: 'node_end3' },
-            { text: '🌊 追查“长生葬”真相', target: 'node_end4' },
-            { text: '🌅 公开全部内幕，迎接明天', target: 'node_end5' }
+            { text: '提供云留山调查报告', target: 'node_end1', requires: 'node_news_nanzhang', reply: '这份报道提到了云留山后山的诡异洞窟...我立刻带队过去！' },
+            { text: '提供九华高中失踪线索', target: 'node_end2', requires: 'node_news_shizong', reply: '九华高中女生的失踪案居然牵扯到运契互助会...太危险了。' },
+            { text: '联合实名举报泰永集团', target: 'node_end3', requires: 'node_news_taiyong', reply: '有了宋青云和泰永集团的资金链证据，我们终于可以公开发表报道了！' },
+            { text: '追查“长生葬”真相', target: 'node_end4', requires: 'node_doc_wenyan', reply: '温岩日记里记载的“长生葬”与延盛岛仪式...真相令人毛骨悚然。' },
+            { text: '公开全部内幕，迎接明天', target: 'node_end5', requires: 'node_doc_dusheng', reply: '《渡生大醮仪》原卷与全部审讯录音已经拿到！我们要让所有人看清真相！' }
           ]
         },
         {
           id: 'qiaoqiao',
           name: '乔乔 (妹妹)',
           bio: '妹妹 · 正在南鄣市读大学',
-          avatar: '👧',
+          avatar: '',
           messages: [
             { sender: 'npc', text: '姐，你到底在哪儿？快回电话！' },
             { sender: 'player', text: '我还在调查一些事情，别担心。' },
@@ -76,27 +75,27 @@ export function getQiyuebanDemoProject() {
           id: 'guibujue',
           name: '鬼不觉 (论坛调查人)',
           bio: '七月半论坛资深坛友 · 代号【鬼不觉】',
-          avatar: '🕵️',
+          avatar: '',
           messages: [
             { sender: 'npc', text: '水青，千万不要在论坛公开发帖！管理层有内鬼。' },
             { sender: 'npc', text: '隐藏文件夹密码是七个小写字母：yxzyddx（异想之夜大典）。' },
             { sender: 'player', text: '收到，我这就去查电脑上的加密文件夹。' }
           ],
           choices: [
-            { text: '🔐 前往打开机密文件夹', target: 'node_login' }
+            { text: '前往打开机密文件夹', target: 'node_login' }
           ]
         },
         {
           id: 'xiaoqingyu',
           name: '小青鱼 (神秘失踪人员)',
           bio: '状态异常 · 信号微弱',
-          avatar: '🐟',
+          avatar: '',
           messages: [
             { sender: 'npc', text: '救救我……这里好黑……' },
             { sender: 'npc', text: '他们要把我带去延盛岛……不要相信宋青云！' }
           ],
           choices: [
-            { text: '🔍 去搜索引擎查【延盛岛】与【宋青云】', target: 'node_search' }
+            { text: '去搜索引擎查【延盛岛】与【宋青云】', target: 'node_search' }
           ]
         }
       ]
@@ -105,7 +104,7 @@ export function getQiyuebanDemoProject() {
     // 3. 七月半灵异论坛首页
     {
       id: 'node_forum',
-      name: '🌐 七月半灵异论坛',
+      name: '七月半灵异论坛',
       type: 'Browse',
       template: '复古 BBS 论坛',
       x: 80,
@@ -126,7 +125,7 @@ export function getQiyuebanDemoProject() {
     // 4. 全网搜索引擎
     {
       id: 'node_search',
-      name: '🔍 全网线索搜索引擎',
+      name: '全网线索搜索引擎',
       type: 'Search',
       template: '经典搜索',
       x: 380,
@@ -134,7 +133,7 @@ export function getQiyuebanDemoProject() {
       fields: {
         siteName: '千禧搜索 (Search Archive)',
         subtitle: '全网海量数据检索 · 灵异与失踪线索查询系统',
-        notice: '💡 提示：输入关键词检索线索，例如：失踪、南鄣、泰永集团、宋青云、延盛岛、运契、渡生大醮',
+        notice: '提示：输入关键词检索线索，例如：失踪、南鄣、泰永集团、宋青云、延盛岛、运契、渡生大醮',
         placeholder: '请输入线索关键词...',
         buttonText: '搜索档案',
         notFoundText: '抱歉，没有找到相关线索记录。请尝试检索：失踪、南鄣、泰永集团、运契、渡生大醮。'
@@ -145,7 +144,7 @@ export function getQiyuebanDemoProject() {
         { keyword: '南鄣市', target: 'node_news_nanzhang' },
         { keyword: '泰永集团', target: 'node_news_taiyong' },
         { keyword: '宋青云', target: 'node_news_taiyong' },
-        { keyword: '延盛岛', target: 'node_news_yansheng' },
+        { keyword: '延盛岛', target: 'node_news_nanzhang' },
         { keyword: '运契', target: 'node_news_yunqi' },
         { keyword: '渡生大醮', target: 'node_doc_dusheng' },
         { keyword: 'ai', target: 'node_post_ai' },
@@ -158,7 +157,7 @@ export function getQiyuebanDemoProject() {
     // 5. 机密文件夹密码锁
     {
       id: 'node_login',
-      name: '🔐 机密文件夹密码锁',
+      name: '机密文件夹密码锁',
       type: 'Login',
       template: '后台登录',
       x: 680,
@@ -172,7 +171,7 @@ export function getQiyuebanDemoProject() {
     // 18. 机密档案库文件夹
     {
       id: 'node_files',
-      name: '📁 机密档案库文件夹',
+      name: '机密档案库文件夹',
       type: 'Files',
       template: 'Windows 文件夹',
       x: 980,
@@ -185,7 +184,7 @@ export function getQiyuebanDemoProject() {
     // 6. 论坛帖子：AI 恐怖谷
     {
       id: 'node_post_ai',
-      name: '📰 帖子：AI 恐怖谷讨论',
+      name: '帖子：AI 恐怖谷讨论',
       type: 'Browse',
       template: '复古 BBS 论坛',
       x: 80,
@@ -204,7 +203,7 @@ export function getQiyuebanDemoProject() {
     // 7. 论坛帖子：公寓遇鬼
     {
       id: 'node_post_gyg',
-      name: '📰 帖子：我住的公寓又遇鬼了',
+      name: '帖子：我住的公寓又遇鬼了',
       type: 'Browse',
       template: '复古 BBS 论坛',
       x: 380,
@@ -223,7 +222,7 @@ export function getQiyuebanDemoProject() {
     // 13. 新闻：女大学生失踪
     {
       id: 'node_news_shizong',
-      name: '📰 新闻：女大学生失踪案',
+      name: '新闻：女大学生失踪案',
       type: 'Browse',
       template: '门户新闻',
       x: 680,
@@ -240,7 +239,7 @@ export function getQiyuebanDemoProject() {
     // 14. 深度报道：探秘南鄣市
     {
       id: 'node_news_nanzhang',
-      name: '📰 报道：探秘南鄣市与延盛岛',
+      name: '报道：探秘南鄣市与延盛岛',
       type: 'Browse',
       template: '门户新闻',
       x: 980,
@@ -257,7 +256,7 @@ export function getQiyuebanDemoProject() {
     // 15. 专访：泰永集团董事长宋青云
     {
       id: 'node_news_taiyong',
-      name: '📰 专访：宋青云与泰永集团',
+      name: '专访：宋青云与泰永集团',
       type: 'Browse',
       template: '门户新闻',
       x: 680,
@@ -274,7 +273,7 @@ export function getQiyuebanDemoProject() {
     // 16. 公益通报：运契互助会
     {
       id: 'node_news_yunqi',
-      name: '📰 通报：“运契”互助会调查',
+      name: '通报：“运契”互助会调查',
       type: 'Browse',
       template: '门户新闻',
       x: 980,
@@ -291,7 +290,7 @@ export function getQiyuebanDemoProject() {
     // 17. 古籍绝密文献《渡生大醮仪》
     {
       id: 'node_doc_dusheng',
-      name: '📜 文献：《渡生大醮仪》',
+      name: '文献：《渡生大醮仪》',
       type: 'Browse',
       template: '牛皮纸手写日记',
       x: 1280,
@@ -301,7 +300,7 @@ export function getQiyuebanDemoProject() {
         title: '《渡生大醮仪》卷三 · 移花接木篇',
         date: '民国三十六年录',
         author: '南鄣隐士',
-        body: '以生人之八字，结阴阳互通之契，引魂归兮，移花接木，借寿延生……\n凡开坛者，皆诵暗号：异想之夜大典（拼音首字母 yxzyddx）。\n若得此密匙，可启机密之箱。\n\n<a data-arg-link="打开机密文件夹">🔐 前往输入密码解锁文件夹</a> | <a data-arg-link="返回电脑桌面">返回电脑桌面</a>',
+        body: '以生人之八字，结阴阳互通之契，引魂归兮，移花接木，借寿延生……\n凡开坛者，皆诵暗号：异想之夜大典（拼音首字母 yxzyddx）。\n若得此密匙，可启机密之箱。\n\n<a data-arg-link="打开机密文件夹">前往输入密码解锁文件夹</a> | <a data-arg-link="返回电脑桌面">返回电脑桌面</a>',
         primaryColor: '#8b2500',
         bgColor: '#3d2f23',
         cardBg: '#f4ecd8',
@@ -313,7 +312,7 @@ export function getQiyuebanDemoProject() {
     // 19. 温岩考察日记
     {
       id: 'node_doc_wenyan',
-      name: '📑 档案：温岩考察日记',
+      name: '档案：温岩考察日记',
       type: 'Browse',
       template: '绝密档案卷宗',
       x: 1280,
@@ -330,7 +329,7 @@ export function getQiyuebanDemoProject() {
     // 20. 嫌疑人杨威口供记录
     {
       id: 'node_doc_yangwei',
-      name: '📑 档案：杨威审讯口供',
+      name: '档案：杨威审讯口供',
       type: 'Browse',
       template: '严肃公文',
       x: 1280,
@@ -347,7 +346,7 @@ export function getQiyuebanDemoProject() {
     // 8. 结局一
     {
       id: 'node_end1',
-      name: '🎬 结局一 · 云留山事件',
+      name: '结局一 · 云留山事件',
       type: 'Ending',
       template: '报纸头版通报',
       x: 80,
@@ -360,7 +359,7 @@ export function getQiyuebanDemoProject() {
     // 9. 结局二
     {
       id: 'node_end2',
-      name: '🎬 结局二 · 深夜遇害',
+      name: '结局二 · 深夜遇害',
       type: 'Ending',
       template: 'CRT 黑屏',
       x: 380,
@@ -373,7 +372,7 @@ export function getQiyuebanDemoProject() {
     // 10. 结局三
     {
       id: 'node_end3',
-      name: '🎬 结局三 · 记者实名举报',
+      name: '结局三 · 记者实名举报',
       type: 'Ending',
       template: '案件结案判定书',
       x: 680,
@@ -386,7 +385,7 @@ export function getQiyuebanDemoProject() {
     // 11. 结局四
     {
       id: 'node_end4',
-      name: '🎬 结局四 · 长生葬',
+      name: '结局四 · 长生葬',
       type: 'Ending',
       template: '报纸头版通报',
       x: 980,
@@ -399,7 +398,7 @@ export function getQiyuebanDemoProject() {
     // 12. 结局五
     {
       id: 'node_end5',
-      name: '🎬 结局五 · 明天 (True End)',
+      name: '结局五 · 明天 (True End)',
       type: 'Ending',
       template: '案件结案判定书',
       x: 1280,
@@ -412,61 +411,56 @@ export function getQiyuebanDemoProject() {
 
   const edges = [
     // Desktop routes
-    { from: 'node_desktop', to: 'node_chat', port: '聊天通讯.exe', label: '聊天通讯.exe', icon: '💬', desc: '打开加密聊天软件' },
-    { from: 'node_desktop', to: 'node_forum', port: '七月半论坛.exe', label: '七月半论坛.exe', icon: '🌐', desc: '打开七月半灵异论坛' },
-    { from: 'node_desktop', to: 'node_search', port: '全盘搜索.exe', label: '全盘搜索.exe', icon: '🔍', desc: '启动全网搜索引擎' },
-    { from: 'node_desktop', to: 'node_login', port: '机密文件夹', label: '机密文件夹', icon: '🔐', desc: '打开需要密码的机密文件夹' },
+    { from: 'node_desktop', to: 'node_chat', port: '聊天通讯.exe', label: '聊天通讯.exe', desc: '打开加密聊天软件' },
+    { from: 'node_desktop', to: 'node_forum', port: '七月半论坛.exe', label: '七月半论坛.exe', desc: '打开七月半灵异论坛' },
+    { from: 'node_desktop', to: 'node_search', port: '全盘搜索.exe', label: '全盘搜索.exe', desc: '启动全网搜索引擎' },
+    { from: 'node_desktop', to: 'node_login', port: '机密文件夹', label: '机密文件夹', desc: '打开需要密码的机密文件夹' },
 
     // Chat choices to Endings & others
-    { from: 'node_chat', to: 'node_end1', port: '提供云留山调查报告', label: '提供云留山报告', desc: '分支一' },
-    { from: 'node_chat', to: 'node_end2', port: '提供九华高中失踪线索', label: '提供九华高中线索', desc: '分支二' },
-    { from: 'node_chat', to: 'node_end3', port: '联合实名举报泰永集团', label: '实名举报泰永集团', desc: '分支三' },
-    { from: 'node_chat', to: 'node_end4', port: '追查“长生葬”真相', label: '追查长生葬', desc: '分支四' },
-    { from: 'node_chat', to: 'node_end5', port: '公开全部内幕，迎接明天', label: '公开全部内幕', desc: '真结局' },
+    { from: 'node_chat', to: 'node_end1', port: '提供云留山调查报告', label: '结局一', desc: '' },
+    { from: 'node_chat', to: 'node_end2', port: '提供九华高中失踪线索', label: '结局二', desc: '' },
+    { from: 'node_chat', to: 'node_end3', port: '联合实名举报泰永集团', label: '结局三', desc: '' },
+    { from: 'node_chat', to: 'node_end4', port: '追查“长生葬”真相', label: '结局四', desc: '' },
+    { from: 'node_chat', to: 'node_end5', port: '公开全部内幕，迎接明天', label: '结局五', desc: '' },
     { from: 'node_chat', to: 'node_desktop', port: '返回电脑桌面', label: '返回桌面', desc: '' },
-    { from: 'node_chat', to: 'node_login', port: '前往打开机密文件夹', label: '解密文件夹', desc: '' },
-    { from: 'node_chat', to: 'node_search', port: '去搜索引擎查【延盛岛】与【宋青云】', label: '搜索线索', desc: '' },
+    { from: 'node_chat', to: 'node_login', port: '前往打开机密文件夹', label: '机密锁', desc: '' },
+    { from: 'node_chat', to: 'node_search', port: '去搜索引擎查【延盛岛】与【宋青云】', label: '搜索', desc: '' },
 
-    // Forum routes
-    { from: 'node_forum', to: 'node_post_ai', port: 'AI恐怖谷讨论', label: 'AI恐怖谷讨论', desc: '' },
-    { from: 'node_forum', to: 'node_post_gyg', port: '公寓遇鬼', label: '公寓遇鬼帖子', desc: '' },
-    { from: 'node_forum', to: 'node_search', port: '全网搜索引擎', label: '全网搜索引擎', desc: '' },
-    { from: 'node_forum', to: 'node_desktop', port: '返回电脑桌面', label: '返回电脑桌面', desc: '' },
+    // Forum links
+    { from: 'node_forum', to: 'node_post_ai', port: 'AI恐怖谷讨论', label: 'AI恐怖谷', desc: '' },
+    { from: 'node_forum', to: 'node_post_gyg', port: '公寓遇鬼', label: '公寓遇鬼', desc: '' },
+    { from: 'node_forum', to: 'node_search', port: '全网搜索引擎', label: '搜索系统', desc: '' },
+    { from: 'node_forum', to: 'node_desktop', port: '返回电脑桌面', label: '返回桌面', desc: '' },
 
-    // Search rules routes
-    { from: 'node_search', to: 'node_news_shizong', port: '失踪', label: '女大学生失踪案', desc: '搜索关键词：失踪' },
-    { from: 'node_search', to: 'node_news_nanzhang', port: '南鄣', label: '探秘南鄣市', desc: '搜索关键词：南鄣' },
-    { from: 'node_search', to: 'node_news_taiyong', port: '泰永集团', label: '宋青云与泰永集团', desc: '搜索关键词：泰永集团/宋青云' },
-    { from: 'node_search', to: 'node_news_yunqi', port: '运契', label: '运契互助会', desc: '搜索关键词：运契' },
-    { from: 'node_search', to: 'node_doc_dusheng', port: '渡生大醮', label: '《渡生大醮仪》', desc: '搜索关键词：渡生大醮' },
-    { from: 'node_search', to: 'node_post_ai', port: 'ai', label: 'AI恐怖谷', desc: '搜索关键词：ai/恐怖谷' },
-    { from: 'node_search', to: 'node_post_gyg', port: '公寓', label: '公寓遇鬼', desc: '搜索关键词：公寓/鬼' },
-    { from: 'node_search', to: 'node_desktop', port: '返回电脑桌面', label: '返回桌面', desc: '' },
-    { from: 'node_search', to: 'node_chat', port: '进入加密通讯', label: '进入聊天', desc: '' },
-    { from: 'node_search', to: 'node_forum', port: '七月半论坛', label: '进入论坛', desc: '' },
-
-    // Login route
-    { from: 'node_login', to: 'node_files', port: '解锁机密文件夹', label: '解锁机密文件夹', desc: '密码：yxzyddx' },
-
-    // Files routes
-    { from: 'node_files', to: 'node_doc_wenyan', port: '温岩考察日记.doc', label: '温岩考察日记.doc', icon: '📄', desc: '' },
-    { from: 'node_files', to: 'node_doc_dusheng', port: '渡生大醮仪.pdf', label: '渡生大醮仪.pdf', icon: '📜', desc: '' },
-    { from: 'node_files', to: 'node_doc_yangwei', port: '杨威口供记录.txt', label: '杨威口供记录.txt', icon: '📝', desc: '' },
-    { from: 'node_files', to: 'node_desktop', port: '返回桌面', label: '返回桌面', icon: '💻', desc: '' },
-
-    // News/Doc cross links
+    // Forum post returns
     { from: 'node_post_ai', to: 'node_forum', port: '返回论坛首页', label: '返回论坛', desc: '' },
     { from: 'node_post_ai', to: 'node_search', port: '全网线索搜索引擎', label: '前往搜索', desc: '' },
     { from: 'node_post_gyg', to: 'node_forum', port: '返回论坛首页', label: '返回论坛', desc: '' },
     { from: 'node_post_gyg', to: 'node_search', port: '全网线索搜索引擎', label: '前往搜索', desc: '' },
+
+    // Search links
+    { from: 'node_search', to: 'node_desktop', port: '返回电脑桌面', label: '返回桌面', desc: '' },
+    { from: 'node_search', to: 'node_forum', port: '七月半论坛', label: '进入论坛', desc: '' },
+    { from: 'node_search', to: 'node_news_shizong', port: '女大学生失踪案', label: '失踪案', desc: '' },
+
+    // Login -> Files
+    { from: 'node_login', to: 'node_files', port: '解锁机密文件夹', label: '解锁机密文件夹', desc: '密码：yxzyddx' },
+
+    // Files -> Documents
+    { from: 'node_files', to: 'node_doc_wenyan', port: '温岩考察日记.doc', label: '温岩日记', desc: '' },
+    { from: 'node_files', to: 'node_doc_dusheng', port: '渡生大醮仪.pdf', label: '渡生大醮仪', desc: '' },
+    { from: 'node_files', to: 'node_doc_yangwei', port: '杨威口供记录.txt', label: '杨威口供', desc: '' },
+    { from: 'node_files', to: 'node_desktop', port: '返回桌面', label: '返回桌面', desc: '' },
+
+    // Documents -> Chat or Files
     { from: 'node_news_shizong', to: 'node_search', port: '全网线索搜索引擎', label: '返回搜索', desc: '' },
     { from: 'node_news_shizong', to: 'node_chat', port: '加密聊天软件', label: '联络明月夜', desc: '' },
     { from: 'node_news_nanzhang', to: 'node_search', port: '全网线索搜索引擎', label: '返回搜索', desc: '' },
-    { from: 'node_news_taiyong', to: 'node_chat', port: '加密聊天软件', label: '揭发宋青云', desc: '' },
     { from: 'node_news_taiyong', to: 'node_search', port: '全网线索搜索引擎', label: '返回搜索', desc: '' },
-    { from: 'node_news_yunqi', to: 'node_doc_dusheng', port: '渡生大醮仪古籍', label: '查看渡生大醮仪', desc: '' },
+    { from: 'node_news_taiyong', to: 'node_chat', port: '加密聊天软件', label: '联络明月夜', desc: '' },
     { from: 'node_news_yunqi', to: 'node_search', port: '全网线索搜索引擎', label: '返回搜索', desc: '' },
-    { from: 'node_doc_dusheng', to: 'node_login', port: '打开机密文件夹', label: '前往解密', desc: '' },
+    { from: 'node_news_yunqi', to: 'node_doc_dusheng', port: '渡生大醮仪古籍', label: '查阅文献', desc: '' },
+    { from: 'node_doc_dusheng', to: 'node_login', port: '打开机密文件夹', label: '解锁文件夹', desc: '' },
     { from: 'node_doc_dusheng', to: 'node_desktop', port: '返回电脑桌面', label: '返回桌面', desc: '' },
     { from: 'node_doc_wenyan', to: 'node_files', port: '返回机密文件夹', label: '返回文件夹', desc: '' },
     { from: 'node_doc_wenyan', to: 'node_chat', port: '加密聊天软件', label: '联络明月夜', desc: '' },

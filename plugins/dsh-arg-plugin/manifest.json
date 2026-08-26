@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "dsh-arg-plugin",
+  "displayName": "ARG Blueprint Linux CLI Engine Plugin for DeepSeek Harness",
+  "version": "1.0.0",
+  "description": "DeepSeek Harness 专属插件：通过原生 Linux 风格 CLI 指令直接操作与读取 ARG Blueprint 游戏蓝图",
+  "tools": [
+    {
+      "name": "arg_exec",
+      "description": "在 ARG Blueprint 中批量执行 Linux CLI 指令（支持 touch 创建页面、ln 建立连线、set 设置属性密码、rule 配置搜索词、contact 添加联系人、msg 追加对话、choice 添加选项分支）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "script": {
+            "type": "string",
+            "description": "单行或多行 ARG Blueprint Linux CLI 指令，例如：\ntouch hospital -t Browse -n \"废弃医院病历\"\nln desktop hospital -p \"病历.doc\"\nrule search \"0717\" hospital"
+          }
+        },
+        "required": ["script"]
+      }
+    },
+    {
+      "name": "arg_query",
+      "description": "在 ARG Blueprint 中执行查询类 Linux 指令（如 'ls -l' 查看全部页面列表、'cat <id>' 读取页面详情、'stat <id>' 查看页面属性和联系人）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "查询指令，例如 'ls -l' 或 'cat node_login' 或 'stat node_chat'"
+          }
+        },
+        "required": ["command"]
+      }
+    },
+    {
+      "name": "arg_validate",
+      "description": "调用 ARG Blueprint 图论自检器，检测当前剧情中是否存在孤岛卡片、死胡同页面、断路结局或损坏的关键词跳转目标。",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "arg_get_blueprint",
+      "description": "获取当前 ARG Blueprint 全局剧情蓝图的完整 Prompt 上下文（包含所有已有页面、人物、连线拓扑和语法规范）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "focus": {
+            "type": "string",
+            "description": "可选关注焦点，例如 '扩写林警官的审讯对话' 或 '设计暗号密码锁'"
+          }
+        }
+      }
+    }
+  ]
+}
