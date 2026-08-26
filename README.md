@@ -104,17 +104,18 @@ node scratch/build_zip_standalone.mjs
 ### 1. 正向联动：在 ARG Blueprint 中调用 DSH 扩写剧本
 - **默认端点**：`http://127.0.0.1:3080`（支持在界面中自由修改并持久化到本地存储）。
 - **顶栏状态指示**：顶栏常驻 `DSH 联动 [● 3080]`，绿色表示本地服务在线，灰色表示未检测到服务。
-- **AI 剧情协同助手 (Co-pilot)**：
-  - 点击顶栏「DSH 联动」，内置四大解谜剧情预设：
-    - 🧩 **完整谜题链生成**：一句话生成“桌面 + 搜索 + 聊天 + 密码箱 + 结局”全套链路。
-    - 💬 **NPC 深度审讯对话扩写**：为指定角色扩充多轮带选项分支的逼真对话。
-    - 🔍 **搜索库线索扩充**：为搜索引擎自动生成 10 组关联关键词与背景新闻。
-    - 🔐 **密码锁暗号设计**：在日记与新闻中自动埋入藏头诗/拼音密码暗号。
+- **AI 剧情叙事副驾驶 (ARG Narrative Copilot Skill)**：
+  - 本项目内置专有的 **`arg-narrative-copilot` Skill**（位于 `.agents/skills/arg-narrative-copilot/SKILL.md` 及插件目录）：
+    - 💡 **剧情头脑风暴 (由用户做决断)**：提供 2~3 个不同基调的剧情走向方案（社会派反转、民俗怪谈、黑客科技阴谋），由用户拍板。
+    - 🔍 **玩家行动驱动力自检**：严密检查每个页面是否具备明确的下一步行动抓手与动机，杜绝“看完全文不知去哪”的迷茫与死胡同。
+    - 🧩 **多样化 ARG 解密机制选型**：推荐关键词反向溯源、多维度密码暗号（拼音缩写/藏头诗）、证言矛盾戳破及前置线索门槛依赖（`requires`）。
+    - 🎨 **功能模板与 UI 选型指导**：根据故事调性推荐最契合的页面类型（时代新闻、绝密卷宗、手写日记、现代杂志、黑客流、BIOS开机等）。
+    - 💬 **NPC 深度对话与分支扩充**：为指定人物扩充富有张力的调查对话。
   - **一键执行**：DSH 生成的脚本可以直接粘贴或点击 **「⚡ 立即执行并在画布上生成页面」**，画布瞬间生长出对应卡片。
 - **内嵌 Webview 模式**：可在右侧抽屉直接内嵌查看 DSH 本地浏览器页面，免去切屏烦恼。
 
-### 2. 反向联动：在 DSH 中作为 Tool 插件操控 ARG Blueprint
-在 `plugins/dsh-arg-plugin/` 中，我们为 DSH 编写了专有插件。该插件**直接复用了 ARG Blueprint 已有的 Linux CLI 解释器与自检器（0 重复造轮子）**。
+### 2. 反向联动：在 DSH 中作为 Tool 插件与 Skill 操控 ARG Blueprint
+在 `plugins/dsh-arg-plugin/` 中，我们为 DSH 编写了专有插件与 Skill。该插件**直接复用了 ARG Blueprint 已有的 Linux CLI 解释器与自检器（0 重复造轮子）**。
 
 #### DSH 插件暴露给 Agent 的 4 大核心工具：
 1. **`arg_exec({ script })`**：让 DSH Agent 直接通过标准 Linux CLI 批量执行 `touch`, `ln`, `set`, `rule`, `contact`, `msg`, `choice` 指令。
@@ -124,7 +125,7 @@ node scratch/build_zip_standalone.mjs
 
 #### 加载方式：
 ```bash
-# 在 DSH 中加载本地插件
+# 在 DSH 中加载本地插件与 Skill
 dsh plugin add ./plugins/dsh-arg-plugin
 
 # 或启动独立 HTTP 中继服务 (端口 3088)

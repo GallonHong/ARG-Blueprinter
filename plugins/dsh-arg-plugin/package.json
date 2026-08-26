@@ -4,6 +4,11 @@
   "description": "DeepSeek Harness (dsh) reverse integration plugin for ARG Blueprint interactive story engine",
   "main": "index.js",
   "type": "module",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "keywords": [
     "dsh",
     "deepseek-harness",

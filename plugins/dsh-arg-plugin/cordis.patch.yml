@@ -1,0 +1,9 @@
+# dsh-arg-plugin bundle patch: mounts the ARG Blueprint tool plugin as one
+# host-plane loader row, so its arg_* tools register into the DSH `tools`
+# registry and every session's agent can call them.
+#
+# Applied as a profile bundle layer (package.json -> dsh.bundle.patch), after
+# @deepseek-ai/dsh-base's insert and before the profile's own cordis.patch.yml.
+- insert:
+    - id: dsh-arg-plugin
+      name: '@arg-blueprint/dsh-plugin'

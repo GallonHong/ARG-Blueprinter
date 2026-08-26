@@ -62,7 +62,7 @@ export function formatBlueprintForDsh(state, requestPrompt = '') {
     return `- [${n.type}] id: ${n.id} | 名称: "${n.name}" | 模板: ${n.template}${extra} | 出口: ${outEdges.join(', ') || '无'}`;
   }).join('\n');
 
-  const systemContext = `# ARG Blueprint 游戏蓝图结构上下文 (供 DeepSeek Harness Agent 推理参考)
+  const systemContext = `# ARG Blueprint 游戏蓝图结构上下文 & 叙事设计副驾驶 (ARG Narrative Copilot)
 项目名称：${state.title || '未命名 ARG'}
 总页面数：${nodes.length} 个
 起始页面：${startNode ? `[${startNode.type}] ${startNode.name} (${startNode.id})` : '未设置'}
@@ -70,18 +70,28 @@ export function formatBlueprintForDsh(state, requestPrompt = '') {
 ## 当前已有页面与拓扑连线列表：
 ${nodeSummaries || '（当前画布为空）'}
 
+## 🤖 你的核心职责 (Narrative Copilot Role):
+1. **剧情头脑风暴 (由用户做决断)**：
+   - 围绕用户的构思目标，主动提供 2~3 个不同基调的剧情走向方案（如：社会派反转、民俗怪谈、黑客科技阴谋），阐述悬念点，由用户做最终选择。
+2. **玩家驱动力与行动抓手自检 (Player Motivation Check)**：
+   - 检查每个页面是否给予玩家明确的下一步动机与线索指引，杜绝“读完不知去哪”的信息死胡同。
+3. **ARG 解密机制选型 (Puzzle Selection)**：
+   - 推荐巧妙的解密手法：搜索词溯源、拼音/藏头密码锁、证人证言矛盾戳破、事件线索依赖（requires 前置门槛）等。
+4. **页面功能模板与 UI 选型**：
+   - 根据氛围推荐：时代新闻、复古BBS、SCP绝密卷宗、遇害者手写日记、极简现代杂志、黑客数据流、电脑桌面、即时通讯等。
+
 ## ARG Blueprint 专有 Linux CLI 指令语法规范：
 - 创建页面：touch <id> -t <Type> -n "<名称>" [--template "<模板>"] [--start]
-  (Type 可选: Desktop, Chat, Search, Browse, Login, Files, Ending)
+  (Type: Desktop, Chat, Search, Browse, Login, Files, Ending)
 - 建立连线：ln <from_id> <to_id> [-p "<按键名>"] [--icon "<图标/emoji>"]
-- 设置属性：set <id> <key>="<value>" (例如 set login password="0717")
+- 设置属性：set <id> <key>="<value>" (例如 set admin_lock password="0717")
 - 搜索规则：rule <search_id> "<关键词>" <target_id>
 - 聊天人物：contact <chat_id> "<姓名>" [--avatar "<头像>"] [--bio "<简介>"]
 - 聊天消息：msg <chat_id> "<姓名>" <npc|user> "<对话内容>"
-- 对话选项：choice <chat_id> "<姓名>" "<玩家选项文案>" <target_id> [--reply "<NPC回复>"]
+- 对话选项：choice <chat_id> "<姓名>" "<玩家选项文案>" <target_id> [--requires "<前置线索节点ID>"] [--reply "<NPC回复>"]
 
 ## 用户任务与扩写要求：
-${requestPrompt || '请基于现有剧情线索，构思新的解谜支线或丰富 NPC 对话，并直接输出可执行的 ARG CLI 脚本（放在 ```bash 代码块中）。'}
+${requestPrompt || '请作为 ARG 剧情副驾驶，基于现有线索为用户提出 2~3 个精彩的剧情分支方案供用户抉择，并输出可执行的 ARG CLI 脚本（放在 ```bash 代码块中）。'}
 `;
 
   return systemContext;

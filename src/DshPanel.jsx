@@ -58,14 +58,16 @@ export function DshPanel({ state, update, isOpen, onClose }) {
   };
 
   const applyPreset = (presetType) => {
-    if (presetType === 'puzzle_chain') {
-      setPromptInput('请为本项目设计一条完整的【暗网悬疑解谜链】：包含 1 个暗网入口页面、3 个关联搜索关键词、1 份绝密密码箱档案（密码设为 secret99），以及通往【真相大白】的真结局。');
+    if (presetType === 'story_brainstorm') {
+      setPromptInput('请作为 ARG 剧情副驾驶，基于现有蓝图设定，为我构思 2~3 个不同风格（如现实社会派揭黑、民俗怪谈、黑客反转）的后续剧情走向方案。请深入分析各方案的悬念亮点与玩家情感共鸣，由我做最终决断，并附带可落地的 ARG CLI 脚本。');
+    } else if (presetType === 'drive_check') {
+      setPromptInput('请对当前已有页面的【玩家行动驱动力】进行全面自检：检查玩家在每个页面阅读后，是否明确知道下一步去哪？是否存在无指引的“信息死胡同”？并提出线索指引的补强方案与 CLI 脚本。');
+    } else if (presetType === 'puzzle_mechanics') {
+      setPromptInput('请为当前剧情设计 2 组精巧的【ARG 解密机制】：包括关键词反向检索、密码暗号（拼音缩写/藏头诗）、证言矛盾戳破以及事件线索依赖（requires 前置门槛），并输出完整的 Bash CLI 脚本。');
+    } else if (presetType === 'template_ui') {
+      setPromptInput('请根据当前故事氛围，为我推荐最适合的【功能页面类型与 UI 主题预设】（如 SCP绝密卷宗、遇害者手写日记、黑客数据流、复古BBS、BIOS开机、案件裁决书等），并给出对应的 touch 与 set 指令。');
     } else if (presetType === 'npc_dialogue') {
-      setPromptInput('请为联系人【林警官】扩写 3 组富有张力的审讯与调查对话，增加 2 个玩家抉择分支，并在其中一个分支中透露档案库的密码线索。');
-    } else if (presetType === 'search_clues') {
-      setPromptInput('请为全网搜索引擎扩充 4 个新的检索关键词（例如：【渡生大醮】、【延盛岛】、【泰永集团】、【失踪档案】），并自动生成对应的 4 篇新闻与档案页面内容。');
-    } else if (presetType === 'safe_cipher') {
-      setPromptInput('请设计一个绝密的【密码暗号推理关卡】：在论坛帖子的藏头诗或日记日期中隐藏暗号，并在密码锁页面配置正确的验证密码与通关出口。');
+      setPromptInput('请为核心 NPC 扩写 3 轮富有张力的调查对话，增加 2 个玩家关键抉择分支，配置 requires 线索前置依赖与结局跳转，并输出 CLI 脚本。');
     }
   };
 
@@ -124,17 +126,20 @@ export function DshPanel({ state, update, isOpen, onClose }) {
                 </span>
               </div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-                <button className="ghost icon-tiny" onClick={() => applyPreset('puzzle_chain')}>
-                  🧩 完整谜题链生成
+                <button className="ghost icon-tiny" onClick={() => applyPreset('story_brainstorm')} title="提供 2~3 个不同风格剧情走向由您决断">
+                  💡 剧情头脑风暴 (用户决断)
                 </button>
-                <button className="ghost icon-tiny" onClick={() => applyPreset('npc_dialogue')}>
-                  💬 NPC 审讯对话扩写
+                <button className="ghost icon-tiny" onClick={() => applyPreset('drive_check')} title="检查每个节点是否有明确的玩家下一步行动指引与抓手">
+                  🔍 玩家驱动力与卡关检查
                 </button>
-                <button className="ghost icon-tiny" onClick={() => applyPreset('search_clues')}>
-                  🔍 搜索引擎线索扩充
+                <button className="ghost icon-tiny" onClick={() => applyPreset('puzzle_mechanics')} title="设计关键词检索、密码暗号、证言矛盾与线索前置门槛">
+                  🧩 解密机制与暗号设计
                 </button>
-                <button className="ghost icon-tiny" onClick={() => applyPreset('safe_cipher')}>
-                  🔐 密码锁暗号链设计
+                <button className="ghost icon-tiny" onClick={() => applyPreset('template_ui')} title="推荐最契合故事氛围的页面功能与 UI 主题预设">
+                  🎨 功能模板与 UI 选型
+                </button>
+                <button className="ghost icon-tiny" onClick={() => applyPreset('npc_dialogue')} title="扩写核心人物对话与选项">
+                  💬 NPC 对话与线索依赖
                 </button>
               </div>
               <textarea
