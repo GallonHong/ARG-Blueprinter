@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[INTERCEPTED] {{title}}</title>
+</head>
+<body>
+  <div class="cyber-container">
+    <div class="cyber-topbar">
+      <span class="cyber-status-blink">● LIVE INTERCEPTION</span>
+      <span class="cyber-packet-id">NODE_ID: 0x7F17 // PKT_SN: 9021</span>
+      <span class="cyber-enc-type">AES-256-GCM [DECRYPTED]</span>
+    </div>
+
+    <div class="cyber-terminal-card">
+      <div class="cyber-meta-row">
+        <span>TARGET_SITE: <strong data-arg-slot="siteName">{{siteName}}</strong></span>
+        <span>RECORD_DATE: <strong data-arg-slot="date">{{date}}</strong></span>
+        <span>AUTHOR_UID: <strong data-arg-slot="author">{{author}}</strong></span>
+      </div>
+
+      <div class="cyber-divider">============================================================</div>
+
+      <h1 class="cyber-title" data-arg-slot="title">&gt;&gt; {{title}}</h1>
+
+      <div class="cyber-body" data-arg-slot="body">
+        {{body}}
+      </div>
+
+      <div class="cyber-divider">============================================================</div>
+
+      <div class="cyber-links" data-arg-links>
+        <!-- Outgoing Links -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>

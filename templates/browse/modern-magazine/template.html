@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - 深度纪实</title>
+</head>
+<body>
+  <div class="mag-container">
+    <header class="mag-header">
+      <div class="mag-brand" data-arg-slot="siteName">{{siteName}}</div>
+      <div class="mag-category">INVESTIGATION · 深度调查特刊</div>
+    </header>
+
+    <main class="mag-article">
+      <h1 class="mag-title" data-arg-slot="title">{{title}}</h1>
+      
+      <div class="mag-meta">
+        <span class="mag-author">✍️ 文 / <strong data-arg-slot="author">{{author}}</strong></span>
+        <span class="mag-date">📅 <span data-arg-slot="date">{{date}}</span></span>
+        <span class="mag-readtime">⏱️ 深度阅读 · 5 分钟</span>
+      </div>
+
+      <div class="mag-lead">
+        核心摘要：本篇记录涉及南鄣市与延盛岛不可公开之事件档案，已被列入重点线索观察名录。
+      </div>
+
+      <div class="mag-body" data-arg-slot="body">
+        {{body}}
+      </div>
+
+      <div class="mag-links" data-arg-links>
+        <!-- Dynamic Links -->
+      </div>
+    </main>
+
+    <footer class="mag-footer">
+      <div class="mag-copyright">© {{siteName}} · 独立调查记录项目</div>
+    </footer>
+  </div>
+</body>
+</html>

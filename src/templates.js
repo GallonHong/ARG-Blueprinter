@@ -8,6 +8,8 @@ import browseNews from '../templates/browse/news-2001/template.html?raw'
 import browseBbs from '../templates/browse/bbs-thread/template.html?raw'
 import browseScp from '../templates/browse/scp-document/template.html?raw'
 import browseDiary from '../templates/browse/victim-diary/template.html?raw'
+import browseMagazine from '../templates/browse/modern-magazine/template.html?raw'
+import browseCyber from '../templates/browse/cyber-leak/template.html?raw'
 import loginAdmin from '../templates/login/admin/template.html?raw'
 import loginBios from '../templates/login/bios-screen/template.html?raw'
 import filesWindows from '../templates/files/windows-folder/template.html?raw'
@@ -56,8 +58,12 @@ const templates={
     'BBS 论坛':browseBbs,
     '2001 新闻':browseNews,
     '新闻 2001':browseNews,
+    '时代新闻大头条':browseNews,
     'SCP 绝密文档':browseScp,
-    '遇害者手写日记':browseDiary
+    'SCP 绝密卷宗':browseScp,
+    '遇害者手写日记':browseDiary,
+    '极简现代杂志':browseMagazine,
+    '黑客数据窃密流':browseCyber
   },
   Login:{
     '后台登录':loginAdmin,
