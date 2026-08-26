@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - 监控室观察记录</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #05070a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', 'Consolas', monospace;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+    .crt {
+      position: relative;
+      width: min(860px, 96vw);
+      background: #0b0f14;
+      border: 14px solid #1a1d23;
+      border-radius: 18px;
+      box-shadow: 0 0 60px rgba(0, 180, 255, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.9);
+      padding: 22px 26px 18px;
+    }
+    /* 扫描线 */
+    .crt::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.28) 0 1px, transparent 1px 3px);
+      pointer-events: none;
+      z-index: 3;
+      border-radius: 6px;
+    }
+    /* 暗角 + 信号噪点 */
+    .crt::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.75) 100%),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/></filter><rect width="120" height="120" filter="url(%23n)" opacity="0.06"/></svg>');
+      pointer-events: none;
+      z-index: 4;
+      border-radius: 6px;
+      animation: flicker 4.2s infinite;
+    }
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      92% { opacity: 1; }
+      93% { opacity: 0.55; }
+      94% { opacity: 1; }
+      97% { opacity: 0.7; }
+      98% { opacity: 1; }
+    }
+    .hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px dashed rgba(0, 255, 180, 0.35);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      color: #3cffa0;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    .rec {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .rec .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff2a2a;
+      box-shadow: 0 0 8px #ff2a2a;
+      animation: blink 1.1s steps(2) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0.15; } }
+    .cam-tag { color: #ffb347; }
+    .clock { color: #7fd4ff; }
+    .screen-title {
+      color: #e8f6ff;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      text-shadow: 0 0 12px rgba(0, 180, 255, 0.45);
+    }
+    .log {
+      border: 1px solid rgba(0, 255, 180, 0.22);
+      background: rgba(0, 20, 16, 0.55);
+      padding: 14px 16px;
+      min-height: 160px;
+      color: #bfe8d8;
+      font-size: 14.5px;
+      line-height: 1.9;
+      white-space: pre-line;
+      text-shadow: 0 0 6px rgba(0, 255, 180, 0.18);
+    }
+    .log .stamp { color: #ffb347; }
+    .sig {
+      margin-top: 12px;
+      text-align: right;
+      color: #8fa8b8;
+      font-size: 12.5px;
+      letter-spacing: 1px;
+    }
+    .sig b { color: #e8f6ff; font-weight: 400; }
+    .loss {
+      margin-top: 10px;
+      color: #ff5c5c;
+      font-size: 11.5px;
+      letter-spacing: 3px;
+      animation: blink 2.8s steps(2) infinite;
+    }
+    .nav {
+      margin-top: 16px;
+      border-top: 1px dashed rgba(0, 255, 180, 0.3);
+      padding-top: 12px;
+      font-size: 13px;
+    }
+    .nav a {
+      color: #7fd4ff;
+      text-decoration: none;
+      margin-right: 18px;
+      display: inline-block;
+      padding: 3px 0;
+      border-bottom: 1px solid transparent;
+    }
+    .nav a:hover { border-bottom-color: #7fd4ff; text-shadow: 0 0 8px rgba(127, 212, 255, 0.8); }
+  </style>
+</head>
+<body>
+  <div class="crt">
+    <div class="hud">
+      <span class="rec"><span class="dot"></span> REC</span>
+      <span class="cam-tag" data-arg-slot="cam">CAM {{cam}}</span>
+      <span class="clock" data-arg-slot="clock">{{date}} {{time}}</span>
+    </div>
+
+    <h2 class="screen-title" data-arg-slot="title">{{title}}</h2>
+
+    <div class="log" data-arg-slot="body">
+      {{body}}
+    </div>
+
+    <div class="sig" data-arg-slot="signature">—— 值班观察员 <b>{{signature}}</b> ——</div>
+    <div class="loss">⚠ 信号中断 · 请勿离开监控范围 · 若画面中出现「走廊尽头的房门」，请立即上报并闭眼 3 秒</div>
+
+    <div class="nav" data-arg-slot="links">{{ARG_LINKS}}</div>
+  </div>
+</body>
+</html>

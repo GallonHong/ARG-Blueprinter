@@ -130,6 +130,8 @@ choice ward_chat "家人" "开门" end_counted --reply "门开了。里面只有
 choice ward_chat "家人" "检查门牌号" corridor_404 --reply "门牌号：404。没有 403，也没有 405。"
 ```
 
+> **连线与选项的关系（重要）**：`choice` 只把选项写入联系人数据（驱动游玩跳转），**不会**生成画布连线。要让选项目标（尤其是结局页）在画布上出现连线，必须对每个选项目标再补一条 `ln <chat_id> <target_id> -p "<选项文案>" [--icon "<图标>"]`——官方 demo 即采用"选项 + 连线并存"的做法，只有选项没有连线的结局页在画布上是"孤立的"。
+
 **脚本自检清单**：每个 `Ending` 前都有明确抓手；每条 `rule` 关键词都存在于某页正文/对话中；至少 1 处 `Login` 密码可由守则文本推导；坏结局与真结局并存；`arg_validate` 自检应报告 0 错误。
 
 ---
@@ -195,6 +197,14 @@ choice ward_chat "巡查员" "保持视线向下，不出声" subject_room --rep
 choice ward_chat "家人" "相信这是现实，跟它走" end_topo --reply "你第 4 次从床上坐起。窗外没有街道，只有不断向下延伸的楼梯。"
 choice ward_chat "巡查员" "问它：你们清点的是谁？" end_true --reply "它停住了。缓慢地，一根根关节从它的四肢里长出来。它说：'从你进来那天起，你就在空房间名单上。'"
 choice ward_chat "家人" "我摸过水龙头了，是冷的——我不会开门" end_wake --reply "妈妈的声音消失了。你醒在真实的床上，水龙头正滴着冷水。可你突然想起：守则里没有写'水龙头在哪里'。"
+
+# ── 补画布连线（choice 不建线，选项目标需 ln 才能在画布上画出线）──
+ln ward_chat end_counted -p "打开房门" --icon "🚪"
+ln ward_chat corridor_404 -p "检查门牌号" --icon "🚪"
+ln ward_chat subject_room -p "保持视线向下，不出声" --icon "🔇"
+ln ward_chat end_topo -p "相信这是现实，跟它走" --icon "🚶"
+ln ward_chat end_true -p "问它：你们清点的是谁？" --icon "❓"
+ln ward_chat end_wake -p "我摸过水龙头了，是冷的" --icon "🚿"
 ```
 
 **玩家流程与驱动力注释**：起始页提供 4 个抓手（守则/检验终端/档案馆/电话）→ 读守则发现「冷水」与「镜子」线索 → 检验终端输 `cold`（或去档案馆拼凑被删的第 3 版）→ 走廊 404 的「开门/查门牌」抉择、游泳馆的浮出 → 电话信道的三个抉择通向 4 个结局；`arg_validate` 应通过，全部结局可达。

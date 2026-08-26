@@ -163,7 +163,7 @@ export function buildRouteConfig(node, state, { preview = false } = {}) {
   const files = Object.fromEntries(state.nodes.map(item => [item.id, pageFileName(state, item.id)]))
   const searchNode = node.type === 'Search' ? node : state.nodes.find(item => item.type === 'Search')
   const searchRules = Object.fromEntries((searchNode?.rules || []).map(rule => [String(rule.keyword || '').trim().toLowerCase(), rule.target]))
-  const contacts = node.type === 'Chat' ? (node.contacts && node.contacts.length ? node.contacts : defaultContacts()) : []
+  const contacts = node.type === 'Chat' ? (node.contacts || []) : []
   const config = {
     nodeId: node.id,
     preview,

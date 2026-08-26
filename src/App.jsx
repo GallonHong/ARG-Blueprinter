@@ -595,7 +595,7 @@ function newNode(type, count) {
     y: 60 + row * 150,
     fields: {},
     rules: safeType === 'Search' ? [{ keyword: '线索', target: '' }] : [],
-    contacts: safeType === 'Chat' ? defaultContacts() : []
+    contacts: []
   }
   TYPES[safeType].fields.forEach(field => {
     node.fields[field[0]] = field[2]
@@ -1309,7 +1309,7 @@ export default function App() {
 
 function summary(node, edges = []) {
   if (node.type === 'Chat') {
-    const count = (node.contacts || defaultContacts()).length
+    const count = (node.contacts || []).length
     return `联系人 ${count} 位 · 对话分支`
   }
   if (node.type === 'Desktop') {
@@ -1419,8 +1419,8 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
             node.template = TYPES[node.type].templates[0]
             node.fields = {}
             TYPES[node.type].fields.forEach(field => { node.fields[field[0]] = field[2] })
-            if (node.type === 'Chat' && (!node.contacts || !node.contacts.length)) {
-              node.contacts = defaultContacts()
+            if (node.type === 'Chat' && !Array.isArray(node.contacts)) {
+              node.contacts = []
             }
           })}>
             {Object.entries(TYPES).map(([key, value]) => <option key={key} value={key}>{value.label}</option>)}
@@ -1824,7 +1824,7 @@ function ImageUpload({ value, onChange, label, placeholder = '上传图片或输
 
 
 function ChatEditor({ selected, nodes, edges, update, patch }) {
-  const contacts = selected.contacts && selected.contacts.length ? selected.contacts : defaultContacts()
+  const contacts = selected.contacts || []
   const [activeContactId, setActiveContactId] = useState(contacts[0]?.id || '')
   const activeContact = contacts.find(c => c.id === activeContactId) || contacts[0]
   const contactIdx = Math.max(0, contacts.findIndex(c => c.id === activeContact?.id))
@@ -1844,18 +1844,9 @@ function ChatEditor({ selected, nodes, edges, update, patch }) {
       name: `新联系人 ${contacts.length + 1}`,
       avatar: '👤',
       bio: '新身份简介',
-      lastMsg: '点击开始对话',
-      unread: true,
-      dialogue: [
-        { id: `m_${Date.now()}_1`, sender: 'npc', text: '你好，我是新联系人。有重要线索提供。' },
-        {
-          id: `m_${Date.now()}_2`,
-          sender: 'choice',
-          options: [
-            { text: '发生什么事了？', reply: '线索已经记录在案，请查阅相关档案！', target: '' }
-          ]
-        }
-      ]
+      lastMsg: '',
+      unread: false,
+      dialogue: []
     }
     const next = [...contacts, newC]
     updateContacts(next)
@@ -1863,13 +1854,9 @@ function ChatEditor({ selected, nodes, edges, update, patch }) {
   }
 
   const removeContact = (id) => {
-    if (contacts.length <= 1) {
-      alert('至少保留一位联系人')
-      return
-    }
     const next = contacts.filter(c => c.id !== id)
     updateContacts(next)
-    setActiveContactId(next[0].id)
+    setActiveContactId(next[0]?.id || '')
   }
 
   const updateActiveContact = (fn) => {
@@ -1940,39 +1927,46 @@ function ChatEditor({ selected, nodes, edges, update, patch }) {
         <button className="ghost icon-tiny" style={{ fontSize: 12, padding: '4px 8px' }} onClick={addContact}>＋ 添加联系人</button>
       </div>
 
-      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 8, marginBottom: 12 }}>
-        {contacts.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            className="ghost"
-            style={{
-              padding: '6px 10px',
-              fontSize: 12,
-              borderRadius: 6,
-              border: (c.id === (activeContact?.id || '')) ? '2px solid #07c160' : '1px solid #dfe5ec',
-              background: (c.id === (activeContact?.id || '')) ? '#e8f7ed' : '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              whiteSpace: 'nowrap'
-            }}
-            onClick={() => setActiveContactId(c.id)}
-          >
-            <span>{c.avatar || '👤'}</span>
-            <strong>{c.name}</strong>
-          </button>
-        ))}
-      </div>
-
-      {activeContact && (
-        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, marginBottom: 14 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 11, fontWeight: 'bold', color: '#07c160' }}>👤 当前编辑联系人：{activeContact.name}</span>
-            {contacts.length > 1 && (
-              <button className="rule-remove" title="删除此联系人" onClick={() => removeContact(activeContact.id)}>×</button>
-            )}
+      {contacts.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '24px 16px', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: 8, marginBottom: 14 }}>
+          <div style={{ fontSize: 24, marginBottom: 6 }}>💬</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-main)', marginBottom: 4 }}>当前暂无联系人</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12 }}>聊天页默认空白，点击下方按钮添加联系人与自定义对话剧本</div>
+          <button type="button" className="primary icon-tiny" onClick={addContact}>＋ 添加第一个联系人</button>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 8, marginBottom: 12 }}>
+            {contacts.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className="ghost"
+                style={{
+                  padding: '6px 10px',
+                  fontSize: 12,
+                  borderRadius: 6,
+                  border: (c.id === (activeContact?.id || '')) ? '2px solid #07c160' : '1px solid #dfe5ec',
+                  background: (c.id === (activeContact?.id || '')) ? '#e8f7ed' : '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={() => setActiveContactId(c.id)}
+              >
+                <span>{c.avatar || '👤'}</span>
+                <strong>{c.name}</strong>
+              </button>
+            ))}
           </div>
+
+          {activeContact && (
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 'bold', color: '#07c160' }}>👤 当前编辑联系人：{activeContact.name}</span>
+                <button className="rule-remove" title="删除此联系人" onClick={() => removeContact(activeContact.id)}>×</button>
+              </div>
 
           <div className="field" style={{ margin: '4px 0 6px 0' }}>
             <label style={{ fontSize: 10 }}>联系人姓名</label>
@@ -2133,7 +2127,9 @@ function ChatEditor({ selected, nodes, edges, update, patch }) {
           </div>
         </div>
       )}
-    </div>
+    </>
+  )}
+</div>
   )
 }
 

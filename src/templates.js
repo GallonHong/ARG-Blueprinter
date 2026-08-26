@@ -10,6 +10,7 @@ import browseScp from '../templates/browse/scp-document/template.html?raw'
 import browseDiary from '../templates/browse/victim-diary/template.html?raw'
 import browseMagazine from '../templates/browse/modern-magazine/template.html?raw'
 import browseCyber from '../templates/browse/cyber-leak/template.html?raw'
+import browseSurveillance from '../templates/browse/surveillance-crt/template.html?raw'
 import loginAdmin from '../templates/login/admin/template.html?raw'
 import loginBios from '../templates/login/bios-screen/template.html?raw'
 import filesWindows from '../templates/files/windows-folder/template.html?raw'
@@ -63,7 +64,9 @@ const templates={
     'SCP 绝密卷宗':browseScp,
     '遇害者手写日记':browseDiary,
     '极简现代杂志':browseMagazine,
-    '黑客数据窃密流':browseCyber
+    '黑客数据窃密流':browseCyber,
+    '监控室观察记录':browseSurveillance,
+    '监控室观察记录 (CRT)':browseSurveillance
   },
   Login:{
     '后台登录':loginAdmin,

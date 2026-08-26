@@ -76,7 +76,7 @@ export function executeCliCommand(line, state, updateState) {
             template,
             fields: { title: name, siteName: name, body: '' },
             rules: matchedType === 'Search' ? [] : undefined,
-            contacts: matchedType === 'Chat' ? defaultContacts() : undefined,
+            contacts: matchedType === 'Chat' ? [] : undefined,
             x: 80 + col * 260,
             y: 80 + row * 200,
             isStart

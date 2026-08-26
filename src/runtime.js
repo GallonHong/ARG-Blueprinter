@@ -248,7 +248,6 @@ export const runtimeSource = `
 
   function bindChat(container){
     const contacts = config.contacts || [];
-    if (!contacts.length) return;
     let currentIdx = 0;
     const contactsList = container.querySelector('#contactsList');
     const nameEl = container.querySelector('#currentContactName');
@@ -257,6 +256,16 @@ export const runtimeSource = `
     const choicesEl = container.querySelector('#chatChoicesArea');
     const form = container.querySelector('#chatForm');
     const input = container.querySelector('#chatInput');
+
+    if (!contacts.length) {
+      if (contactsList) {
+        contactsList.innerHTML = '<div style="padding:16px 10px;text-align:center;color:var(--text-muted, #888);font-size:12px;">暂无联系人</div>';
+      }
+      if (messagesEl) {
+        messagesEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted, #888);font-size:13px;">暂无对话内容</div>';
+      }
+      return;
+    }
 
     function renderContacts(){
       if (!contactsList) return;
