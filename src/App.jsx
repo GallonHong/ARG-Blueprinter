@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import JSZip from 'jszip'
 import { buildPageHtml } from './generator.js'
-import { pageFileName, defaultContacts } from './route-config.js'
+import { pageFileName, defaultContacts, getSmartIcon } from './route-config.js'
 import { runtimeSource } from './runtime.js'
 import { setCustomTemplates } from './templates.js'
 import { getQiyuebanDemoProject } from './demo-project.js'
@@ -630,6 +630,15 @@ export default function App() {
       if (typeof node.y !== 'number' || isNaN(node.y)) node.y = 60 + Math.floor(index / 3) * 150
       if (!node.type || !TYPES[node.type]) node.type = 'Browse'
       if (!node.fields) node.fields = {}
+    })
+    saved.edges.forEach(edge => {
+      const fromNode = saved.nodes.find(n => n.id === edge.from)
+      const toNode = saved.nodes.find(n => n.id === edge.to)
+      if (fromNode && (fromNode.type === 'Desktop' || fromNode.type === 'Files')) {
+        if (!edge.icon || edge.icon === '📁') {
+          edge.icon = getSmartIcon(edge, toNode)
+        }
+      }
     })
     if (saved.nodes.length && !saved.startId) saved.startId = saved.nodes[0].id
     if (saved.nodes.length && !saved.nodes.some(node => node.isStart)) saved.nodes[0].isStart = true
@@ -2122,9 +2131,10 @@ function LinkEditor({ selected, nodes, edges, update }) {
   const isIndex = selected.type === 'Index'
   const isDesktop = selected.type === 'Desktop'
 
-  const addLink = (placement = 'hot', defaultIcon = '📁') => {
+  const addLink = (placement = 'hot', defaultIcon = '') => {
     const target = targets.find(node => !outgoing.some(edge => edge.to === node.id)) || targets[0]
     if (target) {
+      const icon = defaultIcon || (isDesktop ? getSmartIcon({ label: target.name, port: target.name }, target) : '')
       update(next => next.edges.push({
         from: selected.id,
         to: target.id,
@@ -2132,7 +2142,7 @@ function LinkEditor({ selected, nodes, edges, update }) {
         label: target.name,
         desc: isSearch ? '热搜推荐' : (target.fields?.title || ''),
         placement: isSearch ? placement : 'default',
-        icon: isDesktop ? defaultIcon : ''
+        icon
       }))
     } else {
       alert('请先创建其他页面节点作为超链接目标')

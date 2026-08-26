@@ -45,6 +45,59 @@ export function isImg(src) {
   return s.startsWith('data:image/') || s.startsWith('blob:') || s.endsWith('.png') || s.endsWith('.jpg') || s.endsWith('.jpeg') || s.endsWith('.gif') || s.endsWith('.webp') || s.endsWith('.svg') || s.endsWith('.ico')
 }
 
+export function getSmartIcon(edge, target) {
+  if (edge && edge.icon) return edge.icon
+  const name = (edge?.label || edge?.port || target?.name || '').toLowerCase()
+  const targetType = target?.type || ''
+  
+  if (targetType === 'Chat' || name.includes('聊天') || name.includes('通讯') || name.includes('qq') || name.includes('微信') || (name.endsWith('.exe') && name.includes('chat'))) {
+    return '💬'
+  }
+  if (targetType === 'Search' || name.includes('搜索') || name.includes('检索')) {
+    return '🔍'
+  }
+  if (targetType === 'Index' || name.includes('论坛') || name.includes('bbs') || name.includes('网页') || name.includes('门户') || name.includes('浏览器') || name.includes('ie')) {
+    return '🌐'
+  }
+  if (targetType === 'Login' || name.includes('密码') || name.includes('锁') || name.includes('机密') || name.includes('保险箱')) {
+    return '🔐'
+  }
+  if (name.endsWith('.doc') || name.endsWith('.docx') || name.endsWith('.txt') || name.includes('日记') || name.includes('文档') || name.includes('报告') || name.includes('口供')) {
+    return '📄'
+  }
+  if (name.endsWith('.pdf') || name.includes('大醮') || name.includes('文献') || name.includes('古籍') || name.includes('卷宗')) {
+    return '📜'
+  }
+  if (name.endsWith('.wav') || name.endsWith('.mp3') || name.includes('录音') || name.includes('音频')) {
+    return '🎵'
+  }
+  if (name.endsWith('.jpg') || name.endsWith('.png') || name.includes('照片') || name.includes('证据') || name.includes('图片')) {
+    return '🖼️'
+  }
+  if (name.endsWith('.xls') || name.endsWith('.xlsx') || name.includes('表格') || name.includes('报表')) {
+    return '📊'
+  }
+  if (name.includes('终端') || name.includes('命令行') || name.includes('cmd')) {
+    return '📟'
+  }
+  if (name.includes('扫雷') || name.includes('游戏')) {
+    return '🎮'
+  }
+  if (name.includes('控制面板') || name.includes('设置')) {
+    return '⚙️'
+  }
+  if (name.includes('邮箱') || name.includes('邮件') || name.includes('mail')) {
+    return '📧'
+  }
+  if (name.includes('软盘') || name.includes('驱动器')) {
+    return '💾'
+  }
+  if (name.includes('桌面') || name.includes('电脑')) {
+    return '🖥️'
+  }
+  return '📁'
+}
+
 export function generateDesktopIconsHtml(node, state) {
   const outgoing = (state.edges || []).filter(edge => edge.from === node.id)
   if (!outgoing.length) return '<div class="empty-desktop-icons" style="color:rgba(255,255,255,0.8);font-size:12px;padding:12px;background:rgba(0,0,0,0.3);border-radius:4px;">（暂无桌面图标，请在右侧属性面板添加桌面图标）</div>'
@@ -52,7 +105,7 @@ export function generateDesktopIconsHtml(node, state) {
     const target = state.nodes.find(item => item.id === edge.to)
     const port = edge.port || target?.name || edge.to
     const title = edge.label || port
-    const symbol = edge.icon || '📁'
+    const symbol = getSmartIcon(edge, target)
     const symbolHtml = isImg(symbol)
       ? `<img src="${esc(symbol)}" class="desktop-icon-img" alt="${esc(title)}">`
       : `<div class="icon-symbol">${esc(symbol)}</div>`

@@ -411,10 +411,10 @@ export function getQiyuebanDemoProject() {
 
   const edges = [
     // Desktop routes
-    { from: 'node_desktop', to: 'node_chat', port: '聊天通讯.exe', label: '聊天通讯.exe', desc: '打开加密聊天软件' },
-    { from: 'node_desktop', to: 'node_forum', port: '七月半论坛.exe', label: '七月半论坛.exe', desc: '打开七月半灵异论坛' },
-    { from: 'node_desktop', to: 'node_search', port: '全盘搜索.exe', label: '全盘搜索.exe', desc: '启动全网搜索引擎' },
-    { from: 'node_desktop', to: 'node_login', port: '机密文件夹', label: '机密文件夹', desc: '打开需要密码的机密文件夹' },
+    { from: 'node_desktop', to: 'node_chat', port: '聊天通讯.exe', label: '聊天通讯.exe', icon: '💬', desc: '打开加密聊天软件' },
+    { from: 'node_desktop', to: 'node_forum', port: '七月半论坛.exe', label: '七月半论坛.exe', icon: '🌐', desc: '打开七月半灵异论坛' },
+    { from: 'node_desktop', to: 'node_search', port: '全盘搜索.exe', label: '全盘搜索.exe', icon: '🔍', desc: '启动全网搜索引擎' },
+    { from: 'node_desktop', to: 'node_login', port: '机密文件夹', label: '机密文件夹', icon: '🔐', desc: '打开需要密码的机密文件夹' },
 
     // Chat choices to Endings & others
     { from: 'node_chat', to: 'node_end1', port: '提供云留山调查报告', label: '结局一', desc: '' },
@@ -447,10 +447,10 @@ export function getQiyuebanDemoProject() {
     { from: 'node_login', to: 'node_files', port: '解锁机密文件夹', label: '解锁机密文件夹', desc: '密码：yxzyddx' },
 
     // Files -> Documents
-    { from: 'node_files', to: 'node_doc_wenyan', port: '温岩考察日记.doc', label: '温岩日记', desc: '' },
-    { from: 'node_files', to: 'node_doc_dusheng', port: '渡生大醮仪.pdf', label: '渡生大醮仪', desc: '' },
-    { from: 'node_files', to: 'node_doc_yangwei', port: '杨威口供记录.txt', label: '杨威口供', desc: '' },
-    { from: 'node_files', to: 'node_desktop', port: '返回桌面', label: '返回桌面', desc: '' },
+    { from: 'node_files', to: 'node_doc_wenyan', port: '温岩考察日记.doc', label: '温岩考察日记.doc', icon: '📄', desc: '' },
+    { from: 'node_files', to: 'node_doc_dusheng', port: '渡生大醮仪.pdf', label: '渡生大醮仪.pdf', icon: '📜', desc: '' },
+    { from: 'node_files', to: 'node_doc_yangwei', port: '杨威口供记录.txt', label: '杨威口供记录.txt', icon: '📝', desc: '' },
+    { from: 'node_files', to: 'node_desktop', port: '返回桌面', label: '返回桌面', icon: '🖥️', desc: '' },
 
     // Documents -> Chat or Files
     { from: 'node_news_shizong', to: 'node_search', port: '全网线索搜索引擎', label: '返回搜索', desc: '' },
