@@ -650,17 +650,47 @@ button:disabled {
   box-sizing: border-box;
 }
 
-.preset-scroll-container {
+.preset-dropdown-container {
+  margin-top: 6px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 230px;
+  max-height: 250px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 4px;
-  background: var(--bg-subtle);
+  padding: 6px;
+  background: #ffffff;
   border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.preset-card-item {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  white-space: normal !important;
+  text-align: left !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
   border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.preset-card-item:hover {
+  border-color: #93c5fd !important;
+  background: #f8fafc !important;
+}
+
+.preset-card-item.active {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
 }
 
 .field {

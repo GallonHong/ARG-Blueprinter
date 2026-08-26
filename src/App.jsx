@@ -1588,54 +1588,30 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
 
           {/* Collapsible Dropdown Cards List */}
           {presetDropdownOpen && (
-            <div
-              style={{
-                marginTop: 6,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-                maxHeight: 240,
-                overflowY: 'auto',
-                padding: '6px',
-                background: '#ffffff',
-                border: '1px solid var(--border-color)',
-                borderRadius: 8,
-                boxShadow: '0 8px 20px rgba(0,0,0,0.08)'
-              }}
-            >
+            <div className="preset-dropdown-container">
               {currentPresets.map((preset) => {
                 const isCurrent = selected.template === preset.template
                 return (
-                  <button
+                  <div
                     key={preset.id}
-                    type="button"
-                    className="ghost"
-                    style={{
-                      padding: '7px 10px',
-                      textAlign: 'left',
-                      borderRadius: 6,
-                      border: isCurrent ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
-                      background: isCurrent ? '#f0fdf4' : '#fafafa',
-                      transition: 'all 0.12s ease',
-                      cursor: 'pointer'
-                    }}
+                    className={`preset-card-item ${isCurrent ? 'active' : ''}`}
                     onClick={() => {
                       applyPreset(preset)
                       setPresetDropdownOpen(false)
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                      <strong style={{ fontSize: 11.5, color: isCurrent ? '#166534' : 'var(--text-main)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, width: '100%' }}>
+                      <strong style={{ fontSize: 12, color: isCurrent ? '#1e40af' : 'var(--text-main)' }}>
                         {preset.name} {isCurrent ? '✓' : ''}
                       </strong>
-                      <span style={{ fontSize: 9.5, padding: '1px 5px', borderRadius: 3, background: isCurrent ? '#bbf7d0' : '#f1f5f9', color: isCurrent ? '#14532d' : '#64748b' }}>
+                      <span style={{ fontSize: 9.5, padding: '1px 6px', borderRadius: 3, background: isCurrent ? '#dbeafe' : '#f1f5f9', color: isCurrent ? '#1e40af' : '#64748b', fontWeight: 600, flexShrink: 0 }}>
                         {preset.template}
                       </span>
                     </div>
-                    <div style={{ fontSize: 10.5, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.4, wordBreak: 'break-word', whiteSpace: 'normal' }}>
                       {preset.desc}
                     </div>
-                  </button>
+                  </div>
                 )
               })}
             </div>
