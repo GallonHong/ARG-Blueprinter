@@ -11,7 +11,8 @@ import {
   arg_get_blueprint,
   arg_get_presets,
   getBlueprintState,
-  setBlueprintState
+  setBlueprintState,
+  onBlueprintChange
 } from './index.js';
 
 export const BRIDGE_PORT = 3088;
@@ -62,6 +63,25 @@ export function createBridgeServer(port = BRIDGE_PORT) {
         const focus = url.searchParams.get('focus') || '';
         const data = await arg_get_blueprint({ focus });
         sendJson(200, data);
+      } else if (url.pathname === '/api/events' && req.method === 'GET') {
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream; charset=utf-8',
+          'Cache-Control': 'no-cache, no-transform',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*'
+        });
+        res.write(`data: ${JSON.stringify({ type: 'INIT', state: getBlueprintState() })}\n\n`);
+
+        const unsubscribe = onBlueprintChange((newState) => {
+          try {
+            res.write(`data: ${JSON.stringify({ type: 'STATE_CHANGED', state: newState })}\n\n`);
+          } catch (e) {}
+        });
+
+        req.on('close', () => {
+          unsubscribe();
+        });
+        return;
       } else if (url.pathname === '/api/state' && req.method === 'GET') {
         sendJson(200, { success: true, state: getBlueprintState() });
       } else if (url.pathname === '/api/state' && req.method === 'POST') {

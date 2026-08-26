@@ -133,3 +133,76 @@ export function sendPostMessageToDsh(messageType, payload, targetWindow = null) 
   }
   return false;
 }
+
+/**
+ * Shared State Real-time Sync Client (SSE + Auto Background Sync)
+ * Connects browser to 3088 bridge for Unified Shared State between UI, DSH Agent, and CLI.
+ */
+export function createSharedStateClient({ onRemoteUpdate, onConnectionChange }) {
+  let eventSource = null;
+  let retryTimer = null;
+  let isConnected = false;
+  let lastSyncTimestamp = 0;
+  const clientId = 'ui_' + Math.random().toString(36).slice(2, 9);
+
+  function connect() {
+    try {
+      eventSource = new EventSource('http://127.0.0.1:3088/api/events');
+
+      eventSource.onopen = () => {
+        isConnected = true;
+        onConnectionChange?.({ connected: true, endpoint: 'http://127.0.0.1:3088' });
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload && (payload.type === 'INIT' || payload.type === 'STATE_CHANGED') && payload.state) {
+            onRemoteUpdate?.(payload.state, payload.type);
+          }
+        } catch (e) {
+          console.warn('[SharedState SSE parse error]', e);
+        }
+      };
+
+      eventSource.onerror = () => {
+        isConnected = false;
+        onConnectionChange?.({ connected: false, endpoint: 'http://127.0.0.1:3088' });
+        eventSource?.close();
+        clearTimeout(retryTimer);
+        retryTimer = setTimeout(connect, 3000);
+      };
+    } catch (e) {
+      isConnected = false;
+      onConnectionChange?.({ connected: false, error: e.message });
+      clearTimeout(retryTimer);
+      retryTimer = setTimeout(connect, 3000);
+    }
+  }
+
+  connect();
+
+  return {
+    clientId,
+    isConnected: () => isConnected,
+    disconnect: () => {
+      clearTimeout(retryTimer);
+      if (eventSource) eventSource.close();
+    },
+    syncState: async (state) => {
+      try {
+        lastSyncTimestamp = Date.now();
+        const res = await fetch('http://127.0.0.1:3088/api/state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ state, clientId, timestamp: lastSyncTimestamp })
+        });
+        return await res.json();
+      } catch (e) {
+        // graceful offline fallback
+        return { success: false, error: e.message };
+      }
+    }
+  };
+}
+
