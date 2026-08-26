@@ -5,15 +5,17 @@ export const runtimeSource = `
   const result = (text) => { const el = document.querySelector('[data-arg-result]'); if (el) el.textContent = text; };
 
   // ==================== Clue & Story State Engine ====================
-  try {
-    const visitedStr = sessionStorage.getItem('arg_visited_nodes') || '[]';
-    const visited = JSON.parse(visitedStr);
-    const currentPageId = config.nodeId || config.pageName || window.location.pathname.split('/').pop().replace('.html', '');
-    if (currentPageId && !visited.includes(currentPageId)) {
-      visited.push(currentPageId);
-      sessionStorage.setItem('arg_visited_nodes', JSON.stringify(visited));
-    }
-  } catch (e) {}
+  if (config.trackProgress !== false) {
+    try {
+      const visitedStr = sessionStorage.getItem('arg_visited_nodes') || '[]';
+      const visited = JSON.parse(visitedStr);
+      const currentPageId = config.nodeId || config.pageName || window.location.pathname.split('/').pop().replace('.html', '');
+      if (currentPageId && !visited.includes(currentPageId)) {
+        visited.push(currentPageId);
+        sessionStorage.setItem('arg_visited_nodes', JSON.stringify(visited));
+      }
+    } catch (e) {}
+  }
 
   function hasClue(req) {
     if (!req) return true;

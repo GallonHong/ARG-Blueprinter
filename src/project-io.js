@@ -1,7 +1,8 @@
 import JSZip from 'jszip';
 import { runtimeSource } from './runtime.js';
-import { pageFileName } from './route-config.js';
+import { pageFileName, defaultContacts } from './route-config.js';
 import { buildPageHtml } from './generator.js';
+import { TYPES } from './types-config.js';
 
 export async function exportZip(state) {
   try {

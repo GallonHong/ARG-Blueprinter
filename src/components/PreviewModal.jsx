@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { buildPageHtml } from '../generator.js';
 import { pageFileName } from '../route-config.js';
 
@@ -10,12 +10,22 @@ export function Preview({ state, close, initialNode, onEdit }) {
   const node = state.nodes.find(item => item.id === id || item.name === id || pageFileName(state, item.id) === id) || state.nodes.find(item => item.id === state.startId) || state.nodes[0]
   const outgoing = state.edges.filter(edge => edge.from === node?.id)
   const portName = edge => edge.port || state.nodes.find(item => item.id === edge.to)?.name || edge.to
-  const prepare = () => frame.current?.contentDocument?.querySelectorAll('[data-arg-slot]').forEach(element => { element.contentEditable = 'true'; element.classList.add('arg-editable') })
-  const format = command => { frame.current?.contentDocument?.execCommand(command, false, null); frame.current?.contentWindow.focus() }
+  const prepare = () => frame.current?.contentDocument?.querySelectorAll('[data-arg-slot]').forEach(element => {
+    element.contentEditable = 'true'
+    element.spellcheck = false
+    element.classList.add('arg-editable')
+    element.title = '点击此处直接编辑'
+  })
+  const format = command => {
+    const doc = frame.current?.contentDocument
+    frame.current?.contentWindow?.focus()
+    doc?.execCommand(command, false, null)
+  }
   const linkSelection = () => {
     const doc = frame.current?.contentDocument
     const selection = doc?.getSelection()
     if (!doc || !selection || selection.rangeCount === 0 || selection.isCollapsed || !linkPort) return
+    frame.current?.contentWindow?.focus()
     if (linkPort === '__unlink__') doc.execCommand('unlink', false, null)
     else {
       doc.execCommand('createLink', false, '#')
@@ -25,6 +35,26 @@ export function Preview({ state, close, initialNode, onEdit }) {
         anchor.dataset.argLink = linkPort
       }
     }
+    frame.current?.contentWindow.focus()
+  }
+  const mosaicSelection = () => {
+    const doc = frame.current?.contentDocument
+    const selection = doc?.getSelection()
+    if (!doc || !selection || selection.rangeCount === 0 || selection.isCollapsed) return
+    const range = selection.getRangeAt(0)
+    const mask = doc.createElement('span')
+    mask.className = 'arg-redacted'
+    try {
+      range.surroundContents(mask)
+    } catch (err) {
+      const content = range.extractContents()
+      mask.appendChild(content)
+      range.insertNode(mask)
+    }
+    selection.removeAllRanges()
+    const nextRange = doc.createRange()
+    nextRange.selectNodeContents(mask)
+    selection.addRange(nextRange)
     frame.current?.contentWindow.focus()
   }
   const saveSlots = () => {
@@ -59,11 +89,13 @@ export function Preview({ state, close, initialNode, onEdit }) {
       </div>
       <div className="preview-bar">
         <span>{pageFileName(state, node.id)}</span>
-        <span className="preview-live">LIVE · 模板实时渲染（支持点击按键体验跳转）</span>
+        <span className="preview-live">编辑模式 · 点击虚线内容直接修改，保存后同步画布与导出文件</span>
       </div>
       <div className="editor-toolbar">
         <button className="ghost" onClick={() => format('bold')}><strong>B</strong> 加粗</button>
         <button className="ghost" onClick={() => format('italic')}><em>I</em> 斜体</button>
+        <button className="ghost" onClick={() => format('underline')}><u>U</u> 下划线</button>
+        <button className="ghost" onClick={mosaicSelection} title="选中文字后添加马赛克遮挡">▦ 马赛克</button>
         <select className="link-target" value={linkPort} onChange={event => setLinkPort(event.target.value)}>
           <option value="">选择链接目标</option>
           {outgoing.map((edge, index) => <option key={`${edge.to}-${index}`} value={portName(edge)}>{portName(edge)}</option>)}
@@ -71,7 +103,7 @@ export function Preview({ state, close, initialNode, onEdit }) {
         </select>
         <button className="ghost" onClick={linkSelection} disabled={!linkPort}>{linkPort === '__unlink__' ? '取消链接' : '🔗 设为链接'}</button>
         <button className="primary" onClick={saveSlots}>保存内容</button>
-        <span>直接编辑页面文字或点击按键预览跳转</span>
+        <span>双击画布卡片也可打开；先选中文字，再使用样式或链接工具</span>
       </div>
       <iframe ref={frame} onLoad={prepare} title="ARG 游戏预览" srcDoc={buildPageHtml(node, state, { preview: true })}/>
     </div>
@@ -86,7 +118,7 @@ export function openPreviewInNewTab(state, initialNode) {
   const startNode = initialNode || state.nodes.find(n => n.id === state.startId) || state.nodes[0]
   const pages = {}
   state.nodes.forEach(node => {
-    const html = buildPageHtml(node, state, { preview: true })
+    const html = buildPageHtml(node, state, { preview: true, trackProgress: true })
     pages[node.id] = html
     const fileName = pageFileName(state, node.id)
     pages[fileName] = html
@@ -207,6 +239,10 @@ export function openPreviewInNewTab(state, initialNode) {
     const runnerBar = document.getElementById('runnerBar');
     const collapseBtn = document.getElementById('collapseBtn');
 
+    function resetProgress() {
+      try { sessionStorage.removeItem('arg_visited_nodes'); } catch (err) {}
+    }
+
     NODES.forEach(n => {
       const opt = document.createElement('option');
       opt.value = n.id;
@@ -291,6 +327,7 @@ export function openPreviewInNewTab(state, initialNode) {
     }
 
     function restartGame() {
+      resetProgress();
       loadPage(START_ID);
     }
 
@@ -351,6 +388,9 @@ export function openPreviewInNewTab(state, initialNode) {
         }, true);
       } catch (err) {}
     });
+
+    // A new runner must never inherit evidence collected by the editor preview.
+    resetProgress();
 
     // Initial load
     loadPage(currentId);

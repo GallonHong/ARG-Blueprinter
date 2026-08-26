@@ -4,7 +4,7 @@ import { TYPE_THEME_PRESETS } from './theme-presets.js';
 import { validateStoryGraph } from './validator.js';
 
 /**
- * Linux CLI Command Engine for ARG Blueprint
+ * ARG Blueprint Command Engine
  * Supported commands:
  *  - touch <id> [-t <type>] [-n <name>] [--template <tpl>] [--start] [-x <n>] [-y <n>]
  *  - cp / clone <src_id> <new_id> [-n <name>]
@@ -43,6 +43,13 @@ export function executeCliCommand(line, state, updateState) {
   const trimmed = line.trim();
   if (!trimmed) return { output: '', error: null };
   if (trimmed.startsWith('#') || trimmed.startsWith('//')) return { output: '', error: null };
+
+  // JSON must keep its quotation marks intact. Parse `import` before the
+  // shell-like tokenizer, which intentionally removes quotation delimiters
+  // from ordinary CLI arguments.
+  if (/^import(?:\s|$)/i.test(trimmed)) {
+    return importBlueprintPayload(trimmed.replace(/^import\s*/i, ''), updateState);
+  }
 
   const tokens = parseCommandLine(trimmed);
   if (!tokens.length) return { output: '', error: null };
@@ -614,24 +621,7 @@ export function executeCliCommand(line, state, updateState) {
       }
 
       case 'import': {
-        const payload = line.trim().slice(cmd.length).trim();
-        if (!payload) throw new Error('用法: import <json_字符串>');
-        let parsed;
-        try {
-          parsed = JSON.parse(payload);
-        } catch (e) {
-          throw new Error(`JSON 解析失败: ${e.message}`);
-        }
-        if (!parsed || !Array.isArray(parsed.nodes)) throw new Error('无效的蓝图 JSON 数据（需包含 nodes 数组）');
-
-        updateState(draft => {
-          draft.title = parsed.title || draft.title;
-          draft.startId = parsed.startId || (parsed.nodes[0]?.id || null);
-          draft.nodes = parsed.nodes;
-          draft.edges = parsed.edges || [];
-          draft.selected = parsed.startId || (parsed.nodes[0]?.id || null);
-        });
-        return { output: `[OK] 已成功导入蓝图 (${parsed.nodes.length} 个页面节点, ${(parsed.edges || []).length} 条连线)`, error: null };
+        return importBlueprintPayload(line.trim().slice(cmd.length).trim(), updateState);
       }
 
       case 'ls': {
@@ -742,11 +732,33 @@ export function executeCliCommand(line, state, updateState) {
         return { output: '__CLEAR__', error: null };
 
       default:
-        throw new Error(`未知指令 '${cmd}'。输入 'help' 查看所有可用 Linux 命令。`);
+        throw new Error(`未知指令 '${cmd}'。输入 'help' 查看所有可用 ARG 命令。`);
     }
   } catch (err) {
     return { output: '', error: err.message };
   }
+}
+
+function importBlueprintPayload(payload, updateState) {
+  if (!payload) return { output: '', error: '用法: import <json_字符串>' };
+  let parsed;
+  try {
+    parsed = JSON.parse(payload);
+  } catch (e) {
+    return { output: '', error: `JSON 解析失败: ${e.message}` };
+  }
+  if (!parsed || !Array.isArray(parsed.nodes)) {
+    return { output: '', error: '无效的蓝图 JSON 数据（需包含 nodes 数组）' };
+  }
+
+  updateState(draft => {
+    draft.title = parsed.title || draft.title;
+    draft.startId = parsed.startId || (parsed.nodes[0]?.id || null);
+    draft.nodes = parsed.nodes;
+    draft.edges = parsed.edges || [];
+    draft.selected = parsed.startId || (parsed.nodes[0]?.id || null);
+  });
+  return { output: `[OK] 已成功导入蓝图 (${parsed.nodes.length} 个页面节点, ${(parsed.edges || []).length} 条连线)`, error: null };
 }
 
 /**
@@ -964,7 +976,7 @@ function parseCommandLine(text) {
 function getHelpText(sub) {
   return `
 ======================================================================
-  ARG Blueprint Linux 终端控制台 (CLI Manual)
+  ARG Blueprint 命令参考
 ======================================================================
 可用指令列表：
 

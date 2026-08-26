@@ -28,6 +28,14 @@ test('搜索规则按规范归一化并指向目标节点', () => {
   assert.equal(config.files.case, 'case.html')
 })
 
+test('卡片编辑预览不写入玩家进度，运行与导出游戏会记录进度', () => {
+  const state = fixture()
+  assert.equal(buildRouteConfig(state.nodes[0], state, { preview: true }).trackProgress, false)
+  assert.equal(buildRouteConfig(state.nodes[0], state, { preview: true, trackProgress: true }).trackProgress, true)
+  assert.equal(buildRouteConfig(state.nodes[0], state).trackProgress, true)
+  assert.match(runtimeSource, /config\.trackProgress !== false/)
+})
+
 test('一个页面可以拥有多个命名出口', () => {
   const state = fixture()
   const config = buildRouteConfig(state.nodes[0], state)
@@ -149,6 +157,14 @@ test('桌面页支持生成仿 Windows 桌面图标并关联路由出口', () =>
   state.edges[0].icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
   const customImgIconsHtml = generateDesktopIconsHtml(desktopNode, state)
   assert.match(customImgIconsHtml, /<img src="data:image\/png;base64,[^"]+" class="desktop-icon-img"/)
+})
+
+test('雾港示例在桌面提供论坛和聊天入口，论坛首页可进入置顶帖', () => {
+  const example = JSON.parse(fs.readFileSync(path.join(root, 'examples', '雾港2004-第七码头失踪记录.arg-blueprint.json'), 'utf8'))
+  const desktopTargets = example.edges.filter(edge => edge.from === 'desktop_main').map(edge => edge.to)
+  assert.equal(['forum_home', 'chat_dispatch', 'chat_signal'].every(target => desktopTargets.includes(target)), true)
+  assert.equal(example.nodes.some(node => node.id === 'forum_home' && node.name === '雾港夜航论坛首页'), true)
+  assert.equal(example.edges.some(edge => edge.from === 'forum_home' && edge.to === 'bbs_forum'), true)
 })
 
 test('聊天页支持多联系人、对话顺序与玩家选项分支及路由绑定', () => {
@@ -322,4 +338,3 @@ test('通用 Runtime 暴露标准沙箱 API (window.ARG_RUNTIME)', () => {
   assert.ok(runtimeSource.includes('playSynthSound'))
   assert.ok(runtimeSource.includes('triggerClue'))
 })
-

@@ -1,19 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "dsh-arg-plugin",
-  "displayName": "ARG Blueprint Linux CLI Engine Plugin for DeepSeek Harness",
-  "version": "1.0.0",
-  "description": "DeepSeek Harness 专属插件：通过原生 Linux 风格 CLI 指令直接操作与读取 ARG Blueprint 游戏蓝图",
+  "displayName": "ARG Blueprint Command Engine Plugin for DeepSeek Harness",
+  "version": "1.0.1",
+  "description": "DeepSeek Harness 专属插件：通过 ARG Blueprint 命令直接操作与读取游戏蓝图",
   "tools": [
     {
       "name": "arg_exec",
-      "description": "在 ARG Blueprint 中批量执行 Linux CLI 指令（支持 touch 创建页面、ln 建立连线、set 设置属性密码、rule 配置搜索词、contact 添加联系人、msg 追加对话、choice 添加选项分支）。",
+      "description": "在 ARG Blueprint 中批量执行 ARG 命令。修改前先读取蓝图；修改后先自检拓扑，再从干净进度验证 requires、起始桌面图标、论坛首页和聊天入口。",
       "parameters": {
         "type": "object",
         "properties": {
           "script": {
             "type": "string",
-            "description": "单行或多行 ARG Blueprint Linux CLI 指令，例如：\ntouch hospital -t Browse -n \"废弃医院病历\"\nln desktop hospital -p \"病历.doc\"\nrule search \"0717\" hospital"
+            "description": "单行或多行 ARG Blueprint 命令，例如：\ntouch hospital -t Browse -n \"废弃医院病历\"\nln desktop hospital -p \"病历.doc\"\nrule search \"0717\" hospital"
           }
         },
         "required": ["script"]
@@ -21,7 +21,7 @@
     },
     {
       "name": "arg_query",
-      "description": "在 ARG Blueprint 中执行查询类 Linux 指令（如 'ls -l' 查看全部页面列表、'cat <id>' 读取页面详情、'stat <id>' 查看页面属性和联系人）。",
+      "description": "在 ARG Blueprint 中执行查询命令（如 'ls -l' 查看全部页面列表、'cat <id>' 读取页面详情、'stat <id>' 查看页面属性和联系人）。",
       "parameters": {
         "type": "object",
         "properties": {
@@ -35,7 +35,7 @@
     },
     {
       "name": "arg_validate",
-      "description": "调用 ARG Blueprint 图论自检器，检测当前剧情中是否存在孤岛卡片、死胡同页面、断路结局或损坏的关键词跳转目标。",
+      "description": "调用 ARG Blueprint 图论自检器，检测孤岛、死胡同、断路结局或损坏跳转。仅覆盖结构，不能替代实际运行验收。",
       "parameters": {
         "type": "object",
         "properties": {}
@@ -43,13 +43,26 @@
     },
     {
       "name": "arg_get_blueprint",
-      "description": "获取当前 ARG Blueprint 全局剧情蓝图的完整 Prompt 上下文（包含所有已有页面、人物、连线拓扑和语法规范）。",
+      "description": "获取当前 ARG Blueprint 全局剧情蓝图的完整 Prompt 上下文与运行态质量门槛。",
       "parameters": {
         "type": "object",
         "properties": {
           "focus": {
             "type": "string",
             "description": "可选关注焦点，例如 '扩写林警官的审讯对话' 或 '设计暗号密码锁'"
+          }
+        }
+      }
+    },
+    {
+      "name": "arg_get_presets",
+      "description": "获取 ARG Blueprint 支持的页面主题预设，可按页面类型筛选。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "可选页面类型，例如 Browse、Chat、Desktop、Search、Login、Files、Ending 或 Index"
           }
         }
       }

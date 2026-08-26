@@ -80,7 +80,7 @@ ${nodeSummaries || '（当前画布为空）'}
 4. **页面功能模板与 UI 选型**：
    - 根据氛围推荐：时代新闻、复古BBS、SCP绝密卷宗、遇害者手写日记、极简现代杂志、黑客数据流、电脑桌面、即时通讯等。
 
-## ARG Blueprint 专有 Linux CLI 指令语法规范：
+## ARG Blueprint 专有命令语法规范：
 - 创建页面：touch <id> -t <Type> -n "<名称>" [--template "<模板>"] [--start]
   (Type: Desktop, Chat, Search, Browse, Login, Files, Ending)
 - 建立连线：ln <from_id> <to_id> [-p "<按键名>"] [--icon "<图标/emoji>"]
@@ -106,10 +106,13 @@ export function extractCliScriptFromDshResponse(responseContent) {
   if (blockMatch) {
     return blockMatch[1].trim();
   }
-  // If no code block, check if lines look like CLI commands
+  // If no code block, retain every command supported by the CLI. Silently
+  // dropping commands such as `preset`, `tag`, or `layout` makes an agent
+  // report success while producing an incomplete blueprint.
+  const cliCommandPattern = /^(?:touch|mkpage|new|cp|clone|copy|rm|del|preset|ln|link|unlink|rmlink|set|config|rule|rmrule|contact|rmcontact|msg|rmmsg|choice|rmchoice|start|goto|focus|select|layout|autolayout|validate|check|search|simulate|walk|note|tag|export|import|ls|cat|stat|help|man|dsh|clear)(?:\s|$)/i;
   const lines = responseContent.split('\n').filter(line => {
     const trimmed = line.trim();
-    return trimmed.startsWith('touch ') || trimmed.startsWith('ln ') || trimmed.startsWith('set ') || trimmed.startsWith('rule ') || trimmed.startsWith('contact ') || trimmed.startsWith('msg ') || trimmed.startsWith('choice ') || trimmed.startsWith('#');
+    return cliCommandPattern.test(trimmed) || trimmed.startsWith('#') || trimmed.startsWith('//');
   });
   if (lines.length > 0) {
     return lines.join('\n').trim();
@@ -205,4 +208,3 @@ export function createSharedStateClient({ onRemoteUpdate, onConnectionChange }) 
     }
   };
 }
-

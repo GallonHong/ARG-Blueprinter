@@ -1,6 +1,6 @@
 /**
  * @arg-blueprint/dsh-plugin - DeepSeek Harness Reverse Integration Plugin
- * Reuses ARG Blueprint's native Linux CLI commands (cli.js) and graph validator (validator.js).
+ * Reuses ARG Blueprint's native command engine (cli.js) and graph validator (validator.js).
  */
 
 import { executeCliCommand, executeBatchCli } from '../../src/cli.js';
@@ -8,10 +8,20 @@ import { validateStoryGraph } from '../../src/validator.js';
 import { formatBlueprintForDsh, extractCliScriptFromDshResponse } from '../../src/dsh-bridge.js';
 import { getQiyuebanDemoProject } from '../../src/demo-project.js';
 import { TYPE_THEME_PRESETS } from '../../src/theme-presets.js';
+import { sharedBridgeTools } from './shared-bridge-client.js';
 
 // Active in-memory blueprint state for DSH agent session
 let currentBlueprintState = getQiyuebanDemoProject();
 let stateUpdateListeners = [];
+
+export const AGENT_RUNTIME_QUALITY_GATE = [
+  '先区分编辑预览与真实运行：编辑器卡片预览、所见即所得编辑不得写入玩家线索或访问进度。',
+  '每次运行测试必须从干净进度开始；分别验证“未访问前置节点时选项锁定”与“访问全部 requires 节点后选项解锁”。',
+  '不要只验证画布连线：从起始页实际检查桌面图标、论坛首页、搜索结果、登录后出口和聊天入口是否都能到达。',
+  '论坛首页与单篇论坛帖必须是不同的玩家体验；如果剧情需要两者，就建立首页节点及其到帖子的入口。',
+  '示例或导出文件修改后，旧的 blob 运行标签页不会自动刷新；必须重新打开运行器，并提醒用户重新导入已更新的示例文件。',
+  'arg_validate 只能验证拓扑与目标引用；完成后仍必须执行以上运行态冒烟测试。'
+];
 
 export function getBlueprintState() {
   return currentBlueprintState;
@@ -30,11 +40,11 @@ export function onBlueprintChange(listener) {
 }
 
 /**
- * Tool 1: Execute single or batch Linux CLI script
+ * Tool 1: Execute a single or batch ARG command script
  */
 export async function arg_exec({ script }) {
   if (!script) {
-    return { success: false, error: '缺少 script 参数，请输入有效的 ARG Linux CLI 指令。' };
+    return { success: false, error: '缺少 script 参数，请输入有效的 ARG Blueprint 命令。' };
   }
   const cleanScript = extractCliScriptFromDshResponse(script);
   
@@ -44,6 +54,16 @@ export async function arg_exec({ script }) {
       draftFn(currentBlueprintState);
     });
     setBlueprintState(currentBlueprintState);
+    if (resultOutput.includes('❌ [ERROR]')) {
+      return {
+        success: false,
+        error: '部分指令执行失败；已保留成功执行的改动，请根据输出修正后重试。',
+        executedScript: cleanScript,
+        partialOutput: resultOutput,
+        currentNodeCount: currentBlueprintState.nodes.length,
+        currentEdgeCount: currentBlueprintState.edges.length
+      };
+    }
     return {
       success: true,
       executedScript: cleanScript,
@@ -61,7 +81,7 @@ export async function arg_exec({ script }) {
 }
 
 /**
- * Tool 2: Query blueprint state via read-only Linux CLI commands (ls -l, cat, stat)
+ * Tool 2: Query blueprint state via read-only ARG commands (ls -l, cat, stat)
  */
 export async function arg_query({ command }) {
   if (!command) {
@@ -99,7 +119,8 @@ export async function arg_validate() {
         reachableCount: report.reachableCount,
         totalCount: report.totalCount,
         endingCount: report.endingCount
-      }
+      },
+      runtimeValidationNote: '此报告仅覆盖画布拓扑与引用。完成后仍需按 arg_get_blueprint 返回的 runtimeQualityGate，从干净进度实际运行并验证 requires 的锁定与解锁。'
     };
   } catch (err) {
     return { success: false, error: err.message };
@@ -117,7 +138,8 @@ export async function arg_get_blueprint({ focus = '' } = {}) {
       context: prompt,
       title: currentBlueprintState.title,
       nodesCount: currentBlueprintState.nodes.length,
-      edgesCount: currentBlueprintState.edges.length
+      edgesCount: currentBlueprintState.edges.length,
+      runtimeQualityGate: AGENT_RUNTIME_QUALITY_GATE
     };
   } catch (err) {
     return { success: false, error: err.message };
@@ -163,24 +185,24 @@ const jsonTextOutput = {
 export function apply(ctx) {
   ctx.tools.register({
     name: 'arg_exec',
-    description: '在 ARG Blueprint 中批量执行 Linux CLI 指令（支持 touch 创建页面、ln 建立连线、set 设置属性密码、cp/clone 克隆节点、preset 应用主题预设、rule 配置搜索词、contact 添加联系人、msg 追加对话、choice 添加选项分支）。',
+    description: '在 ARG Blueprint 中批量执行 ARG 命令（支持 touch、ln、set、rule、contact、msg、choice 等）。修改前先读取 arg_get_blueprint；修改后调用 arg_validate，并按 runtimeQualityGate 从干净进度检查 requires、起始桌面入口、论坛首页与聊天入口。',
     parameters: {
       type: 'object',
       properties: {
         script: {
           type: 'string',
-          description: '单行或多行 ARG Blueprint Linux CLI 指令，例如：\ntouch hospital -t Browse -n "废弃医院病历"\nln desktop hospital -p "病历.doc"\nrule search "0717" hospital\ncp hospital morgue -n "地下停尸间"',
+          description: '单行或多行 ARG Blueprint 命令，例如：\ntouch hospital -t Browse -n "废弃医院病历"\nln desktop hospital -p "病历.doc"\nrule search "0717" hospital\ncp hospital morgue -n "地下停尸间"',
         },
       },
       required: ['script'],
     },
     output: jsonTextOutput,
-    execute: (args) => arg_exec(args),
+    execute: (args) => sharedBridgeTools.arg_exec(args),
   });
 
   ctx.tools.register({
     name: 'arg_query',
-    description: "在 ARG Blueprint 中执行查询类 Linux 指令（如 'ls -l' 查看全部页面列表、'cat <id>' 读取页面详情、'stat <id>' 查看页面属性和联系人）。",
+    description: "在 ARG Blueprint 中执行查询命令（如 'ls -l' 查看全部页面列表、'cat <id>' 读取页面详情、'stat <id>' 查看页面属性和联系人）。",
     parameters: {
       type: 'object',
       properties: {
@@ -192,20 +214,20 @@ export function apply(ctx) {
       required: ['command'],
     },
     output: jsonTextOutput,
-    execute: (args) => arg_query(args),
+    execute: (args) => sharedBridgeTools.arg_query(args),
   });
 
   ctx.tools.register({
     name: 'arg_validate',
-    description: '调用 ARG Blueprint 图论自检器，检测当前剧情中是否存在孤岛卡片、死胡同页面、断路结局或损坏的关键词跳转目标。',
+    description: '调用 ARG Blueprint 图论自检器，检测孤岛、死胡同、断路结局和损坏跳转。它不等同于运行测试：结果会附带必须执行的运行态验收提醒。',
     parameters: { type: 'object', properties: {} },
     output: jsonTextOutput,
-    execute: () => arg_validate(),
+    execute: () => sharedBridgeTools.arg_validate(),
   });
 
   ctx.tools.register({
     name: 'arg_get_blueprint',
-    description: '获取当前 ARG Blueprint 全局剧情蓝图的完整 Prompt 上下文（包含所有已有页面、人物、连线拓扑和语法规范）。',
+    description: '获取当前 ARG Blueprint 全局剧情蓝图的完整 Prompt 上下文，并返回 runtimeQualityGate。任何修改前都应读取；完成后要据此完成运行态验收。',
     parameters: {
       type: 'object',
       properties: {
@@ -216,7 +238,7 @@ export function apply(ctx) {
       },
     },
     output: jsonTextOutput,
-    execute: (args) => arg_get_blueprint(args),
+    execute: (args) => sharedBridgeTools.arg_get_blueprint(args),
   });
 
   ctx.tools.register({
@@ -232,7 +254,7 @@ export function apply(ctx) {
       },
     },
     output: jsonTextOutput,
-    execute: (args) => arg_get_presets(args),
+    execute: (args) => sharedBridgeTools.arg_get_presets(args),
   });
 }
 

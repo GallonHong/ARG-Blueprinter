@@ -4,17 +4,22 @@ import { getTemplateStyle } from './templateStyles.js'
 import { buildRouteConfig, pageFileName, generateLinksHtml, generateNavLinksHtml, generateHotLinksHtml, generateDesktopIconsHtml } from './route-config.js'
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
-const rich=s=>esc(s).replace(/\n/g,'<br>').replace(/&lt;(\/?(?:b|strong|i|em|u|br|span))&gt;/gi,'<$1>').replace(/&lt;a data-arg-link=&quot;([^&]+)&quot;&gt;/gi,(_,port)=>`<a data-arg-link="${port}">`).replace(/&lt;\/a&gt;/gi,'</a>')
+const rich=s=>esc(s)
+  .replace(/\n/g,'<br>')
+  .replace(/&lt;(\/?(?:b|strong|i|em|u|br|span))&gt;/gi,'<$1>')
+  .replace(/&lt;span class=&quot;arg-redacted&quot;&gt;/gi,'<span class="arg-redacted">')
+  .replace(/&lt;a data-arg-link=&quot;([^&]+)&quot;&gt;/gi,(_,port)=>`<a data-arg-link="${port}">`)
+  .replace(/&lt;\/a&gt;/gi,'</a>')
 
 export { generateLinksHtml, generateNavLinksHtml, generateHotLinksHtml, generateDesktopIconsHtml }
 
 import { setCustomTemplates } from './templates.js'
 
-export function buildPageHtml(node,state,{preview=false}={}){
+export function buildPageHtml(node,state,{preview=false,trackProgress=!preview}={}){
   if (state.customTemplates) {
     setCustomTemplates(state.customTemplates);
   }
-  const config=buildRouteConfig(node,state,{preview});
+  const config=buildRouteConfig(node,state,{preview,trackProgress});
   const f=node.fields||{};
   const richFields=new Set(['body','links','siteName','title','date','author','forumName','username','time','replies','navigation','buttonText','systemName','path','message','categoryTitle','subtitle','notice','notFoundText','stickyNote','startTitle']);
   const values=Object.fromEntries(Object.entries(f).map(([key,value])=>[key,richFields.has(key)?rich(value):esc(value)]));
@@ -128,6 +133,14 @@ export function buildPageHtml(node,state,{preview=false}={}){
     .arg-atmosphere-glitch {
       animation: arg-glitch-flicker 4s infinite;
     }
+    .arg-redacted {
+      color: transparent !important;
+      background: repeating-linear-gradient(45deg, #151515 0 3px, #555 3px 6px) !important;
+      border-radius: 2px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      cursor: help;
+    }
     @keyframes arg-glitch-flicker {
       0%, 95%, 100% { filter: none; }
       96% { filter: hue-rotate(90deg) contrast(1.2); }
@@ -155,6 +168,4 @@ export function buildPageHtml(node,state,{preview=false}={}){
 
   return template.replace('</body>',`${configTag}${runtimeTag}${customScriptTag}</body>`);
 }
-
-
 

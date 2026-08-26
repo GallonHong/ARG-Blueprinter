@@ -19,7 +19,7 @@ test('DSH 插件工具 arg_get_blueprint 能够提取完整蓝图上下文', asy
   assert.equal(res.nodesCount, 20);
 });
 
-test('DSH 插件工具 arg_exec 能够通过类 Linux 指令动态扩充画布', async () => {
+test('DSH 插件工具 arg_exec 能够通过 ARG 命令动态扩充画布', async () => {
   const customState = {
     title: 'DSH 联动测试',
     nodes: [

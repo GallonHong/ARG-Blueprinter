@@ -16,13 +16,30 @@ import {
 } from './index.js';
 
 export const BRIDGE_PORT = 3088;
+export const BRIDGE_HOST = '127.0.0.1';
+
+function getCorsOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) return null;
+  return /^https?:\/\/(?:127\.0\.0\.1|localhost)(?::\d+)?$/.test(origin) ? origin : null;
+}
+
+function setLocalCorsHeaders(req, res) {
+  const origin = getCorsOrigin(req);
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
 export function createBridgeServer(port = BRIDGE_PORT) {
   const server = http.createServer(async (req, res) => {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // The bridge accepts requests only from local development origins. The
+    // standalone server below also binds to loopback, so it is not exposed on
+    // the LAN by default.
+    setLocalCorsHeaders(req, res);
 
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
@@ -67,8 +84,7 @@ export function createBridgeServer(port = BRIDGE_PORT) {
         res.writeHead(200, {
           'Content-Type': 'text/event-stream; charset=utf-8',
           'Cache-Control': 'no-cache, no-transform',
-          'Connection': 'keep-alive',
-          'Access-Control-Allow-Origin': '*'
+          'Connection': 'keep-alive'
         });
         res.write(`data: ${JSON.stringify({ type: 'INIT', state: getBlueprintState() })}\n\n`);
 
@@ -117,8 +133,8 @@ export function createBridgeServer(port = BRIDGE_PORT) {
 // Start standalone server if executed directly
 if (process.argv[1] && process.argv[1].endsWith('bridge-server.js')) {
   const srv = createBridgeServer(BRIDGE_PORT);
-  srv.listen(BRIDGE_PORT, () => {
-    console.log(`[DSH Bridge Server] Listening on http://127.0.0.1:${BRIDGE_PORT}`);
+  srv.listen(BRIDGE_PORT, BRIDGE_HOST, () => {
+    console.log(`[DSH Bridge Server] Listening on http://${BRIDGE_HOST}:${BRIDGE_PORT}`);
     console.log(`[DSH Bridge Server] Ready to receive commands from DeepSeek Harness.`);
   });
 }

@@ -1,6 +1,6 @@
 {
   "name": "@arg-blueprint/dsh-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DeepSeek Harness (dsh) reverse integration plugin for ARG Blueprint interactive story engine",
   "main": "index.js",
   "type": "module",
@@ -18,5 +18,5 @@
     "agent-tools"
   ],
   "author": "ARG Blueprint Team",
-  "license": "MIT"
+  "license": "MPL-2.0"
 }

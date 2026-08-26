@@ -1,283 +1,232 @@
-# ARG Blueprint (另类实境游戏 / 拟真交互解谜剧本引擎)
+# ARG Blueprint
 
 <p align="center">
-  <b>专注于千禧复古桌面、加密聊天、全网搜索、解密档案与多分支结局的交互式 ARG 创作与离线分发工作台</b>
+  <b>面向另类实境游戏（ARG）的可视化剧情蓝图、拟真页面与静态导出工作台。</b>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Node.js-%3E%3D18.0.0-green.svg" alt="Node Version">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
-  <img src="https://img.shields.io/badge/Vite-Fast-646CFF.svg" alt="Vite">
-  <img src="https://img.shields.io/badge/Tests-32%2F32%20Passing-success.svg" alt="Tests">
+  <a href="https://github.com/GallonHong/ARG-Blueprinter/actions"><img src="https://github.com/GallonHong/ARG-Blueprinter/actions/workflows/ci.yml/badge.svg" alt="CI 状态"></a>
+  <img src="https://img.shields.io/badge/Node.js-20.19%2B%20%7C%2022.12%2B-green.svg" alt="Node.js 版本">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MPL--2.0-orange.svg" alt="MPL 2.0 许可证"></a>
+  <img src="https://img.shields.io/badge/Vite-8-646CFF.svg" alt="Vite 8">
 </p>
 
----
+ARG Blueprint 把桌面、聊天、搜索、档案与结局等拟真界面组织为可连线的剧情图。创作者可在浏览器中编辑、预览、自检并导出完整静态项目；可选接入 DSH 或 MCP，让 Agent 通过受控的 ARG 命令协作创作。
 
-## 📑 目录
+## 快速开始
 
-- [一、小白极速 3 步上手 (Windows / Mac 一键启动)](#一小白极速-3-步上手-windows--mac-一键启动)
-- [二、什么是 ARG？这套引擎能做什么？](#二什么是-arg这套引擎能做什么)
-- [三、核心创作流程：从 0 到 1 制作你的解谜游戏](#三核心创作流程从-0-到-1-制作你的解谜游戏)
-- [四、DeepSeek (DSH) AI 剧情共创副驾驶](#四deepseek-dsh-ai-剧情共创副驾驶)
-- [五、全量 UI 主题预设库与页面复用机制](#五全量-ui-主题预设库与页面复用机制)
-- [六、Linux CLI 命令行终端完整指令表](#六linux-cli-命令行终端完整指令表)
-- [七、线索物证追踪与条件解锁机制](#七线索物证追踪与条件解锁机制)
-- [八、一键导出与离线分发给玩家](#八一键导出与离线分发给玩家)
-- [九、项目目录与架构说明](#九项目目录与架构说明)
-- [十、测试与构建验证](#十测试与构建验证)
+### 环境要求
 
----
+- Node.js **20.19+** 或 **22.12+**（推荐安装当前 LTS）
+- npm（随 Node.js 一同安装）
 
-## 一、小白极速 3 步上手 (Windows / Mac 一键启动)
+> Vite 8 不支持 Node.js 18。`start-mac.sh` 与 `start-windows.bat` 会在启动前检查版本。
 
-即使您**完全没有编程基础**，只需跟着下面 3 步，1 分钟即可开启可视化创作！
-
-```
-  ┌─────────────────────────────────────────────────────────────┐
-  │                 3 步极速开启 ARG 游戏创作                    │
-  ├─────────────────────────────────────────────────────────────┤
-  │  第 1 步：下载并安装 Node.js (如已安装可跳过)                │
-  │  第 2 步：双击运行「一键启动」批处理文件                      │
-  │  第 3 步：浏览器自动打开 http://localhost:5173/ 开始创作！   │
-  └─────────────────────────────────────────────────────────────┘
-```
-
-### 第 1 步：安装基础运行环境 (只需装一次)
-- 前往 Node.js 官方网站下载并安装 **LTS 稳定版**：
-  - 🔗 官方下载地址：[https://nodejs.org/](https://nodejs.org/)
-- 下载后一路点击 **「Next / 下一步」** 安装即可（无需修改任何高级配置）。
-
-### 第 2 步：一键运行项目
-
-#### 🪟 Windows 用户：
-- 在项目文件夹中，直接双击运行：
-  👉 **`一键启动-Windows.bat`** (或 `start-windows.bat`)
-- 脚本会自动检测环境、安装依赖，并在 2 秒后自动打开浏览器！
-
-#### 🍎 macOS / Linux 用户：
-- 在终端中运行启动脚本：
-  ```bash
-  chmod +x start-mac.sh
-  ./start-mac.sh
-  ```
-- 或直接双击 **`一键启动-macOS.command`**。
-
-### 第 3 步：开始创作
-- 浏览器访问：**`http://localhost:5173/`**
-- 您会看到一个纯净的 ARG 蓝图画布，点击上方 **「示例项目」** 可以一键载入 20 节点的官方高完成度范例《灵异论坛调查模仿》！
-
----
-
-## 二、什么是 ARG？这套引擎能做什么？
-
-**ARG（Alternate Reality Game，另类实境游戏）** 是一种将虚拟剧情与现实互联网交互（如网页、聊天软件、论坛、搜索引擎、电脑桌面）深度融合的沉浸式解谜游戏。
-
-**ARG Blueprint** 为创作者提供了 7 大拟真交互场景：
-
-| 场景类型 | 图标 | 实际呈现效果 | 典型游戏玩法 |
-| :--- | :---: | :--- | :--- |
-| **电脑桌面** (`Desktop`) | 🖥️ | 拟真 Windows 98 / XP / Mac OS 桌面 | 点击桌面图标打开聊天软件、文件或浏览器 |
-| **加密聊天** (`Chat`) | 💬 | 微信 / QQ / Telegram / 黑客加密信道 | 与 NPC 对话、做出关键抉择、出示收集到的物证 |
-| **全网搜索** (`Search`) | 🔍 | 千禧年代搜索引擎 / 暗网数据终端 | 玩家输入特定关键词（如案件编号、人名）检索线索 |
-| **文章/论坛** (`Browse`) | 📄 | 时代新闻 / 复古 BBS 论坛 / SCP 卷宗 / 遇害者日记 | 阅读长篇案情记录、论坛跟帖、在文字中寻找隐藏密码 |
-| **机密密码锁** (`Login`) | 🔐 | 企业内网系统 / BIOS 自检口令 / 保险箱 | 玩家输入正确密码解锁下一阶段的核心档案 |
-| **绝密档案库** (`Files`) | 📁 | Windows 资源管理器 / 军方保密档案库 | 探索受限制的多层文件夹与机密附件 |
-| **终局结算** (`Ending`) | 🎬 | 案件结案判定书 / 报纸头版通报 / CRT 断电黑屏 | 判定玩家达成的结局（真结局、死亡结局、失踪结局等） |
-
----
-
-## 三、核心创作流程：从 0 到 1 制作你的解谜游戏
-
-### 步骤 1：新建第一个起始页面
-1. 在左侧工具栏或空白画布卡片上点击 **「＋ 电脑桌面」**；
-2. 在右侧属性面板中，勾选 **「设为游戏起始页」**（该页面将作为玩家打开游戏看到的第一个画面）。
-
-### 步骤 2：添加应用与场景连线
-1. 再添加一个 **「＋ 聊天通讯」** 节点；
-2. 选中桌面节点，切换到 **「桌面图标」** 选项卡，点击 **「＋ 添加桌面图标」**；
-3. 目标选择刚刚创建的聊天节点，图标名字填 `微信.exe`，Emoji 选择 `💬`；
-4. 此时画布上会自动生成一条优雅的平滑贝塞尔连接线！
-
-### 步骤 3：设计聊天剧本与分支选项
-1. 选中聊天节点，点击 **「＋ 添加联系人」**，输入姓名 `林警官`，选择头像 `👮`；
-2. 点击 **「添加 NPC 消息」**，输入：*“水青，医院现场提取出了重要加密线索。”*；
-3. 点击 **「添加玩家选项分支」**，输入选项文案 `前往调查`，跳转目标选择下游页面；
-4. 还可以配置 **🔒 解锁前置线索**：限制玩家必须先在其他页面找到「病历档案」才能点亮该选项！
-
-### 步骤 4：实时测试与一键自检
-- 点击顶栏右侧的 **「▶ 预览运行」**，可以直接在浏览器里沉浸式试玩；
-- 点击顶栏的 **「🩺 剧情自检」**，系统会利用图论算法自动检查全图是否存在无法到达的死胡同或断路。
-
----
-
-## 四、DeepSeek (DSH) AI 剧情共创副驾驶
-
-遇到剧情瓶颈或想快速铺开几十个复杂解谜节点？ARG Blueprint 内置了 **DeepSeek 剧情头脑风暴副驾驶**！
-
-### 1. 启动 DSH AI 工作台
-- 点击顶栏右侧的 **`[ DSH 联动 ]`** 按钮打开侧边栏；
-- 面板已为您默认预置了 **「剧情头脑风暴」** 提示词；
-- 点击底部的 **「💡 剧情头脑风暴」**、**「🔍 玩家驱动力检查」**、**「🧩 解密机制与暗号」** 等预设，可一键向 AI 提问。
-
-### 2. 自动生成画布脚本
-- DSH 会与您深度讨论剧情走向（由您做最终决断），并为您输出标准的 Linux CLI 自动化脚本；
-- 点击 AI 回复下方的 **「⚡ 一键执行脚本」**，瞬间在画布上自动创建数十个关联页面与连线！
-
-### 3. 一键双向数据同步
-- **`📥 从 3088 桥接同步到画布`**：一键从后台拉取最新剧情图；
-- **`📤 推送画布到 3088`**：将当前浏览器画布全量同步到后台。
-
----
-
-## 五、全量 UI 主题预设库与页面复用机制
-
-### 1. 内置 20+ 款 WordPress 级主题预设
-选中任意页面，在属性面板切换至 **「样式定制」**，可一键切换精美预设：
-- **新闻与论坛**：📰 时代新闻大头条、🌐 复古 BBS 论坛楼层、📁 SCP 绝密卷宗、📓 遇害者手写日记、📖 极简现代杂志、💻 黑客数据窃密流；
-- **聊天应用**：💬 微信经典风格、🐧 QQ 复古千禧、✈️ Telegram 极简蓝、🎮 Discord 暗黑社区、📟 黑客终端加密信道；
-- **操作系统**：🖥️ Windows 98 经典桌面、🌄 Windows XP 蓝天草地、🍎 Mac OS 9 白金质感、💻 暗黑黑客控制台、🕵️ 调查员案卷工作台。
-
-### 2. 自定义页面的 4 种复用方式
-1. **画布一键克隆**：在属性面板底部点击 **`📋 复制/克隆此页面`**，完整复制模板与样式；
-2. **终端极速克隆**：输入 `cp <原ID> <新ID> -n "新名称"`；
-3. **全局模板库保存**：在顶栏「自定义模板」中保存您的专属 HTML/CSS 结构，供所有节点直接选择；
-4. **AI 自然语言复用**：直接告诉 DSH：“以【受试者房间】为模板，克隆出【地下室】和【配电房】”。
-
----
-
-## 六、Linux CLI 命令行终端完整指令表
-
-按下快捷键 **``Ctrl + ` ``**（或点击顶栏「终端」）可随时唤出网页命令行控制台，支持自动换行与 40+ 行批量脚本一键粘贴执行！
+### 启动编辑器
 
 ```bash
-# 页面增删改查
-touch <id> [-t <type>] [-n <name>] [--template <tpl>] [--start] [-x <n>] [-y <n>]  # 创建页面
-cp / clone <src_id> <new_id> [-n <新名称>]                                          # 克隆页面
-rm <id> [-f]                                                                       # 删除页面
-mv / rename <old_id> <new_id>                                                      # 重命名页面
-start <id>                                                                         # 指定游戏起始页
-
-# 路由连线
-ln <from> <to> [-p <port/按键名>] [--icon <icon>] [--label <label>]                  # 建立跳转连线
-unlink <from> <to> [port]                                                          # 断开连线
-
-# 属性与主题配置
-set <id> <key_or_path>=<val>                                                       # 设置属性/深度嵌套路径
-preset <id> <预设名称/ID>                                                          # 应用 UI 主题预设
-
-# 搜索引擎规则
-rule <search_id> <keyword> <target_id>                                             # 添加搜索关键词跳转
-rmrule <search_id> <keyword>                                                       # 删除搜索关键词
-
-# 聊天对话与选项分支
-contact <chat_id> <name> [--avatar <icon>] [--bio <bio>]                           # 添加联系人
-rmcontact <chat_id> <name>                                                         # 删除联系人
-msg <chat_id> <contact_name> <npc|player> <text>                                   # 追加对话消息
-rmmsg <chat_id> <contact_name> <序号或关键词>                                      # 删除对话消息
-choice <chat_id> <contact_name> <text> [target_id] [--reply <r>] [--requires <id>] # 添加分支(自动建线)
-rmchoice <chat_id> <contact_name> <选项文案/序号>                                   # 删除分支选项
-
-# 策划、排版与诊断
-goto / focus <id>                                                                  # 画布聚焦定位节点
-layout / autolayout                                                                # 有向拓扑全图自动排版
-note <id> "策划备忘录..."                                                           # 添加策划粘滞便签
-tag <id> "第一章, 关键线索"                                                         # 添加分类标签
-validate / check                                                                   # 终端运行图论自检
-search <关键词>                                                                    # 模拟一次关键词检索
-simulate / walk                                                                    # 模拟全图玩家走查并报死胡同
-
-# 数据通道与查询
-export                                                                             # 导出完整蓝图 JSON
-import <json_字符串>                                                               # 导入蓝图 JSON
-ls [-l] / cat <id> / stat <id> / clear                                             # 列表、详情与清屏
+npm install
+npm run dev
 ```
 
----
+打开启动后显示的地址，默认是 `http://localhost:5173/`。
 
-## 七、线索物证追踪与条件解锁机制
+也可以使用一键启动脚本：
 
-为了避免解谜游戏“开局剧透”，引擎内置了完整的**运行时物证闭环**：
+- Windows：双击 `一键启动-Windows.bat` 或 `start-windows.bat`
+- macOS：双击 `一键启动-macOS.command` 或执行 `./start-mac.sh`
 
-```
-  ┌─────────────────────────────────────────────────────────────┐
-  │                 玩家解谜探索推进流程                         │
-  ├─────────────────────────────────────────────────────────────┤
-  │ 1. 玩家进入【废弃医院】页面阅读档案                         │
-  │    ➔ 引擎自动在本地持久化记录线索：doc_hospital             │
-  │                                                             │
-  │ 2. 玩家回到【刑警对话】微信页面                             │
-  │    ➔ 原本灰显/隐藏的「出示医院病历」选项被动态点亮！        │
-  │                                                             │
-  │ 3. 点击选项触发分支对话，解锁通往【真相大白】真结局的道路！│
-  └─────────────────────────────────────────────────────────────┘
-```
+## 让自己的 AI 帮你创作
 
-- 您可以在属性面板中直观勾选，也可以通过 CLI：
-  `choice chat "林警官" "出示病历" ending --reply "这是关键证据！" --requires doc_hospital`
+你不需要懂代码。先在编辑器中点“示例项目”看看成品，再选择下面其中一种方式与自己的 AI 协作。
 
----
+### 方式一：任何聊天 AI 都能用（推荐新手从这里开始）
 
-## 八、一键导出与离线分发给玩家
+这一方式适用于普通的 ChatGPT、Claude、Gemini、DeepSeek 等聊天窗口。AI 不会直接连接你的电脑；它可以先帮你梳理页面、线索和跳转关系，再由你在画布中按计划创建。
 
-制作完成后，无需服务器、无需数据库，即可将游戏发布给全世界玩家！
+1. 在 ARG Blueprint 中创建几个页面，或点击“示例项目”。
+2. 把下面的提示词完整复制给你常用的 AI，并把方括号中的内容换成自己的故事想法。
+3. 让 AI 先给剧情方案；满意后，让它输出清晰的页面、连线和条件分支清单。
+4. 在编辑器画布中按清单创建；若希望 AI 直接操作画布，请使用下方的 MCP 方式。
+5. 点击“自检”和“预览运行”；如果不满意，继续把结果告诉 AI 让它修改。
 
-1. 点击画布顶栏右上角的 **「📦 导出 ZIP」** 按钮；
-2. 浏览器会自动下载一个 `game.zip` 压缩包；
-3. **分发给玩家**：玩家只需解压压缩包，**双击打开 `index.html`**，即可在任何电脑的任意浏览器（Chrome / Edge / Safari / Firefox）中离线畅玩！
+```text
+你是 ARG Blueprint 剧情工程师。请帮我把一个互动解谜故事做成可执行的 ARG 蓝图。
 
----
+故事主题：[例如：2003 年一座沿海小城的失踪案]
+氛围：[例如：复古论坛、民俗怪谈、逐步失真的日常]
+玩家要做什么：[例如：通过电脑桌面、搜索、聊天和档案库找到真相]
 
-## 九、项目目录与架构说明
-
-```
-arg-blueprint/
-├── 一键启动-Windows.bat         # Windows 1 键启动脚本
-├── 一键启动-macOS.command       # macOS 1 键启动脚本
-├── start-windows.bat           # Windows 备用启动脚本
-├── start-mac.sh                # macOS/Linux 终端启动脚本
-├── index.html                  # 工作台单页入口
-├── package.json                # 项目依赖与运行脚本
-├── style.css                   # 全局样式与现代 UI 体系
-├── src/                        # 前端核心源码
-│   ├── App.jsx                 # 主画布、属性面板与流程图编辑器
-│   ├── cli.js                  # Linux 风格命令行解析与执行引擎
-│   ├── Terminal.jsx            # 网页终端 UI 组件 (自动换行/批量粘贴)
-│   ├── generator.js            # 静态单页 HTML 生成与插值引擎
-│   ├── route-config.js         # 页面路由表、物证追踪与跳转契约
-│   ├── runtime.js              # 纯前端轻量运行时 (音效/打字机/密码核验)
-│   ├── theme-presets.js        # 全量 UI 主题预设库
-│   ├── validator.js            # 图论剧情健康度与死胡同自检器
-│   ├── dsh-bridge.js           # DeepSeek Harness 桥接与 Prompt 上下文
-│   ├── DshPanel.jsx            # DSH 协同工作台侧边栏组件
-│   └── demo-project.js         # 官方示例项目《灵异论坛调查模仿》
-├── templates/                  # 7 大页面类型的 HTML 模板库
-│   ├── desktop/                # 电脑桌面模板 (Win98 / XP / Mac)
-│   ├── chat/                   # 聊天界面模板 (WeChat / QQ / Telegram / Discord)
-│   ├── browse/                 # 文章浏览模板 (News / BBS / SCP / Diary)
-│   ├── search/                 # 搜索引擎模板 (Classic / Terminal)
-│   ├── login/                  # 密码终端模板 (Admin / BIOS / Vault)
-│   ├── files/                  # 档案库模板 (Explorer / SCP Vault)
-│   └── ending/                 # 结局展示模板 (Court / CRT / News Flash)
-├── plugins/dsh-arg-plugin/     # DeepSeek Harness 官方扩展插件
-└── tests/                      # 自动化测试用例套件 (32 项全部通过)
+请先给我 2 个剧情走向，并说明每个走向中玩家下一步要做什么。
+我选定方案后，请输出一个按顺序执行的创作清单：每个页面的名称、页面类型、页面内容、玩家入口、跳转目标和解锁条件。
+不要输出系统命令或安装命令。每次修改前先说明会新增或改变哪些页面。
 ```
 
----
+> 普通聊天 AI 只负责“写指令”，不会自行修改你的蓝图。这正好让你能先看懂、再确认每一处改动。
 
-## 十、测试与构建验证
+### 方式二：让支持 MCP 的 AI 直接操作画布
 
-项目内置了严格的测试套件，全面覆盖图论自检、路由契约、命令行引擎与模板解析：
+如果你的 AI 客户端支持添加本地 MCP Server，就可以让 AI 直接读取、创建和检查你的蓝图。它仍会先通过 3088 Bridge 与编辑器同步，修改会自动出现在画布上。
+
+1. 保持编辑器运行；在项目目录启动共享 Bridge：
+
+   ```bash
+   npm run bridge
+   ```
+
+2. 在 AI 客户端的 MCP 设置中添加下面的配置。将 `/你的/ARG-Blueprinter/绝对路径` 换成项目真实路径。
+
+   ```json
+   {
+     "mcpServers": {
+       "arg-blueprint": {
+         "command": "node",
+         "args": ["/你的/ARG-Blueprinter/绝对路径/plugins/dsh-arg-plugin/mcp-server.js"],
+         "env": {
+           "ARG_BLUEPRINT_BRIDGE_URL": "http://127.0.0.1:3088"
+         }
+       }
+     }
+   }
+   ```
+
+3. 重新打开该 AI 的对话，然后发送：
+
+   ```text
+   请使用 arg-blueprint 工具协作创作。先读取当前蓝图；给出计划并等我确认，再修改页面和连线；完成后必须运行自检，并总结改动与发现的问题。
+   ```
+
+支持 MCP 的 AI 会使用 `arg_get_blueprint` 了解当前画布、用 `arg_exec` 修改它、再用 `arg_validate` 自检。涉及删除或大范围改写时，请在 AI 客户端中仔细阅读确认提示。
+
+## 你可以创作什么
+
+项目内置 8 类页面与交互类型：
+
+| 类型 | 用途示例 |
+| --- | --- |
+| `Desktop` | Windows 98 / XP、Mac OS 9、调查员桌面 |
+| `Chat` | 微信、QQ、Telegram、Discord、终端通讯 |
+| `Search` | 千禧搜索页、门户搜索、终端检索 |
+| `Index` | 门户首页、档案目录、Wiki 档案百科 |
+| `Browse` | 新闻、论坛、SCP 卷宗、日记、监控记录 |
+| `Login` | 后台登录与 BIOS 口令验证 |
+| `Files` | 拟真文件夹与档案库 |
+| `Ending` | CRT 黑屏、结案书、报纸头版 |
+
+核心创作流程：
+
+1. 新建页面并设定起始节点。
+2. 通过连线、桌面图标、搜索规则、聊天选项和登录密码组织剧情分支。
+3. 使用预览与“剧情自检”发现孤立页面、断路和不健康的结局路径。
+4. 导出 ZIP，得到可部署的 HTML、CSS、JavaScript 与完整蓝图 JSON。
+
+### 所见即所得页面编辑
+
+点画布卡片中的“预览页面”，会在该卡片中展开一个完整页面的缩略预览；点缩略预览右上的“编辑”可进入完整编辑模式。完整预览中虚线框出的文字可直接点击修改；选中文字后可加粗、斜体、下划线、添加马赛克遮挡，或绑定到该页面已有的剧情出口。点“保存内容”后，修改会同步到画布、预览运行器和导出的静态游戏。
+
+## 模板与导入导出
+
+- 仓库附带两个完整可导入示例：[灵异论坛调查模仿（ZIP）](examples/灵异论坛调查模仿.zip) 与 [雾港 2004：第七码头失踪记录（JSON）](examples/雾港2004-第七码头失踪记录.arg-blueprint.json)。第一次打开编辑器时会出现“从一个可玩的案件开始”选择框；之后仍可点“导入”手动选择文件。雾港示例覆盖 8 类页面、主题预设、搜索关键词、登录口令、文件、聊天分支与 3 个结局。
+- 内置页面主题可直接在属性面板切换。
+- 支持将 `template.html`、`style.css`、`script.js` 与 `template.json` 作为自定义模板导入、保存与复用。
+- 可导入先前导出的 `.zip` 或 `arg-blueprint.json`，缺失字段会按当前页面类型补齐安全默认值。
+- 导出内容是纯静态 HTML / CSS / JS，无需应用服务器或数据库；可部署到 GitHub Pages、Cloudflare Pages 或任何静态托管服务。
+
+基础项目可以尝试直接打开 `index.html`。为了使浏览器会话状态、动态脚本和高级交互在各浏览器中保持一致，建议用本地静态服务器或静态托管访问导出项目。
+
+### 玩家线索状态
+
+导出的运行时使用 `sessionStorage` 记录玩家在**当前浏览器会话**内访问过的页面，并用它处理线索前置条件。编辑器内的卡片预览和编辑预览不会写入此进度；每次点击“预览运行”或运行器中的“重开”都会从干净进度开始。关闭标签页或浏览器会话后，这些访问记录不保证保留；它不是长期存档功能。
+
+## AI 协作与共享状态（可选）
+
+AI 协作不是启动编辑器的前置条件。未连接 AI 时，编辑、预览、导入导出都可正常使用。
+
+### A. MCP Server（适用于支持 MCP 的 AI）
+
+本项目提供本地 stdio MCP Server：`plugins/dsh-arg-plugin/mcp-server.js`。AI 客户端启动它后，会自动发现五个 `arg_*` 工具；所有请求都会转发到 3088 Bridge，而不是在 MCP 进程中另存一份蓝图。
+
+### B. Prompt Copilot
+
+编辑器内的 DSH 面板会根据当前蓝图整理上下文。剧情头脑风暴、玩家驱动力、解密机制等按钮会填写对应的提示词；你可以复制完整 Prompt 给 DSH，或让已配置 MCP 的 AI 直接协作修改画布。
+
+### C. DSH Agent Plugin
+
+插件位于 `plugins/dsh-arg-plugin/`，为 DSH Agent 注册五个工具：
+
+| 工具 | 用途 |
+| --- | --- |
+| `arg_get_blueprint` | 获取结构化蓝图上下文 |
+| `arg_query` | 查询页面、属性与拓扑 |
+| `arg_exec` | 执行 ARG 命令，创建或修改剧情图 |
+| `arg_validate` | 运行剧情图健康度检查 |
+| `arg_get_presets` | 查询可用页面主题预设 |
+
+按 DSH 的本地插件加载方式安装：
 
 ```bash
-# 运行全部 32 项自动化单元测试
+dsh plugin add ./plugins/dsh-arg-plugin
+```
+
+### D. 3088 Shared State Bridge
+
+要让编辑器、DSH Agent 和 MCP Agent 实时使用同一份蓝图状态，请启动 Bridge：
+
+```bash
+npm run bridge
+```
+
+工作关系如下：
+
+```text
+ARG Blueprint UI  ←─ SSE ─→  3088 Shared State Bridge  ←─ HTTP ─→  DSH Agent Plugin
+       │                         ▲                              └── MCP Server
+       └── 本地修改约 300ms 后同步 ┘
+```
+
+Bridge 是共享状态的唯一入口：浏览器会通过 SSE 接收 `STATE_CHANGED`，DSH 与 MCP 的五个工具都会经由 Bridge 请求执行，因此 Agent 执行 `arg_exec` 后可将变更广播给已连接的编辑器。手动“推送 / 拉取”保留为兼容与调试操作，不是主要工作流。
+
+Bridge 固定监听 `127.0.0.1:3088`，只接受来自 `localhost` / `127.0.0.1` 的浏览器跨域请求，不会默认暴露到局域网。
+
+## 项目结构
+
+```text
+src/
+├── App.jsx                    # 编辑器状态、画布与共享状态连接
+├── components/                # 属性、连线、聊天、预览、模板与自检 UI
+├── cli.js                     # ARG 命令解析与执行器（供 MCP / DSH 使用）
+├── dsh-bridge.js              # DSH Prompt 与浏览器 Shared State 客户端
+├── generator.js               # 静态页面生成器
+├── project-io.js              # ZIP / JSON 导入导出
+├── route-config.js            # 路由、线索和页面跳转契约
+├── runtime.js                 # 导出项目的浏览器运行时
+├── theme-presets.js           # UI 主题预设
+├── types-config.js            # 8 类页面定义与默认字段
+└── validator.js               # 剧情图自检
+templates/                     # 各页面类型的 HTML / CSS 模板
+plugins/dsh-arg-plugin/        # DSH 插件、MCP Server 与 3088 Bridge
+tests/                          # 单元、契约、模板审计、全流程和 Bridge 测试
+```
+
+## 验证与构建
+
+```bash
+# 单元与契约测试
 npm test
 
-# 生产环境编译打包
+# 模板审计与完整示例自检
+npm run audit:templates
+npm run test:self-play
+
+# 执行所有测试
+npm run test:all
+
+# 生产构建
 npm run build
 ```
 
----
+GitHub Actions 会在 Node.js 20.19 和 22.12 上运行完整测试与构建。
 
-## 开源协议
+## 许可证
 
-本项目基于 [MIT License](LICENSE) 开源协议，欢迎自由创作、二创与发布你的专属 ARG 剧本游戏！
+本项目基于 [Mozilla Public License 2.0](LICENSE)（MPL-2.0）开源。对本项目源文件的修改须按 MPL-2.0 提供相应源代码；与其组合的独立文件可采用其他许可证。

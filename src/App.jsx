@@ -3,7 +3,6 @@ import { pageFileName, defaultContacts, getSmartIcon } from './route-config.js';
 import { runtimeSource } from './runtime.js';
 import { setCustomTemplates } from './templates.js';
 import { getQiyuebanDemoProject } from './demo-project.js';
-import { Terminal } from './Terminal.jsx';
 import { validateStoryGraph } from './validator.js';
 import { DshPanel } from './DshPanel.jsx';
 import { EventsModal } from './EventsModal.jsx';
@@ -16,8 +15,12 @@ import { Preview, openPreviewInNewTab } from './components/PreviewModal.jsx';
 import { CustomTemplateModal } from './components/CustomTemplateModal.jsx';
 import { ValidatorModal } from './components/ValidatorModal.jsx';
 import { exportZip, parseAndLoadProject } from './project-io.js';
+import { EXAMPLE_PROJECTS } from './example-projects.js';
+import { buildPageHtml } from './generator.js';
 
 export { exportZip, parseAndLoadProject, openPreviewInNewTab };
+
+const EXAMPLE_PICKER_SEEN_KEY = 'arg_blueprint_example_picker_seen';
 
 export default function App() {
   const [state, setState] = useState(() => {
@@ -77,7 +80,15 @@ export default function App() {
   const [dshEndpoint, setDshEndpoint] = useState(getStoredDshEndpoint());
   const [sharedStateConnected, setSharedStateConnected] = useState(false);
   const [history, setHistory] = useState({ past: [], future: [] });
-  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [selectedExampleId, setSelectedExampleId] = useState('');
+  const [inlinePreviewNodeId, setInlinePreviewNodeId] = useState(null);
+  const [showExampleStarter, setShowExampleStarter] = useState(() => {
+    try {
+      return !localStorage.getItem(EXAMPLE_PICKER_SEEN_KEY);
+    } catch (error) {
+      return true;
+    }
+  });
 
   const canvas = useRef(null);
   const importInputRef = useRef(null);
@@ -229,6 +240,17 @@ export default function App() {
     if (node) fn(node);
   });
 
+  // The visual editor works on template slots. Most slot names already match
+  // field names; desktop templates call their generated icon area `icons`.
+  const editSlots = (id, slots) => update(next => {
+    const node = next.nodes.find(item => item.id === id);
+    if (!node) return;
+    node.fields = node.fields || {};
+    Object.entries(slots).forEach(([slot, value]) => {
+      node.fields[slot === 'icons' ? 'desktopIcons' : slot] = value;
+    });
+  });
+
   const addRule = () => {
     patchSelected(node => {
       node.rules = node.rules || [];
@@ -247,22 +269,37 @@ export default function App() {
     }
   };
 
+  const applyImportedProject = (loadedState, sourceLabel) => {
+    setHistory(h => ({ past: [...h.past.slice(-30), copy(state)], future: [] }));
+    setState(loadedState);
+    setCustomTemplates(loadedState.customTemplates);
+    localStorage.setItem('arg-blueprint-react', JSON.stringify(loadedState));
+    localStorage.setItem('arg_custom_templates', JSON.stringify(loadedState.customTemplates));
+    if (loadedState.nodes.length) {
+      const minX = Math.min(...loadedState.nodes.map(n => n.x));
+      const minY = Math.min(...loadedState.nodes.map(n => n.y));
+      setViewport({ x: -minX + 80, y: -minY + 60, zoom: 1 });
+    }
+    if (sourceLabel) {
+      alert(`已载入示例工程「${sourceLabel}」！\n包含 ${loadedState.nodes.length} 个页面节点、${loadedState.edges.length} 条连线关系。`);
+    } else {
+      alert(`成功导入项目「${loadedState.title}」！\n已恢复 ${loadedState.nodes.length} 个页面节点、${loadedState.edges.length} 条连线关系。`);
+    }
+  };
+
+  const dismissExampleStarter = () => {
+    try {
+      localStorage.setItem(EXAMPLE_PICKER_SEEN_KEY, '1');
+    } catch (error) {}
+    setShowExampleStarter(false);
+  };
+
   const handleImportFile = async event => {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
       const loadedState = await parseAndLoadProject(file);
-      setHistory(h => ({ past: [...h.past.slice(-30), copy(state)], future: [] }));
-      setState(loadedState);
-      setCustomTemplates(loadedState.customTemplates);
-      localStorage.setItem('arg-blueprint-react', JSON.stringify(loadedState));
-      localStorage.setItem('arg_custom_templates', JSON.stringify(loadedState.customTemplates));
-      if (loadedState.nodes.length) {
-        const minX = Math.min(...loadedState.nodes.map(n => n.x));
-        const minY = Math.min(...loadedState.nodes.map(n => n.y));
-        setViewport({ x: -minX + 80, y: -minY + 60, zoom: 1 });
-      }
-      alert(`成功导入项目「${loadedState.title}」！\n已恢复 ${loadedState.nodes.length} 个页面节点、${loadedState.edges.length} 条连线关系。`);
+      applyImportedProject(loadedState);
     } catch (err) {
       console.error('Import failed:', err);
       alert('导入失败: ' + err.message);
@@ -270,6 +307,30 @@ export default function App() {
       event.target.value = '';
     }
   };
+
+  const loadExampleProject = async exampleId => {
+    setSelectedExampleId('');
+    if (!exampleId) return;
+
+    const example = EXAMPLE_PROJECTS.find(item => item.id === exampleId);
+    if (!example) return;
+    if (!confirm(`载入示例工程「${example.label}」？当前画布内容将被替换。`)) return;
+
+    try {
+      const response = await fetch(example.url);
+      if (!response.ok) throw new Error(`示例文件加载失败（${response.status}）`);
+      const blob = await response.blob();
+      const file = new File([blob], example.fileName, { type: blob.type || 'application/octet-stream' });
+      const loadedState = await parseAndLoadProject(file);
+      applyImportedProject(loadedState, example.label);
+      dismissExampleStarter();
+    } catch (err) {
+      console.error('Example import failed:', err);
+      alert('示例工程载入失败: ' + err.message);
+    }
+  };
+
+  const handleExampleImport = event => loadExampleProject(event.target.value);
 
   useEffect(() => {
     const checkConn = async () => {
@@ -288,11 +349,6 @@ export default function App() {
       const target = event.target;
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || target.closest('.modal');
 
-      if ((event.ctrlKey || event.metaKey) && event.key === '`') {
-        event.preventDefault();
-        setTerminalOpen(v => !v);
-        return;
-      }
       if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === 'z') {
         if (!isInput) {
           event.preventDefault();
@@ -409,14 +465,6 @@ export default function App() {
         <button className="ghost icon-tiny" style={{ padding: '5px 8px' }} disabled={!history.future.length} onClick={redo} title="重做操作 (Ctrl+Y 或 Ctrl+Shift+Z)">
           重做
         </button>
-        <button
-          className="ghost icon-tiny"
-          style={{ color: terminalOpen ? 'var(--text-main)' : 'inherit', fontWeight: terminalOpen ? 600 : 'normal' }}
-          onClick={() => setTerminalOpen(!terminalOpen)}
-          title="打开/收起 Linux 命令行终端 (快捷键 Ctrl+`)"
-        >
-          终端
-        </button>
         <input type="file" ref={importInputRef} accept=".zip,.json" style={{ display: 'none' }} onChange={handleImportFile} />
         <button className="ghost icon-tiny" onClick={() => importInputRef.current?.click()} title="导入 .zip 或 .json 蓝图文件">导入</button>
         <button
@@ -458,7 +506,6 @@ export default function App() {
         </button>
         <button className="ghost icon-tiny" onClick={() => setShowTemplateModal(true)}>自定义模板</button>
         <button className="ghost icon-tiny" onClick={() => confirm('确定清空并新建空白蓝图？') && update(next => { Object.assign(next, empty()) })}>新建</button>
-        <button className="ghost icon-tiny" onClick={() => confirm('载入官方示例项目《灵异论坛调查模仿》？当前画布内容将被替换') && update(next => { Object.assign(next, getQiyuebanDemoProject()) })} title="载入官方完整 20 节点悬疑解谜范例">示例项目</button>
         <button className="secondary" onClick={() => openPreviewInNewTab(state)} title="在新的浏览器标签页中全屏运行并体验完整游戏（支持点击桌面图标、论坛、搜索与所有结局跳转）">
           预览运行
         </button>
@@ -581,14 +628,15 @@ export default function App() {
 
             {state.nodes.map(node => {
               const nodeHasIssue = graphValidation.issues.some(i => i.nodeId === node.id);
+              const isInlinePreview = inlinePreviewNodeId === node.id;
               return (
                 <div
                   key={node.id}
                   data-id={node.id}
-                  className={`map-node ${node.id === state.selected ? 'selected' : ''} ${node.isStart ? 'start-node' : ''} ${nodeHasIssue ? 'has-issue' : ''}`}
+                  className={`map-node ${node.id === state.selected ? 'selected' : ''} ${node.isStart ? 'start-node' : ''} ${nodeHasIssue ? 'has-issue' : ''} ${isInlinePreview ? 'with-inline-preview' : ''}`}
                   style={{ left: node.x, top: node.y, pointerEvents: 'auto' }}
                   onMouseDown={event => {
-                    if (event.target.classList.contains('port')) return;
+                    if (event.target.classList.contains('port') || event.target.closest('button')) return;
                     event.stopPropagation();
                     selectNode(node.id);
                     const rect = canvas.current?.getBoundingClientRect();
@@ -605,6 +653,33 @@ export default function App() {
                   </div>
                   <div className="node-template">{node.template}</div>
                   <div className="node-summary">{summary(node, state.edges)}</div>
+                  {!isInlinePreview && (
+                    <button
+                      className="node-inline-preview-trigger"
+                      onMouseDown={event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setInlinePreviewNodeId(node.id);
+                      }}
+                      onClick={event => { event.stopPropagation(); setInlinePreviewNodeId(node.id); }}
+                    >
+                      预览页面
+                    </button>
+                  )}
+                  {isInlinePreview && (
+                    <div className="node-inline-preview">
+                      <div className="node-inline-preview-bar">
+                        <span>页面预览</span>
+                        <div>
+                          <button className="node-preview-edit" onClick={event => { event.stopPropagation(); setPreviewNode(node); }}>编辑</button>
+                          <button className="node-preview-close" aria-label="关闭卡片预览" onClick={event => { event.stopPropagation(); setInlinePreviewNodeId(null); }}>×</button>
+                        </div>
+                      </div>
+                      <div className="node-inline-preview-viewport">
+                        <iframe title={`${node.name} 卡片预览`} srcDoc={buildPageHtml(node, state, { preview: true })} />
+                      </div>
+                    </div>
+                  )}
                   <div
                     className="port out"
                     title="按住拖拽至目标页面创建出口"
@@ -640,9 +715,6 @@ export default function App() {
               const minY = Math.min(...state.nodes.map(n => n.y));
               setViewport({ x: -minX + 80, y: -minY + 60, zoom: 1 });
             }}>居中</button>
-            <button className="ghost canvas-dock-btn" title="打开 Linux 命令行终端 (Ctrl+`)" onClick={() => setTerminalOpen(!terminalOpen)}>
-              终端
-            </button>
             <button className="ghost canvas-dock-btn" title={isFullscreen ? '退出全屏' : '全屏模式'} onClick={toggleFullscreen}>
               {isFullscreen ? '退出全屏' : '全屏'}
             </button>
@@ -666,14 +738,6 @@ export default function App() {
         />
       )}
     </main>
-
-    {terminalOpen && (
-      <Terminal
-        state={state}
-        updateState={update}
-        onClose={() => setTerminalOpen(false)}
-      />
-    )}
 
     {showDshPanel && (
       <DshPanel
@@ -709,6 +773,37 @@ export default function App() {
         initialType={selected?.type || 'Browse'}
         onSelectTemplate={name => patchSelected(node => { node.template = name; })}
       />
+    )}
+
+    {previewNode && (
+      <Preview
+        state={state}
+        initialNode={previewNode}
+        onEdit={editSlots}
+        close={() => setPreviewNode(null)}
+      />
+    )}
+
+    {showExampleStarter && (
+      <div className="example-starter" role="dialog" aria-modal="true" aria-label="从示例工程开始">
+        <div className="example-starter-card">
+          <span className="eyebrow">FIRST CASE FILE</span>
+          <h2>从一个可玩的案件开始</h2>
+          <p>载入范例，观察它如何把页面、线索和结局连成一条可体验的路径。</p>
+          <select
+            className="example-project-select"
+            aria-label="导入示例工程"
+            value={selectedExampleId}
+            onChange={handleExampleImport}
+          >
+            <option value="">选择示例工程…</option>
+            {EXAMPLE_PROJECTS.map(example => (
+              <option key={example.id} value={example.id}>{example.label} · {example.detail}</option>
+            ))}
+          </select>
+          <button className="ghost" onClick={dismissExampleStarter}>先从空白画布开始</button>
+        </div>
+      </div>
     )}
   </>;
 }

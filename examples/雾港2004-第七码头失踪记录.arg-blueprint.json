@@ -1,0 +1,722 @@
+{
+  "title": "雾港 2004：第七码头失踪记录",
+  "startId": "desktop_main",
+  "nodes": [
+    {
+      "id": "desktop_main",
+      "name": "雾港警方：旧案工作台",
+      "type": "Desktop",
+      "template": "调查员工作台",
+      "fields": {
+        "title": "雾港警方旧案工作台",
+        "siteName": "旧案组 / 2004.11.07",
+        "body": "第七码头失踪案：所有证据都指向一盏已经熄灭的灯。",
+        "primaryColor": "#ca8a04",
+        "bgColor": "#181512",
+        "cardBg": "#2a241e",
+        "textColor": "#e5e5e5",
+        "fontFamily": "\"KaiTi\", \"SimSun\", serif",
+        "atmosphere": "vignette",
+        "typewriter": false
+      },
+      "x": 60,
+      "y": 80,
+      "isStart": true,
+      "note": "起始页：把玩家放进旧案调查的桌面。",
+      "tags": [
+        "起始",
+        "调查",
+        "桌面"
+      ]
+    },
+    {
+      "id": "index_portal",
+      "name": "雾港失踪人口档案索引",
+      "type": "Index",
+      "template": "档案目录",
+      "fields": {
+        "title": "雾港失踪人口档案索引",
+        "siteName": "市政公开档案镜像",
+        "body": "用分类目录、旧网页与当事人留下的碎片，拼回那个雨夜。",
+        "primaryColor": "#0284c7",
+        "bgColor": "#f8fafc",
+        "cardBg": "#ffffff",
+        "textColor": "#0f172a",
+        "fontFamily": "-apple-system, BlinkMacSystemFont, sans-serif",
+        "atmosphere": "",
+        "typewriter": false,
+        "customCss": "body{letter-spacing:.03em}"
+      },
+      "x": 340,
+      "y": 80,
+      "isStart": false
+    },
+    {
+      "id": "search_terminal",
+      "name": "灰灯搜索引擎",
+      "type": "Search",
+      "template": "终端搜索",
+      "fields": {
+        "title": "灰灯搜索：港口没有尽头",
+        "siteName": "grey-lantern.search",
+        "body": "输入：第七码头、林灯、潮汐、M-07。",
+        "primaryColor": "#00ff66",
+        "bgColor": "#05070a",
+        "cardBg": "#090e17",
+        "textColor": "#00ff66",
+        "fontFamily": "\"Courier New\", Consolas, monospace",
+        "atmosphere": "crt",
+        "typewriter": false
+      },
+      "rules": [
+        {
+          "keyword": "第七码头",
+          "target": "bbs_forum"
+        },
+        {
+          "keyword": "林灯",
+          "target": "diary_lantern"
+        },
+        {
+          "keyword": "M-07",
+          "target": "scp_record"
+        },
+        {
+          "keyword": "87.4",
+          "target": "leak_dump"
+        },
+        {
+          "keyword": "潮汐",
+          "target": "news_flash"
+        }
+      ],
+      "x": 340,
+      "y": 260,
+      "isStart": false,
+      "note": "核心检索机制：五个关键词分别打开不同证据。",
+      "tags": [
+        "搜索",
+        "解谜",
+        "关键词"
+      ]
+    },
+    {
+      "id": "forum_home",
+      "name": "雾港夜航论坛首页",
+      "type": "Browse",
+      "template": "复古 BBS 论坛",
+      "fields": {
+        "title": "雾港夜航 BBS / 首页",
+        "siteName": "雾港夜航 BBS",
+        "body": "【置顶】第七码头的灯又亮了。请勿在凌晨 02:17 后单独前往港区。\n\n最新帖子：有人在 87.4 频段听见失踪者报坐标。",
+        "primaryColor": "#2b5a8f",
+        "bgColor": "#e5edf5",
+        "cardBg": "#ffffff",
+        "textColor": "#333333",
+        "fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Microsoft YaHei\", sans-serif",
+        "atmosphere": "",
+        "typewriter": false
+      },
+      "x": 620,
+      "y": -100,
+      "isStart": false,
+      "tags": [
+        "论坛首页",
+        "入口"
+      ]
+    },
+    {
+      "id": "bbs_forum",
+      "name": "置顶：87.4 频道目击帖",
+      "type": "Browse",
+      "template": "复古 BBS 论坛",
+      "fields": {
+        "title": "雾港夜航论坛 / 灯塔从不熄灭",
+        "siteName": "雾港夜航 BBS",
+        "body": "楼主：昨晚又听见频道 87.4 有人在报坐标。",
+        "primaryColor": "#2b5a8f",
+        "bgColor": "#e5edf5",
+        "cardBg": "#ffffff",
+        "textColor": "#333333",
+        "fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Microsoft YaHei\", sans-serif",
+        "atmosphere": "",
+        "typewriter": false
+      },
+      "x": 620,
+      "y": 80,
+      "isStart": false
+    },
+    {
+      "id": "news_flash",
+      "name": "2004 年港口晚报",
+      "type": "Browse",
+      "template": "2001 新闻",
+      "fields": {
+        "title": "港口晚报：失踪者家属拒绝结案",
+        "siteName": "2004 年港口晚报",
+        "body": "第七码头封锁期间，市政档案遭到删除。",
+        "primaryColor": "#174a8b",
+        "bgColor": "#f4f6f9",
+        "cardBg": "#ffffff",
+        "textColor": "#222222",
+        "fontFamily": "\"SimSun\", \"宋体\", serif",
+        "atmosphere": "",
+        "typewriter": false
+      },
+      "x": 620,
+      "y": 260,
+      "isStart": false
+    },
+    {
+      "id": "diary_lantern",
+      "name": "林灯的第七夜日记",
+      "type": "Browse",
+      "template": "遇害者手写日记",
+      "fields": {
+        "title": "林灯手记 / 第七夜",
+        "siteName": "林灯的第七夜日记",
+        "body": "他们说灯塔是在引船靠岸，但我看见它把人引向海里。",
+        "primaryColor": "#8b2500",
+        "bgColor": "#2c2219",
+        "cardBg": "#f6eedb",
+        "textColor": "#2c1d11",
+        "fontFamily": "\"KaiTi\", \"楷体\", \"STKaiti\", serif",
+        "atmosphere": "vignette",
+        "typewriter": true
+      },
+      "x": 620,
+      "y": 440,
+      "isStart": false
+    },
+    {
+      "id": "scp_record",
+      "name": "M-07 潮汐异常卷宗",
+      "type": "Browse",
+      "template": "SCP 绝密卷宗",
+      "fields": {
+        "title": "M-07 潮汐异常观察记录",
+        "siteName": "M-07 潮汐异常卷宗",
+        "body": "仅在 02:17 至 02:24 间出现的逆向潮汐，会抹除目击者记忆。",
+        "primaryColor": "#991b1b",
+        "bgColor": "#26221c",
+        "cardBg": "#e8e2d2",
+        "textColor": "#1a1815",
+        "fontFamily": "\"KaiTi\", \"楷体\", \"SimSun\", serif",
+        "atmosphere": "vignette",
+        "typewriter": false
+      },
+      "x": 900,
+      "y": 80,
+      "isStart": false
+    },
+    {
+      "id": "leak_dump",
+      "name": "灯塔监控数据泄露",
+      "type": "Browse",
+      "template": "黑客数据窃密流",
+      "fields": {
+        "title": "LANTERN_ROOT / 数据转储",
+        "siteName": "灯塔监控数据泄露",
+        "body": "root@beacon: 监控文件已恢复 87%，请勿播放最后 17 秒。",
+        "primaryColor": "#00ff66",
+        "bgColor": "#05070a",
+        "cardBg": "#0b0f19",
+        "textColor": "#00ff66",
+        "fontFamily": "\"Courier New\", Consolas, monospace",
+        "atmosphere": "crt",
+        "typewriter": true
+      },
+      "x": 900,
+      "y": 260,
+      "isStart": false
+    },
+    {
+      "id": "login_lighthouse",
+      "name": "第七码头灯塔后台",
+      "type": "Login",
+      "template": "BIOS 开机验证",
+      "fields": {
+        "title": "LIGHTHOUSE BIOS SECURITY",
+        "siteName": "第七码头灯塔后台",
+        "body": "",
+        "primaryColor": "#ffff55",
+        "bgColor": "#0000aa",
+        "cardBg": "#000000",
+        "textColor": "#ffffff",
+        "fontFamily": "\"Consolas\", \"Courier New\", monospace",
+        "atmosphere": "crt",
+        "typewriter": true,
+        "password": "0217",
+        "hint": "潮汐倒转的时间",
+        "loginTarget": "vault_files"
+      },
+      "x": 340,
+      "y": 440,
+      "isStart": false
+    },
+    {
+      "id": "vault_files",
+      "name": "灯塔根目录",
+      "type": "Files",
+      "template": "Windows 文件夹",
+      "fields": {
+        "title": "C:\\\\LIGHTHOUSE\\\\ROOT",
+        "siteName": "灯塔根目录",
+        "body": "其中一份 wav 文件正在自动重命名为你的名字。",
+        "primaryColor": "#000080",
+        "bgColor": "#ffffff",
+        "cardBg": "#f0f0f0",
+        "textColor": "#000000",
+        "fontFamily": "\"MS Sans Serif\", \"SimSun\", sans-serif",
+        "atmosphere": "",
+        "typewriter": false
+      },
+      "x": 620,
+      "y": 620,
+      "isStart": false
+    },
+    {
+      "id": "chat_dispatch",
+      "name": "港警内网协作频道",
+      "type": "Chat",
+      "template": "Discord 社区频道",
+      "fields": {
+        "title": "#旧案-第七码头",
+        "siteName": "港警内网协作频道",
+        "body": "港警内网：仅限授权调查员。",
+        "primaryColor": "#5865f2",
+        "bgColor": "#202225",
+        "cardBg": "#36393f",
+        "textColor": "#dcddde",
+        "fontFamily": "\"gg sans\", \"Noto Sans\", sans-serif",
+        "atmosphere": "",
+        "typewriter": false
+      },
+      "contacts": [
+        {
+          "id": "c_co6hb",
+          "name": "周警官",
+          "avatar": "🕵️",
+          "bio": "旧案组唯一仍在职的调查员",
+          "messages": [
+            {
+              "sender": "npc",
+              "text": "别在内网提灯塔。我们已经因此失去过一个人。"
+            },
+            {
+              "sender": "player",
+              "text": "我找到林灯的日记和 M-07 记录。"
+            },
+            {
+              "sender": "npc",
+              "text": "那你已经被它注意到了。选择你要交出去的证据。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "公开全部卷宗",
+              "target": "end_truth",
+              "reply": "把证据发给每一家媒体。",
+              "requires": "scp_record"
+            },
+            {
+              "text": "接受结案报告",
+              "target": "end_coverup",
+              "reply": "删除备份，保住家人。",
+              "requires": "diary_lantern"
+            }
+          ],
+          "dialogue": [
+            {
+              "id": "m_1787731168337_xyoo",
+              "sender": "npc",
+              "text": "别在内网提灯塔。我们已经因此失去过一个人。"
+            },
+            {
+              "id": "m_1787731168337_g4sc",
+              "sender": "player",
+              "text": "我找到林灯的日记和 M-07 记录。"
+            },
+            {
+              "id": "m_1787731168337_c5x6",
+              "sender": "npc",
+              "text": "那你已经被它注意到了。选择你要交出去的证据。"
+            },
+            {
+              "id": "m_1787731168337_choice",
+              "sender": "choice",
+              "options": [
+                {
+                  "text": "公开全部卷宗",
+                  "reply": "把证据发给每一家媒体。",
+                  "target": "end_truth",
+                  "requires": "scp_record"
+                },
+                {
+                  "text": "接受结案报告",
+                  "reply": "删除备份，保住家人。",
+                  "target": "end_coverup",
+                  "requires": "diary_lantern"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "x": 900,
+      "y": 440,
+      "isStart": false,
+      "tags": [
+        "对话",
+        "抉择",
+        "多结局"
+      ]
+    },
+    {
+      "id": "chat_signal",
+      "name": "未知频段加密通讯",
+      "type": "Chat",
+      "template": "Telegram 风格",
+      "fields": {
+        "title": "SIGNAL_87.4",
+        "siteName": "未知频段加密通讯",
+        "body": "加密频道：对方似乎知道你正看着屏幕。",
+        "primaryColor": "#3390ec",
+        "bgColor": "#e6ebee",
+        "cardBg": "#ffffff",
+        "textColor": "#1e293b",
+        "fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "atmosphere": "",
+        "typewriter": false
+      },
+      "contacts": [
+        {
+          "id": "c_sv1ul",
+          "name": "87.4",
+          "avatar": "📡",
+          "bio": "无法确认的人类讯号",
+          "messages": [
+            {
+              "sender": "npc",
+              "text": "你终于连上来了。林灯不是第一个，也不会是最后一个。"
+            },
+            {
+              "sender": "player",
+              "text": "你是谁？"
+            },
+            {
+              "sender": "npc",
+              "text": "我是上一位玩家留下的回声。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "回应信号",
+              "target": "end_signal",
+              "reply": "把坐标发给我。",
+              "requires": "leak_dump"
+            }
+          ],
+          "dialogue": [
+            {
+              "id": "m_1787731168337_o6lb",
+              "sender": "npc",
+              "text": "你终于连上来了。林灯不是第一个，也不会是最后一个。"
+            },
+            {
+              "id": "m_1787731168337_vluw",
+              "sender": "player",
+              "text": "你是谁？"
+            },
+            {
+              "id": "m_1787731168337_lvsj",
+              "sender": "npc",
+              "text": "我是上一位玩家留下的回声。"
+            },
+            {
+              "id": "m_1787731168337_choice",
+              "sender": "choice",
+              "options": [
+                {
+                  "text": "回应信号",
+                  "reply": "把坐标发给我。",
+                  "target": "end_signal",
+                  "requires": "leak_dump"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "x": 1180,
+      "y": 80,
+      "isStart": false,
+      "note": "元叙事结局：让玩家意识到自己正在接力。",
+      "tags": [
+        "加密通讯",
+        "元叙事"
+      ]
+    },
+    {
+      "id": "end_truth",
+      "name": "结局：让雾港听见真相",
+      "type": "Ending",
+      "template": "案件结案判定书",
+      "fields": {
+        "title": "案件法庭裁决书",
+        "siteName": "结局：让雾港听见真相",
+        "body": "",
+        "primaryColor": "#dc2626",
+        "bgColor": "#f1f5f9",
+        "cardBg": "#ffffff",
+        "textColor": "#0f172a",
+        "fontFamily": "\"KaiTi\", \"楷体\", \"SimSun\", serif",
+        "atmosphere": "",
+        "typewriter": false,
+        "message": "你公开了灯塔实验。雾港终于停电，但每晚 02:17，海面仍会响起你的名字。"
+      },
+      "x": 1180,
+      "y": 260,
+      "isStart": false,
+      "tags": [
+        "结局",
+        "公开"
+      ]
+    },
+    {
+      "id": "end_coverup",
+      "name": "结局：沉默的港口",
+      "type": "Ending",
+      "template": "报纸头版通报",
+      "fields": {
+        "title": "港口晚报特别版",
+        "siteName": "结局：沉默的港口",
+        "body": "",
+        "primaryColor": "#000000",
+        "bgColor": "#d4d0c8",
+        "cardBg": "#f5f4ef",
+        "textColor": "#111111",
+        "fontFamily": "\"SimSun\", \"宋体\", serif",
+        "atmosphere": "",
+        "typewriter": false,
+        "message": "你接受了结案报告。第二天，所有报纸的空白处都印着第七码头的坐标。"
+      },
+      "x": 1180,
+      "y": 440,
+      "isStart": false,
+      "tags": [
+        "结局",
+        "沉默"
+      ]
+    },
+    {
+      "id": "end_signal",
+      "name": "结局：你成了新的信号",
+      "type": "Ending",
+      "template": "CRT 黑屏",
+      "fields": {
+        "title": "信号接入完成",
+        "siteName": "结局：你成了新的信号",
+        "body": "",
+        "primaryColor": "#00ff66",
+        "bgColor": "#000000",
+        "cardBg": "#000000",
+        "textColor": "#ffffff",
+        "fontFamily": "\"Courier New\", Consolas, monospace",
+        "atmosphere": "crt",
+        "typewriter": true,
+        "message": "你没有离开灯塔。你只是成为了下一位负责回应玩家的人。"
+      },
+      "x": 1460,
+      "y": 80,
+      "isStart": false,
+      "tags": [
+        "结局",
+        "循环"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "desktop_main",
+      "to": "index_portal",
+      "port": "失踪人口档案",
+      "icon": "📁",
+      "label": "失踪人口档案",
+      "desc": ""
+    },
+    {
+      "from": "desktop_main",
+      "to": "search_terminal",
+      "port": "灰灯搜索",
+      "icon": "📁",
+      "label": "灰灯搜索",
+      "desc": ""
+    },
+    {
+      "from": "desktop_main",
+      "to": "login_lighthouse",
+      "port": "灯塔后台",
+      "icon": "📁",
+      "label": "灯塔后台",
+      "desc": ""
+    },
+    {
+      "from": "desktop_main",
+      "to": "forum_home",
+      "port": "雾港夜航论坛.exe",
+      "icon": "🌐",
+      "label": "雾港夜航论坛.exe",
+      "desc": "打开雾港夜航 BBS 首页"
+    },
+    {
+      "from": "desktop_main",
+      "to": "chat_dispatch",
+      "port": "港警内网通讯.exe",
+      "icon": "💬",
+      "label": "港警内网通讯.exe",
+      "desc": "联系旧案组调查员"
+    },
+    {
+      "from": "desktop_main",
+      "to": "chat_signal",
+      "port": "87.4 加密通讯.exe",
+      "icon": "📡",
+      "label": "87.4 加密通讯.exe",
+      "desc": "打开未知频段讯号"
+    },
+    {
+      "from": "forum_home",
+      "to": "bbs_forum",
+      "port": "置顶：87.4 频道目击帖",
+      "icon": "",
+      "label": "置顶：87.4 频道目击帖",
+      "desc": "昨晚又有人听见失踪者报坐标"
+    },
+    {
+      "from": "index_portal",
+      "to": "bbs_forum",
+      "port": "论坛目击帖",
+      "icon": "",
+      "label": "论坛目击帖",
+      "desc": ""
+    },
+    {
+      "from": "index_portal",
+      "to": "news_flash",
+      "port": "港口晚报",
+      "icon": "",
+      "label": "港口晚报",
+      "desc": ""
+    },
+    {
+      "from": "index_portal",
+      "to": "diary_lantern",
+      "port": "林灯日记",
+      "icon": "",
+      "label": "林灯日记",
+      "desc": ""
+    },
+    {
+      "from": "index_portal",
+      "to": "search_terminal",
+      "port": "继续检索",
+      "icon": "",
+      "label": "继续检索",
+      "desc": ""
+    },
+    {
+      "from": "bbs_forum",
+      "to": "diary_lantern",
+      "port": "楼主私信附件",
+      "icon": "",
+      "label": "楼主私信附件",
+      "desc": ""
+    },
+    {
+      "from": "news_flash",
+      "to": "chat_dispatch",
+      "port": "联系旧案组",
+      "icon": "",
+      "label": "联系旧案组",
+      "desc": ""
+    },
+    {
+      "from": "diary_lantern",
+      "to": "chat_dispatch",
+      "port": "拨打值班电话",
+      "icon": "",
+      "label": "拨打值班电话",
+      "desc": ""
+    },
+    {
+      "from": "login_lighthouse",
+      "to": "vault_files",
+      "port": "通过 BIOS 自检",
+      "icon": "",
+      "label": "通过 BIOS 自检",
+      "desc": ""
+    },
+    {
+      "from": "vault_files",
+      "to": "scp_record",
+      "port": "打开 M-07 卷宗",
+      "icon": "",
+      "label": "打开 M-07 卷宗",
+      "desc": ""
+    },
+    {
+      "from": "vault_files",
+      "to": "leak_dump",
+      "port": "恢复监控转储",
+      "icon": "",
+      "label": "恢复监控转储",
+      "desc": ""
+    },
+    {
+      "from": "scp_record",
+      "to": "chat_signal",
+      "port": "接入 87.4 频段",
+      "icon": "",
+      "label": "接入 87.4 频段",
+      "desc": ""
+    },
+    {
+      "from": "leak_dump",
+      "to": "chat_signal",
+      "port": "播放最后 17 秒",
+      "icon": "",
+      "label": "播放最后 17 秒",
+      "desc": ""
+    },
+    {
+      "from": "search_terminal",
+      "to": "login_lighthouse",
+      "port": "灯塔登录页",
+      "icon": "",
+      "label": "灯塔登录页",
+      "desc": ""
+    },
+    {
+      "from": "chat_dispatch",
+      "to": "end_truth",
+      "port": "公开全部卷宗",
+      "label": "公开全部卷宗",
+      "desc": "聊天对话「周警官」触发"
+    },
+    {
+      "from": "chat_dispatch",
+      "to": "end_coverup",
+      "port": "接受结案报告",
+      "label": "接受结案报告",
+      "desc": "聊天对话「周警官」触发"
+    },
+    {
+      "from": "chat_signal",
+      "to": "end_signal",
+      "port": "回应信号",
+      "label": "回应信号",
+      "desc": "聊天对话「87.4」触发"
+    }
+  ]
+}

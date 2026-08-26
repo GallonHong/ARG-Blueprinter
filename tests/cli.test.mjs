@@ -28,6 +28,22 @@ test('CLI touch 指令创建节点与设置起始页', () => {
   assert.equal(state.nodes[1].template, '微信 UI 风格');
 });
 
+test('CLI import 保留 JSON 引号并完整替换蓝图', () => {
+  const state = createMockState();
+  const updateState = fn => fn(state);
+  const payload = JSON.stringify({
+    title: '导入示例',
+    startId: 'intro',
+    nodes: [{ id: 'intro', name: '开始页', type: 'Desktop', fields: {}, x: 0, y: 0, isStart: true }],
+    edges: []
+  });
+
+  const result = executeCliCommand(`import ${payload}`, state, updateState);
+  assert.equal(result.error, null);
+  assert.equal(state.title, '导入示例');
+  assert.equal(state.nodes[0].id, 'intro');
+});
+
 test('CLI ln 与 unlink 建立和断开连线', () => {
   const state = createMockState();
   const updateState = fn => fn(state);

@@ -134,6 +134,77 @@ html, body {
   gap: 5px;
 }
 
+.example-project-select {
+  appearance: none;
+  min-width: 126px;
+  max-width: 154px;
+  padding: 4px 25px 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  background: #fff linear-gradient(45deg, transparent 50%, #71717a 50%) calc(100% - 11px) 50% / 4px 4px no-repeat,
+    linear-gradient(135deg, #71717a 50%, transparent 50%) calc(100% - 7px) 50% / 4px 4px no-repeat;
+  font: 500 11px/1.25 inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.example-project-select:hover,
+.example-project-select:focus {
+  color: var(--text-main);
+  border-color: var(--border-strong);
+  outline: none;
+}
+
+.example-starter {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: grid;
+  place-items: start center;
+  padding-top: min(18vh, 150px);
+  background: rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(3px);
+}
+
+.example-starter-card {
+  width: min(440px, calc(100vw - 32px));
+  padding: 22px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.example-starter-card h2 {
+  margin: 4px 0 6px;
+  color: #0f172a;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.example-starter-card p {
+  margin: 0 0 16px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.example-starter-card .example-project-select {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin-bottom: 10px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.example-starter-card .ghost {
+  width: 100%;
+}
+
 /* ==================== Precision Buttons ==================== */
 button {
   border: 1px solid transparent;
@@ -423,6 +494,93 @@ button:disabled {
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.04em;
+}
+
+.map-node.with-inline-preview {
+  width: 390px;
+  z-index: 8;
+}
+
+.node-inline-preview {
+  height: 220px;
+  margin-top: 8px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.node-inline-preview-trigger {
+  margin-top: 7px;
+  padding: 2px 5px;
+  border: 1px solid #dbe3ee;
+  border-radius: 3px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 9.5px;
+  line-height: 1.2;
+}
+
+.node-inline-preview-trigger:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.node-inline-preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 26px;
+  padding: 0 6px 0 8px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.node-inline-preview-bar > div {
+  display: flex;
+  gap: 3px;
+}
+
+.node-preview-edit,
+.node-preview-close {
+  min-width: 20px;
+  padding: 1px 4px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #475569;
+  font-size: 10px;
+}
+
+.node-preview-edit:hover,
+.node-preview-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.node-inline-preview-viewport {
+  position: relative;
+  height: calc(100% - 26px);
+  overflow: hidden;
+}
+
+.node-inline-preview iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 400%;
+  height: 400%;
+  border: 0;
+  background: #fff;
+  pointer-events: none;
+  transform: scale(0.25);
+  transform-origin: top left;
 }
 
 .node-header-row {
@@ -767,185 +925,13 @@ textarea {
   font-size: 12px;
 }
 
-/* ==================== Linux Terminal Drawer ==================== */
-.terminal-drawer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 260px;
-  background: #121214;
-  border-top: 1px solid #27272a;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
-}
-
-.terminal-drawer.maximized {
-  height: 80vh;
-}
-
-.terminal-header {
-  height: 34px;
-  background: #18181b;
-  border-bottom: 1px solid #27272a;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  user-select: none;
-}
-
-.terminal-header-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #e4e4e7;
-  font-size: 11.5px;
-}
-
-.terminal-icon {
-  color: #a1a1aa;
-  font-family: var(--font-mono);
-}
-
+/* ==================== Shared status badge ==================== */
 .terminal-badge {
   font-size: 9.5px;
   color: #71717a;
   padding: 1px 4px;
   border-radius: 3px;
   background: #27272a;
-}
-
-.terminal-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.term-btn {
-  background: #27272a;
-  border: 1px solid #3f3f46;
-  color: #d4d4d8;
-  font-size: 11px;
-  padding: 2px 7px;
-  border-radius: 4px;
-}
-
-.term-btn:hover {
-  background: #3f3f46;
-  color: #ffffff;
-}
-
-.term-btn.primary {
-  background: #e4e4e7;
-  color: #18181b;
-  font-weight: 600;
-  border-color: #e4e4e7;
-}
-
-.term-btn.close {
-  background: transparent;
-  border: none;
-  color: #71717a;
-}
-
-.term-btn.close:hover {
-  color: #f43f5e;
-}
-
-.terminal-body {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 8px 12px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  line-height: 1.5;
-  color: #d4d4d8;
-}
-
-.terminal-line {
-  margin-bottom: 3px;
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  width: 100%;
-  min-width: 0;
-}
-
-.terminal-line.cmd { color: #ffffff; }
-.terminal-line.error { color: #f87171; }
-.terminal-line.output { color: #a1a1aa; }
-.terminal-line.info { color: #71717a; }
-
-.term-prompt {
-  color: #71717a;
-  flex-shrink: 0;
-  user-select: none;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.term-text {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font-family: inherit;
-  font-size: 11.5px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.terminal-input-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin-top: 4px;
-  width: 100%;
-  min-width: 0;
-}
-
-.terminal-input {
-  flex: 1;
-  min-width: 0;
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  line-height: 1.5;
-  padding: 0;
-  outline: none;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  resize: none;
-  overflow-y: hidden;
-  height: 20px;
-  max-height: 180px;
-}
-
-.terminal-batch-pane {
-  flex: 1;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-}
-
-.terminal-batch-textarea {
-  flex: 1;
-  background: #09090b;
-  border: 1px solid #27272a;
-  color: #e4e4e7;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  padding: 8px;
-  border-radius: 5px;
-  resize: none;
 }
 
 /* ==================== Modals (Clean Craft Style) ==================== */
@@ -1362,6 +1348,3 @@ textarea {
   background: #fef3c7;
   color: #92400e;
 }
-
-
-

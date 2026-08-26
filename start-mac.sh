@@ -26,7 +26,13 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
-echo "[✔] Node.js 环境检测正常: $(node -v)"
+if ! node -e "const [major, minor, patch] = process.versions.node.split('.').map(Number); const supported = (major === 20 && (minor > 19 || (minor === 19 && patch >= 0))) || (major === 22 && (minor > 12 || (minor === 12 && patch >= 0))) || major > 22; process.exit(supported ? 0 : 1)"; then
+    echo "[❌ 错误] 当前 Node.js $(node -v) 不受支持。"
+    echo "💡 请安装 Node.js 20.19+ 或 22.12+（推荐当前 LTS），然后重新运行本脚本。"
+    exit 1
+fi
+
+echo "[✔] Node.js 版本检测正常: $(node -v)"
 echo ""
 
 # 2. 检查依赖

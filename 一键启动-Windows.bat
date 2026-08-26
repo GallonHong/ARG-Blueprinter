@@ -22,7 +22,16 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-echo [✔] Node.js 环境检测正常:
+node -e "const [major, minor, patch] = process.versions.node.split('.').map(Number); const supported = (major === 20 ^&^& (minor ^> 19 ^|^| (minor === 19 ^&^& patch ^>= 0))) ^|^| (major === 22 ^&^& (minor ^> 12 ^|^| (minor === 12 ^&^& patch ^>= 0))) ^|^| major ^> 22; process.exit(supported ? 0 : 1)"
+if %errorlevel% neq 0 (
+    echo [❌ 错误] 当前 Node.js 版本不受支持：
+    node -v
+    echo 💡 请安装 Node.js 20.19+ 或 22.12+（推荐当前 LTS），然后重新运行本脚本。
+    pause
+    exit /b 1
+)
+
+echo [✔] Node.js 版本检测正常:
 node -v
 echo.
 
