@@ -9,12 +9,14 @@ import {
 } from './dsh-bridge.js';
 import { executeBatchCli } from './cli.js';
 
+const DEFAULT_COPILOT_PROMPT = '请作为 ARG 剧情副驾驶，基于现有蓝图设定，为我构思 2~3 个不同风格（如现实社会派揭黑、民俗怪谈、黑客反转）的后续剧情走向方案。请深入分析各方案的悬念亮点与玩家情感共鸣，由我做最终决断，并附带可落地的 ARG CLI 脚本。';
+
 export function DshPanel({ state, update, isOpen, onClose }) {
   const [endpoint, setEndpoint] = useState(getStoredDshEndpoint());
   const [isOnline, setIsOnline] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [activeTab, setActiveTab] = useState('copilot'); // 'copilot' | 'webview'
-  const [promptInput, setPromptInput] = useState('');
+  const [promptInput, setPromptInput] = useState(DEFAULT_COPILOT_PROMPT);
   const [generatedScript, setGeneratedScript] = useState('');
   const [copiedTip, setCopiedTip] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -31,6 +33,9 @@ export function DshPanel({ state, update, isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       testConnection(endpoint);
+      if (!promptInput) {
+        setPromptInput(DEFAULT_COPILOT_PROMPT);
+      }
     }
   }, [isOpen]);
 
