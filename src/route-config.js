@@ -171,6 +171,7 @@ export function buildRouteConfig(node, state, { preview = false } = {}) {
     rules: { search: searchRules },
     links: {},
     password: node.fields?.password || '',
+    errorMessage: node.fields?.errorMessage || node.fields?.error || '❌ 密码错误，请重新输入！',
     loginTarget: state.edges.find(edge => edge.from === node.id)?.to || '',
     notFoundText: node.fields?.notFoundText || '没有找到相关结果',
     typewriter: !!(node.fields?.typewriter ?? false),

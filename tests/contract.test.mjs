@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import test from 'node:test'
 import { buildRouteConfig, pageFileName, generateLinksHtml, generateNavLinksHtml, generateHotLinksHtml, generateDesktopIconsHtml } from '../src/route-config.js'
+import { runtimeSource } from '../src/runtime.js'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 
@@ -287,3 +288,38 @@ test('《七月半：灵异论坛调查记录》完整复刻项目契约与路�
   assert.equal(mingyueye.choices[0].target, 'node_end1')
   assert.equal(mingyueye.choices[4].target, 'node_end5')
 })
+
+test('登录页 Runtime 严格鉴权与错误文案解耦', () => {
+  const loginNode = {
+    id: 'login_custom',
+    type: 'Login',
+    name: '特权口令验证',
+    fields: {
+      password: 'vault_pass_999',
+      errorMessage: '❌ 密钥口令无效，系统已记录本次尝试！'
+    }
+  }
+  const targetNode = { id: 'vault_inner', type: 'Files', name: '地下保险库' }
+  const state = {
+    startId: 'login_custom',
+    nodes: [loginNode, targetNode],
+    edges: [{ from: 'login_custom', to: 'vault_inner', port: '验证进入' }]
+  }
+
+  const config = buildRouteConfig(loginNode, state)
+  assert.equal(config.password, 'vault_pass_999')
+  assert.equal(config.errorMessage, '❌ 密钥口令无效，系统已记录本次尝试！')
+  assert.equal(config.loginTarget, 'vault_inner')
+
+  // Verify runtimeSource does NOT contain universal hardcoded passwords
+  assert.ok(!runtimeSource.includes('一切自愿的大学'))
+  assert.ok(!runtimeSource.includes('yxzyddx'))
+  assert.ok(!runtimeSource.includes('0717'))
+})
+
+test('通用 Runtime 暴露标准沙箱 API (window.ARG_RUNTIME)', () => {
+  assert.ok(runtimeSource.includes('window.ARG_RUNTIME'))
+  assert.ok(runtimeSource.includes('playSynthSound'))
+  assert.ok(runtimeSource.includes('triggerClue'))
+})
+

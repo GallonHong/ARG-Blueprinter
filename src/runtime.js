@@ -182,24 +182,26 @@ export const runtimeSource = `
 
     function doLogin(){
       const val = (input ? input.value : '').trim().toLowerCase();
-      const expected = String(config.password || '').trim().toLowerCase();
-      const target = config.loginTarget || Object.values(config.links || {})[0] || 'node_files';
-      const isMatch = (!expected) || (val === expected) || (val === 'yxzyddx') || (val === '0717') || (val === '一切自愿的大学');
+      const rawExpected = String(config.password || '').trim().toLowerCase();
+      const target = config.loginTarget || Object.values(config.links || {})[0] || '';
+      
+      const allowedPasswords = rawExpected ? rawExpected.split(/[,，;|/]+/).map(s => s.trim()).filter(Boolean) : [];
+      const isMatch = allowedPasswords.length === 0 ? true : allowedPasswords.includes(val);
 
       if (isMatch) {
         playSynthSound('unlock');
         if (error) {
           error.style.color = '#10b981';
-          error.textContent = '✓ 密码验证成功，正在解密载入档案...';
+          error.textContent = '✓ 密码验证成功，正在解密载入...';
         }
         setTimeout(() => {
-          go(target);
+          if (target) go(target);
         }, 80);
       } else {
         playSynthSound('error');
         if (error) {
           error.style.color = '#ef4444';
-          error.textContent = '❌ 密码错误！提示：可在搜索“失踪”或“南鄣”新闻中获取暗号拼音首字母 (yxzyddx)';
+          error.textContent = config.errorMessage || '❌ 密码错误，请重新输入！';
         }
         if (input) {
           input.value = '';
@@ -435,6 +437,16 @@ export const runtimeSource = `
         if (port) checkLink(port);
       }
     });
+
+    // Expose official API for custom templates
+    window.ARG_RUNTIME = {
+      go: go,
+      checkLink: checkLink,
+      playSynthSound: playSynthSound,
+      triggerClue: triggerClue,
+      getClues: getClues,
+      config: config
+    };
   }
 
   bind();

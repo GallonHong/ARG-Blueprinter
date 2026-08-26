@@ -149,7 +149,9 @@ export function buildPageHtml(node,state,{preview=false}={}){
   const runtimeTag=preview?`<script>${runtimeSource}</script>`:'<script src="arg-runtime.js"></script>';
   
   const customTpl = (state.customTemplates || []).find(t => t.name === node.template && (t.type === node.type || t.type === 'Custom'));
-  const customScriptTag = (customTpl && customTpl.js) ? `<script>${customTpl.js}</script>` : '';
+  const customScriptTag = (customTpl && customTpl.js)
+    ? `<script>(function(){ try { const run = function(){ try { (function(ARG_RUNTIME, config){ ${customTpl.js} })(window.ARG_RUNTIME, window.ARG_CONFIG || {}); } catch(e){ console.warn('[Custom Template Script Error]', e); } }; if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', run); } else { run(); } } catch(err){} })();</script>`
+    : '';
 
   return template.replace('</body>',`${configTag}${runtimeTag}${customScriptTag}</body>`);
 }
