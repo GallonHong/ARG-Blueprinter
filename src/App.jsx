@@ -1315,6 +1315,7 @@ const safeHex = (val, fallback = '#174a8b') => {
 
 function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateModal, onClose, update, patch, remove, addRule, addNode }) {
   const [activeTab, setActiveTab] = useState('content') // 'content' | 'links' | 'style'
+  const [presetDropdownOpen, setPresetDropdownOpen] = useState(false)
 
   if (!selected) return (
     <aside className="inspector">
@@ -1540,43 +1541,105 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
         <div className="field" style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <label style={{ margin: 0, fontWeight: 'bold', color: 'var(--text-main)' }}>
-              🎨 {TYPES[selected.type]?.label || selected.type} 专属 UI 主题预设 ({currentPresets.length})
+              🎨 {TYPES[selected.type]?.label || selected.type} 专属 UI 主题预设
             </label>
-            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>一键切换完整 UI 结构与质感</span>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>共 {currentPresets.length} 款预设</span>
           </div>
-          <div className="preset-scroll-container">
-            {currentPresets.map((preset) => {
-              const isCurrent = selected.template === preset.template
-              return (
-                <button
-                  key={preset.id}
-                  type="button"
-                  className="ghost"
-                  style={{
-                    padding: '6px 8px',
-                    textAlign: 'left',
-                    borderRadius: 5,
-                    border: isCurrent ? '2px solid #2563eb' : '1px solid var(--border-color)',
-                    background: isCurrent ? '#eff6ff' : '#ffffff',
-                    transition: 'all 0.12s ease'
-                  }}
-                  onClick={() => applyPreset(preset)}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                    <strong style={{ fontSize: 11.5, color: isCurrent ? '#2563eb' : 'var(--text-main)' }}>
-                      {preset.name} {isCurrent ? '✓' : ''}
+
+          {/* Trigger Card (Shows Active Theme) */}
+          {(() => {
+            const activePreset = currentPresets.find(p => p.template === selected.template) || currentPresets[0]
+            return (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '9px 12px',
+                  borderRadius: 6,
+                  border: '1.5px solid #2563eb',
+                  background: '#f0f7ff',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  transition: 'all 0.15s ease'
+                }}
+                onClick={() => setPresetDropdownOpen(!presetDropdownOpen)}
+                title="点击展开/收起主题选择菜单"
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1, paddingRight: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <strong style={{ fontSize: 12, color: '#1e40af', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {activePreset?.name || selected.template}
                     </strong>
-                    <span style={{ fontSize: 9.5, padding: '1px 5px', borderRadius: 3, background: isCurrent ? '#dbeafe' : '#f1f5f9', color: isCurrent ? '#1e40af' : '#64748b' }}>
-                      {preset.template}
+                    <span style={{ fontSize: 9.5, padding: '1px 5px', borderRadius: 3, background: '#dbeafe', color: '#1e40af', fontWeight: 600, flexShrink: 0 }}>
+                      当前使用
                     </span>
                   </div>
-                  <div style={{ fontSize: 10.5, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
-                    {preset.desc}
+                  <div style={{ fontSize: 10.5, color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {activePreset?.desc || '点击展开切换其他预设版式'}
                   </div>
-                </button>
-              )
-            })}
-          </div>
+                </div>
+                <span style={{ fontSize: 11, color: '#2563eb', transform: presetDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', flexShrink: 0 }}>
+                  ▼
+                </span>
+              </div>
+            )
+          })()}
+
+          {/* Collapsible Dropdown Cards List */}
+          {presetDropdownOpen && (
+            <div
+              style={{
+                marginTop: 6,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+                maxHeight: 240,
+                overflowY: 'auto',
+                padding: '6px',
+                background: '#ffffff',
+                border: '1px solid var(--border-color)',
+                borderRadius: 8,
+                boxShadow: '0 8px 20px rgba(0,0,0,0.08)'
+              }}
+            >
+              {currentPresets.map((preset) => {
+                const isCurrent = selected.template === preset.template
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    className="ghost"
+                    style={{
+                      padding: '7px 10px',
+                      textAlign: 'left',
+                      borderRadius: 6,
+                      border: isCurrent ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                      background: isCurrent ? '#f0fdf4' : '#fafafa',
+                      transition: 'all 0.12s ease',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      applyPreset(preset)
+                      setPresetDropdownOpen(false)
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                      <strong style={{ fontSize: 11.5, color: isCurrent ? '#166534' : 'var(--text-main)' }}>
+                        {preset.name} {isCurrent ? '✓' : ''}
+                      </strong>
+                      <span style={{ fontSize: 9.5, padding: '1px 5px', borderRadius: 3, background: isCurrent ? '#bbf7d0' : '#f1f5f9', color: isCurrent ? '#14532d' : '#64748b' }}>
+                        {preset.template}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 10.5, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
+                      {preset.desc}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         <div className="field">
