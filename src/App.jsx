@@ -1307,6 +1307,12 @@ function summary(node, edges = []) {
 }
 
 
+const safeHex = (val, fallback = '#174a8b') => {
+  if (typeof val === 'string' && /^#[0-9a-fA-F]{6}$/.test(val)) return val
+  if (typeof val === 'string' && /^#[0-9a-fA-F]{3}$/.test(val)) return val
+  return fallback
+}
+
 function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateModal, onClose, update, patch, remove, addRule, addNode }) {
   const [activeTab, setActiveTab] = useState('content') // 'content' | 'links' | 'style'
 
@@ -1538,7 +1544,7 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
             </label>
             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>一键切换完整 UI 结构与质感</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div className="preset-scroll-container">
             {currentPresets.map((preset) => {
               const isCurrent = selected.template === preset.template
               return (
@@ -1547,24 +1553,24 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
                   type="button"
                   className="ghost"
                   style={{
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     textAlign: 'left',
-                    borderRadius: 6,
+                    borderRadius: 5,
                     border: isCurrent ? '2px solid #2563eb' : '1px solid var(--border-color)',
-                    background: isCurrent ? 'var(--bg-subtle)' : '#ffffff',
-                    transition: 'all 0.15s ease'
+                    background: isCurrent ? '#eff6ff' : '#ffffff',
+                    transition: 'all 0.12s ease'
                   }}
                   onClick={() => applyPreset(preset)}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                    <strong style={{ fontSize: 12, color: isCurrent ? '#2563eb' : 'var(--text-main)' }}>
+                    <strong style={{ fontSize: 11.5, color: isCurrent ? '#2563eb' : 'var(--text-main)' }}>
                       {preset.name} {isCurrent ? '✓' : ''}
                     </strong>
-                    <span style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: isCurrent ? '#dbeafe' : '#f1f5f9', color: isCurrent ? '#1e40af' : '#64748b' }}>
+                    <span style={{ fontSize: 9.5, padding: '1px 5px', borderRadius: 3, background: isCurrent ? '#dbeafe' : '#f1f5f9', color: isCurrent ? '#1e40af' : '#64748b' }}>
                       {preset.template}
                     </span>
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.35 }}>
+                  <div style={{ fontSize: 10.5, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
                     {preset.desc}
                   </div>
                 </button>
@@ -1576,7 +1582,7 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
         <div className="field">
           <label>{isChat ? '玩家气泡强调色 (Bubble Color)' : '主色调 / 强调色 (Primary Color)'}</label>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={selected.fields.primaryColor || (isChat ? '#95ec69' : '#174a8b')} onChange={e => patch(node => { node.fields.primaryColor = e.target.value })}/>
+            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={safeHex(selected.fields.primaryColor, isChat ? '#95ec69' : '#174a8b')} onChange={e => patch(node => { node.fields.primaryColor = e.target.value })}/>
             <input style={{ flex: 1 }} value={selected.fields.primaryColor || (isChat ? '#95ec69' : '#174a8b')} onChange={e => patch(node => { node.fields.primaryColor = e.target.value })}/>
           </div>
         </div>
@@ -1584,7 +1590,7 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
         <div className="field">
           <label>页面背景色 (Background Color)</label>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={selected.fields.bgColor || (isChat ? '#f0f2f5' : '#f4f6f9')} onChange={e => patch(node => { node.fields.bgColor = e.target.value })}/>
+            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={safeHex(selected.fields.bgColor, isChat ? '#f0f2f5' : '#008080')} onChange={e => patch(node => { node.fields.bgColor = e.target.value })}/>
             <input style={{ flex: 1 }} value={selected.fields.bgColor || (isChat ? '#f0f2f5' : '#f4f6f9')} onChange={e => patch(node => { node.fields.bgColor = e.target.value })}/>
           </div>
         </div>
@@ -1592,7 +1598,7 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
         <div className="field">
           <label>{isChat ? '聊天主窗口背景色' : '卡片容器背景色'}</label>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={selected.fields.cardBg || '#ffffff'} onChange={e => patch(node => { node.fields.cardBg = e.target.value })}/>
+            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={safeHex(selected.fields.cardBg, '#ffffff')} onChange={e => patch(node => { node.fields.cardBg = e.target.value })}/>
             <input style={{ flex: 1 }} value={selected.fields.cardBg || '#ffffff'} onChange={e => patch(node => { node.fields.cardBg = e.target.value })}/>
           </div>
         </div>
@@ -1600,7 +1606,7 @@ function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateM
         <div className="field">
           <label>文字主色 (Text Color)</label>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={selected.fields.textColor || '#222222'} onChange={e => patch(node => { node.fields.textColor = e.target.value })}/>
+            <input type="color" style={{ width: 42, height: 36, padding: 2, cursor: 'pointer' }} value={safeHex(selected.fields.textColor, '#222222')} onChange={e => patch(node => { node.fields.textColor = e.target.value })}/>
             <input style={{ flex: 1 }} value={selected.fields.textColor || '#222222'} onChange={e => patch(node => { node.fields.textColor = e.target.value })}/>
           </div>
         </div>
