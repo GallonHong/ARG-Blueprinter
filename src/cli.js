@@ -1,5 +1,6 @@
 import { defaultContacts } from './route-config.js';
 import { formatBlueprintForDsh, getStoredDshEndpoint, setStoredDshEndpoint } from './dsh-bridge.js';
+import { TYPE_THEME_PRESETS } from './theme-presets.js';
 
 /**
  * Linux CLI Command Engine for ARG Blueprint
@@ -105,6 +106,49 @@ export function executeCliCommand(line, state, updateState) {
           }
         });
         return { output: `[OK] 已删除页面节点 '${id}' 及关联路由连线`, error: null };
+      }
+
+      case 'cp':
+      case 'clone':
+      case 'copy': {
+        if (args.length < 2) throw new Error('用法: cp <src_id> <new_id> [-n <新名称>]');
+        const srcId = args[0];
+        const newId = args[1];
+        let newName = '';
+        for (let i = 2; i < args.length; i++) {
+          if (args[i] === '-n' || args[i] === '--name') newName = args[++i] || '';
+        }
+        updateState(draft => {
+          const srcNode = draft.nodes.find(n => n.id === srcId);
+          if (!srcNode) throw new Error(`找不到源页面节点: '${srcId}'`);
+          if (draft.nodes.some(n => n.id === newId)) throw new Error(`目标节点 ID '${newId}' 已存在`);
+          const clonedNode = JSON.parse(JSON.stringify(srcNode));
+          clonedNode.id = newId;
+          clonedNode.name = newName || `${srcNode.name} (副本)`;
+          clonedNode.isStart = false;
+          clonedNode.x = (srcNode.x || 80) + 40;
+          clonedNode.y = (srcNode.y || 80) + 40;
+          draft.nodes.push(clonedNode);
+        });
+        return { output: `[OK] 已成功克隆页面节点 '${srcId}' -> '${newId}'`, error: null };
+      }
+
+      case 'preset': {
+        if (args.length < 2) throw new Error('用法: preset <node_id> <preset_id_或_名称>');
+        const nodeId = args[0];
+        const presetQuery = args.slice(1).join(' ').toLowerCase();
+        let appliedName = '';
+        updateState(draft => {
+          const node = draft.nodes.find(n => n.id === nodeId);
+          if (!node) throw new Error(`找不到页面节点: '${nodeId}'`);
+          const list = TYPE_THEME_PRESETS[node.type] || [];
+          const found = list.find(p => p.id.toLowerCase() === presetQuery || p.name.toLowerCase().includes(presetQuery));
+          if (!found) throw new Error(`页面类型 '${node.type}' 下未找到匹配的主题预设: '${presetQuery}'`);
+          node.template = found.template;
+          node.fields = { ...(node.fields || {}), ...(found.fields || {}) };
+          appliedName = found.name;
+        });
+        return { output: `[OK] 已将主题预设【${appliedName}】应用至节点 '${nodeId}'`, error: null };
       }
 
       case 'ln':

@@ -9,6 +9,7 @@ import {
   arg_query,
   arg_validate,
   arg_get_blueprint,
+  arg_get_presets,
   getBlueprintState,
   setBlueprintState
 } from './index.js';
@@ -77,6 +78,10 @@ export function createBridgeServer(port = BRIDGE_PORT) {
         sendJson(200, data);
       } else if (url.pathname === '/api/validate' && req.method === 'GET') {
         const data = await arg_validate();
+        sendJson(200, data);
+      } else if (url.pathname === '/api/presets' && req.method === 'GET') {
+        const type = url.searchParams.get('type') || '';
+        const data = await arg_get_presets({ type });
         sendJson(200, data);
       } else {
         sendJson(404, { error: `Endpoint not found: ${url.pathname}` });

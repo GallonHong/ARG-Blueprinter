@@ -51,3 +51,13 @@ ln ward_chat subject_room -p "保持视线向下，不出声" --icon "🔇"
 ln ward_chat end_topo -p "相信这是现实，跟它走" --icon "🚶"
 ln ward_chat end_true -p "问它：你们清点的是谁？" --icon "❓"
 ln ward_chat end_wake -p "我摸过水龙头了，是冷的" --icon "🚿"
+
+# ── 自定义 Browse 页面：监控室观察记录（新模板「监控室观察记录」）──
+touch ward_log -t Browse -n "监控室·观察记录" --template "监控室观察记录"
+set ward_log cam="404"
+set ward_log date="2026-08-26"
+set ward_log time="03:17"
+set ward_log signature="受试者 #0717"
+set ward_log body="03:17 走廊404第4次出现在画面中，地毯颜色比上次浅了一层。｜03:18 左下角房门开了一条缝，透出米黄色地毯的光。｜03:19 有东西拖着湿润的脚步声经过镜头，镜头没有动。｜03:20 你在画面里看见了自己——正站在镜头后面。｜[守则附注] 若监控时间停止走动，说明你已不在监控侧，请立刻检查水龙头水温。"
+ln subject_room ward_log -p "监控终端.exe" --icon "📹"
+ln ward_log subject_room -p "离开监控室" --icon "↩️"

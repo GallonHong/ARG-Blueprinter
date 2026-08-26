@@ -7,6 +7,7 @@ import { executeCliCommand, executeBatchCli } from '../../src/cli.js';
 import { validateStoryGraph } from '../../src/validator.js';
 import { formatBlueprintForDsh, extractCliScriptFromDshResponse } from '../../src/dsh-bridge.js';
 import { getQiyuebanDemoProject } from '../../src/demo-project.js';
+import { TYPE_THEME_PRESETS } from '../../src/theme-presets.js';
 
 // Active in-memory blueprint state for DSH agent session
 let currentBlueprintState = getQiyuebanDemoProject();
@@ -123,9 +124,30 @@ export async function arg_get_blueprint({ focus = '' } = {}) {
   }
 }
 
+/**
+ * Tool 5: Get available theme presets per page type
+ */
+export async function arg_get_presets({ type = '' } = {}) {
+  try {
+    if (type && TYPE_THEME_PRESETS[type]) {
+      return {
+        success: true,
+        type,
+        presets: TYPE_THEME_PRESETS[type]
+      };
+    }
+    return {
+      success: true,
+      allPresets: TYPE_THEME_PRESETS
+    };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
 // ── Cordis / DSH plugin interface ───────────────────────────────────────────
 // Mounted by the dsh profile loader as a host-plane tool plugin (see
-// cordis.patch.yml): the four arg_* tools register into the DSH `tools`
+// cordis.patch.yml): the five arg_* tools register into the DSH `tools`
 // registry and become callable by any session's agent.
 
 export const name = 'dsh-arg-plugin';
@@ -137,17 +159,17 @@ const jsonTextOutput = {
   render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
 };
 
-/** Register the four ARG Blueprint tools into the DSH tools registry. */
+/** Register the five ARG Blueprint tools into the DSH tools registry. */
 export function apply(ctx) {
   ctx.tools.register({
     name: 'arg_exec',
-    description: '在 ARG Blueprint 中批量执行 Linux CLI 指令（支持 touch 创建页面、ln 建立连线、set 设置属性密码、rule 配置搜索词、contact 添加联系人、msg 追加对话、choice 添加选项分支）。',
+    description: '在 ARG Blueprint 中批量执行 Linux CLI 指令（支持 touch 创建页面、ln 建立连线、set 设置属性密码、cp/clone 克隆节点、preset 应用主题预设、rule 配置搜索词、contact 添加联系人、msg 追加对话、choice 添加选项分支）。',
     parameters: {
       type: 'object',
       properties: {
         script: {
           type: 'string',
-          description: '单行或多行 ARG Blueprint Linux CLI 指令，例如：\ntouch hospital -t Browse -n "废弃医院病历"\nln desktop hospital -p "病历.doc"\nrule search "0717" hospital',
+          description: '单行或多行 ARG Blueprint Linux CLI 指令，例如：\ntouch hospital -t Browse -n "废弃医院病历"\nln desktop hospital -p "病历.doc"\nrule search "0717" hospital\ncp hospital morgue -n "地下停尸间"',
         },
       },
       required: ['script'],
@@ -195,6 +217,22 @@ export function apply(ctx) {
     },
     output: jsonTextOutput,
     execute: (args) => arg_get_blueprint(args),
+  });
+
+  ctx.tools.register({
+    name: 'arg_get_presets',
+    description: '获取 ARG Blueprint 支持的所有 WordPress 级 UI 主题预设库（按 Browse、Chat、Desktop、Search、Login、Files、Ending 页面类型分类）。',
+    parameters: {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          description: "可选页面类型: Browse, Chat, Desktop, Search, Login, Files, Ending, Index",
+        },
+      },
+    },
+    output: jsonTextOutput,
+    execute: (args) => arg_get_presets(args),
   });
 }
 
