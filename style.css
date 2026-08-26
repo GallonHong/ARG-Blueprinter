@@ -858,17 +858,21 @@ textarea {
 .terminal-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 8px 12px;
   font-family: var(--font-mono);
   font-size: 11.5px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: #d4d4d8;
 }
 
 .terminal-line {
-  margin-bottom: 2px;
+  margin-bottom: 3px;
   display: flex;
+  align-items: flex-start;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 
 .terminal-line.cmd { color: #ffffff; }
@@ -879,31 +883,50 @@ textarea {
 .term-prompt {
   color: #71717a;
   flex-shrink: 0;
+  user-select: none;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .term-text {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-family: inherit;
+  font-size: 11.5px;
+  line-height: 1.5;
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .terminal-input-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   margin-top: 4px;
+  width: 100%;
+  min-width: 0;
 }
 
 .terminal-input {
   flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   color: #ffffff;
   font-family: var(--font-mono);
   font-size: 11.5px;
+  line-height: 1.5;
   padding: 0;
   outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  resize: none;
+  overflow-y: hidden;
+  height: 20px;
+  max-height: 180px;
 }
 
 .terminal-batch-pane {

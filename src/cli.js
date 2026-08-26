@@ -483,7 +483,7 @@ function parseCommandLine(text) {
         inQuote = true;
         quoteChar = char;
       }
-    } else if (char === ' ' && !inQuote) {
+    } else if (/\s/.test(char) && !inQuote) {
       if (curr) {
         tokens.push(curr);
         curr = '';

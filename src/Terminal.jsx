@@ -28,8 +28,41 @@ export function Terminal({ state, update, isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  const adjustHeight = (el) => {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = Math.min(180, Math.max(20, el.scrollHeight)) + 'px';
+  };
+
+  const handleInputChange = (e) => {
+    setInputVal(e.target.value);
+    adjustHeight(e.target);
+  };
+
+  const handlePaste = (e) => {
+    const pastedText = e.clipboardData?.getData('text');
+    if (pastedText && pastedText.includes('\n')) {
+      const lines = pastedText.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length > 1) {
+        e.preventDefault();
+        const result = executeBatchCli(pastedText, state, update);
+        setCmdHistory(prev => [...prev, ...lines.filter(l => !l.startsWith('#'))]);
+        setHistory(prev => [
+          ...prev,
+          { type: 'cmd', text: `arg-blueprint:~$ [批量执行 ${lines.length} 行脚本]\n${pastedText}` },
+          { type: 'output', text: result || `[OK] 成功执行 ${lines.length} 条指令` }
+        ]);
+        setInputVal('');
+        if (inputRef.current) {
+          inputRef.current.style.height = '20px';
+        }
+        return;
+      }
+    }
+  };
+
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       const rawCmd = inputVal;
       if (!rawCmd.trim()) return;
@@ -38,36 +71,65 @@ export function Terminal({ state, update, isOpen, onClose }) {
       setCmdHistory(prev => [...prev, trimmed]);
       setHistoryIdx(-1);
 
-      // Execute command
-      const res = executeCliCommand(trimmed, state, update);
-
-      if (res.output === '__CLEAR__') {
-        setHistory([]);
-      } else {
+      if (trimmed.includes('\n')) {
+        const result = executeBatchCli(trimmed, state, update);
         setHistory(prev => [
           ...prev,
           { type: 'cmd', text: `arg-blueprint:~$ ${rawCmd}` },
-          ...(res.error ? [{ type: 'error', text: `Error: ${res.error}` }] : []),
-          ...(res.output ? [{ type: 'output', text: res.output }] : [])
+          { type: 'output', text: result || '[OK] 批处理指令执行完毕' }
         ]);
+      } else {
+        const res = executeCliCommand(trimmed, state, update);
+        if (res.output === '__CLEAR__') {
+          setHistory([]);
+        } else {
+          setHistory(prev => [
+            ...prev,
+            { type: 'cmd', text: `arg-blueprint:~$ ${rawCmd}` },
+            ...(res.error ? [{ type: 'error', text: `Error: ${res.error}` }] : []),
+            ...(res.output ? [{ type: 'output', text: res.output }] : [])
+          ]);
+        }
       }
       setInputVal('');
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.style.height = '20px';
+        }
+      }, 0);
     } else if (e.key === 'ArrowUp') {
+      if (inputVal.includes('\n') && inputRef.current && inputRef.current.selectionStart > 0) {
+        return;
+      }
       e.preventDefault();
       if (!cmdHistory.length) return;
       const nextIdx = historyIdx === -1 ? cmdHistory.length - 1 : Math.max(0, historyIdx - 1);
       setHistoryIdx(nextIdx);
-      setInputVal(cmdHistory[nextIdx]);
+      const val = cmdHistory[nextIdx];
+      setInputVal(val);
+      setTimeout(() => {
+        if (inputRef.current) adjustHeight(inputRef.current);
+      }, 0);
     } else if (e.key === 'ArrowDown') {
+      if (inputVal.includes('\n') && inputRef.current && inputRef.current.selectionStart < inputVal.length) {
+        return;
+      }
       e.preventDefault();
       if (historyIdx === -1) return;
       const nextIdx = historyIdx + 1;
       if (nextIdx >= cmdHistory.length) {
         setHistoryIdx(-1);
         setInputVal('');
+        setTimeout(() => {
+          if (inputRef.current) inputRef.current.style.height = '20px';
+        }, 0);
       } else {
         setHistoryIdx(nextIdx);
-        setInputVal(cmdHistory[nextIdx]);
+        const val = cmdHistory[nextIdx];
+        setInputVal(val);
+        setTimeout(() => {
+          if (inputRef.current) adjustHeight(inputRef.current);
+        }, 0);
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
@@ -196,15 +258,17 @@ ln files ending_true -p "提交结案报告.doc"
           ))}
           <div className="terminal-input-row">
             <span className="term-prompt">arg-blueprint:~$</span>
-            <input
+            <textarea
               ref={inputRef}
+              rows={1}
               className="terminal-input"
               value={inputVal}
-              onChange={e => setInputVal(e.target.value)}
+              onChange={handleInputChange}
+              onPaste={handlePaste}
               onKeyDown={handleKeyDown}
               spellCheck="false"
               autoFocus
-              placeholder="输入 touch / ln / set / rm / ls / help..."
+              placeholder="输入 touch / ln / set / rm / ls / help（支持长指令自动换行与直接粘贴执行多行脚本）..."
             />
           </div>
           <div ref={bottomRef} />
