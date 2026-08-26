@@ -127,3 +127,88 @@ test('CLI batch script 批量脚本一键执行', () => {
   assert.equal(state.startId, 'desktop');
   assert.equal(state.nodes.find(n => n.id === 'login').fields.password, '0717');
 });
+
+test('CLI choice --requires 前置门槛与自动建线', () => {
+  const state = createMockState();
+  const updateState = fn => fn(state);
+
+  executeCliCommand('touch chat -t Chat', state, updateState);
+  executeCliCommand('touch ending -t Ending', state, updateState);
+  executeCliCommand('choice chat "林警官" "出示病历" ending --reply "这是关键证据！" --requires doc_hospital', state, updateState);
+
+  const chatNode = state.nodes.find(n => n.id === 'chat');
+  const contact = chatNode.contacts.find(c => c.name === '林警官');
+  assert.equal(contact.choices[0].requires, 'doc_hospital');
+  assert.equal(contact.choices[0].target, 'ending');
+
+  // Verify auto edge creation
+  const edge = state.edges.find(e => e.from === 'chat' && e.to === 'ending');
+  assert.ok(edge);
+  assert.equal(edge.port, '出示病历');
+});
+
+test('CLI rmcontact, rmchoice, rmmsg 颗粒度删除', () => {
+  const state = createMockState();
+  const updateState = fn => fn(state);
+
+  executeCliCommand('touch chat -t Chat', state, updateState);
+  executeCliCommand('contact chat "林警官"', state, updateState);
+  executeCliCommand('contact chat "嫌疑人"', state, updateState);
+  executeCliCommand('msg chat "林警官" npc "这是第一句"', state, updateState);
+  executeCliCommand('msg chat "林警官" npc "这是第二句"', state, updateState);
+  executeCliCommand('choice chat "林警官" "选项A" ending', state, updateState);
+
+  executeCliCommand('rmmsg chat "林警官" "第一句"', state, updateState);
+  const contact = state.nodes[0].contacts.find(c => c.name === '林警官');
+  assert.equal(contact.messages.length, 1);
+  assert.equal(contact.messages[0].text, '这是第二句');
+
+  executeCliCommand('rmchoice chat "林警官" "选项A"', state, updateState);
+  assert.equal(contact.choices.length, 0);
+
+  executeCliCommand('rmcontact chat "嫌疑人"', state, updateState);
+  assert.equal(state.nodes[0].contacts.length, 1);
+});
+
+test('CLI set 深度嵌套路径赋值', () => {
+  const state = createMockState();
+  const updateState = fn => fn(state);
+
+  executeCliCommand('touch chat -t Chat', state, updateState);
+  executeCliCommand('choice chat "林警官" "旧选项" ending', state, updateState);
+  executeCliCommand('set chat contacts.0.choices.0.requires="vault_key" contacts.0.avatar="🕵️"', state, updateState);
+
+  const contact = state.nodes[0].contacts[0];
+  assert.equal(contact.choices[0].requires, 'vault_key');
+  assert.equal(contact.avatar, '🕵️');
+});
+
+test('CLI validate, search, simulate, export, import 诊断与数据通道', () => {
+  const state = createMockState();
+  const updateState = fn => fn(state);
+
+  executeCliCommand('touch search -t Search --start', state, updateState);
+  executeCliCommand('touch secret -t Browse -n "绝密档案"', state, updateState);
+  executeCliCommand('rule search "0717" secret', state, updateState);
+
+  // Test search simulation
+  const searchRes = executeCliCommand('search 0717', state, updateState);
+  assert.match(searchRes.output, /跳转至: secret/);
+
+  // Test graph walk simulation
+  const simRes = executeCliCommand('simulate', state, updateState);
+  assert.match(simRes.output, /已探索可达节点: 2/);
+
+  // Test validate
+  const valRes = executeCliCommand('validate', state, updateState);
+  assert.match(valRes.output, /ARG 故事网健康度自检报告/);
+
+  // Test export & import
+  const expRes = executeCliCommand('export', state, updateState);
+  assert.ok(expRes.output.includes('"startId": "search"'));
+
+  const emptyState = createMockState();
+  executeCliCommand(`import ${expRes.output}`, emptyState, fn => fn(emptyState));
+  assert.equal(emptyState.nodes.length, 2);
+  assert.equal(emptyState.startId, 'search');
+});

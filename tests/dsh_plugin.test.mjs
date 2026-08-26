@@ -44,7 +44,7 @@ choice chat_police "林警官" "询问详情" hospital --reply "你看看这份�
   assert.ok(res.output.includes('[OK] 已创建页面节点: hospital'));
   assert.ok(res.output.includes('[OK] 已创建页面节点: chat_police'));
   assert.equal(getBlueprintState().nodes.length, 3);
-  assert.equal(getBlueprintState().edges.length, 1);
+  assert.equal(getBlueprintState().edges.length, 2);
 });
 
 test('DSH 插件工具 arg_query 支持只读指令查询 (ls -l / cat / stat)', async () => {
