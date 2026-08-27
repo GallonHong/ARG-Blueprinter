@@ -94,6 +94,7 @@ export default function App() {
   const importInputRef = useRef(null);
   const sharedClientRef = useRef(null);
   const isApplyingRemoteRef = useRef(false);
+  const skipInitialStateSyncRef = useRef(true);
 
   const selected = state.nodes.find(node => node.id === state.selected);
   const graphValidation = useMemo(() => validateStoryGraph(state), [state]);
@@ -137,6 +138,13 @@ export default function App() {
 
   // Debounced auto-save local changes to bridge
   useEffect(() => {
+    // The first render represents the state loaded from localStorage. Do not
+    // queue that possibly stale snapshot back to the bridge: if the user
+    // edits immediately, the old empty snapshot could overwrite the edit.
+    if (skipInitialStateSyncRef.current) {
+      skipInitialStateSyncRef.current = false;
+      return undefined;
+    }
     if (isApplyingRemoteRef.current) return;
     const timer = setTimeout(() => {
       if (sharedClientRef.current?.isConnected()) {
@@ -693,7 +701,7 @@ export default function App() {
             })}
 
             {!state.nodes.length && (
-              <div className="empty">
+              <div className="empty" style={{ pointerEvents: 'auto' }}>
                 <p>当前蓝图为空</p>
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 12 }}>
                   <button className="primary" onClick={() => add('Desktop')}>＋ 添加电脑桌面</button>
