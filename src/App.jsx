@@ -233,6 +233,13 @@ export default function App() {
     setInspectorOpen(true);
   };
 
+  const setStart = () => selected && update(next => {
+    next.startId = selected.id;
+    next.nodes.forEach(node => {
+      node.isStart = node.id === selected.id;
+    });
+  });
+
   const remove = () => selected && update(next => {
     next.nodes = next.nodes.filter(node => node.id !== selected.id);
     next.edges = next.edges.filter(edge => edge.from !== selected.id && edge.to !== selected.id);
@@ -741,6 +748,7 @@ export default function App() {
           update={update}
           patch={patchSelected}
           remove={remove}
+          onSetStart={setStart}
           addRule={addRule}
           addNode={add}
         />

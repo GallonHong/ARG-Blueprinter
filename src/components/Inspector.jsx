@@ -8,7 +8,7 @@ import { ImageUpload } from './ImageUpload.jsx';
 const Field = ({ label, children }) => <div className="field"><label>{label}</label>{children}</div>;
 const safeHex = (c, fallback = '#ffffff') => (typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c)) ? c : fallback;
 
-export function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateModal, onClose, update, patch, remove, addRule, addNode }) {
+export function Inspector({ selected, nodes, edges, customTemplates = [], openTemplateModal, onClose, update, patch, remove, onSetStart, addRule, addNode }) {
   const [activeTab, setActiveTab] = useState('content') // 'content' | 'links' | 'style'
   const [presetDropdownOpen, setPresetDropdownOpen] = useState(false)
 
@@ -393,7 +393,17 @@ export function Inspector({ selected, nodes, edges, customTemplates = [], openTe
         </Field>
       </>}
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 24 }}>
+      <button
+        className={selected.isStart ? 'ghost' : 'secondary'}
+        style={{ width: '100%', marginTop: 24, fontSize: 11.5 }}
+        onClick={onSetStart}
+        disabled={selected.isStart}
+        title={selected.isStart ? '当前页面已经是起始页' : '将当前页面设为玩家进入游戏时首先打开的页面'}
+      >
+        {selected.isStart ? '✓ 当前已是起始页' : '设为起始页'}
+      </button>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
         <button
           className="secondary"
           style={{ flex: 1, fontSize: 11.5 }}
